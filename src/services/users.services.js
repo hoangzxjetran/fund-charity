@@ -1,6 +1,6 @@
 const db = require('../models/index.js')
 const { tokenType } = require('../constants/enum.js')
-const { generateToken } = require('../utils/jwt.js')
+const { generateToken, verifyToken } = require('../utils/jwt.js')
 const { AppError } = require('../controllers/error.controllers.js')
 const { hashPassword, comparePassword } = require('../utils/bcrypt.js')
 const { USER_MESSAGES } = require('../constants/message.js')
@@ -40,11 +40,34 @@ class UserServices {
     return generateToken(
       {
         userId,
-        tokenType: tokenType.RefreshToken
+        tokenType: tokenType.ResetPasswordToken
       },
       process.env.JWT_EMAIL_VERIFY_TOKEN_EXPIRES_IN || '5m'
     )
   }
+
+  async refreshToken(userId, refreshTokenStr) {
+    const decodedRefreshToken = await verifyToken(refreshTokenStr)
+    if (!decodedRefreshToken || decodedRefreshToken.tokenType !== tokenType.RefreshToken) {
+      throw new AppError(USER_MESSAGES.REFRESH_TOKEN_IS_INVALID, HTTP_STATUS.UNAUTHORIZED)
+    }
+
+    const [accessToken, newRefreshToken] = await Promise.all([
+      this.signAccessToken(userId.toString()),
+      this.signRefreshToken(userId.toString())
+    ])
+
+    await db.User.update(
+      {
+        refreshToken: newRefreshToken,
+        updatedAt: new Date()
+      },
+      { where: { userId } }
+    )
+
+    return { accessToken, refreshToken: newRefreshToken }
+  }
+
   async checkEmailExists(email) {
     const user = await db.User.findOne({ where: { email } })
     return !!user
@@ -53,15 +76,15 @@ class UserServices {
   async getUserByEmail(email) {
     const data = await db.User.findOne({ where: { email } })
     if (!data) return null
-    const user = data.get({ plain: true })
+    const { password, accessTokenForgotPassword, ...user } = data.get({ plain: true })
     return user
   }
 
   async getUserById(userId) {
     const data = await db.User.findOne({ where: { userId } })
     if (!data) return null
-    const user = data.get({ plain: true })
-    return user
+    const { password, accessTokenForgotPassword, ...restUser } = data.get({ plain: true })
+    return restUser
   }
 
   async signUp({ firstName, lastName, dateOfBirth, email, password }) {
@@ -89,7 +112,16 @@ class UserServices {
       this.signAccessToken(user.userId.toString()),
       this.signRefreshToken(user.userId.toString())
     ])
-    const { password: _, ...restUser } = user
+    await db.User.update(
+      {
+        refreshToken,
+        updatedAt: new Date()
+      },
+      {
+        where: { userId: user.userId }
+      }
+    )
+    const { password: _, accessTokenForgotPassword, ...restUser } = user
     return { ...restUser, accessToken, refreshToken }
   }
 
@@ -124,14 +156,13 @@ class UserServices {
     return true
   }
 
-  async changePassword(userId, oldPlainTextPassword, newPlainTextPassword) {
-    const user = await this.getUserById(userId)
-    if (!comparePassword(oldPlainTextPassword, user.password)) {
+  async changePassword({ userId, currentPassword, newPassword }) {
+    if (!comparePassword(currentPassword, newPassword)) {
       throw new AppError(USER_MESSAGES.OLD_PASSWORD_INCORRECT, HTTP_STATUS.BAD_REQUEST)
     }
     await db.User.update(
       {
-        password: hashPassword(newPlainTextPassword),
+        password: hashPassword(newPassword),
         updatedAt: new Date()
       },
       {
@@ -140,16 +171,11 @@ class UserServices {
     )
     return true
   }
-  async myProfile(user_id) {}
 
   async updateMyProfile(user_id, body) {}
 
   async updateUser(user_id, body) {
     return result
-  }
-  async refreshToken(user_id) {
-    const accessToken = await this.signAccessToken(user_id)
-    return accessToken
   }
   async changePassword(user_id, plainTextPassword) {}
 

@@ -6,8 +6,10 @@ const {
   signInValidator,
   forgotPasswordValidator,
   verifyPasswordTokenValidator,
-  resetPasswordValidator
+  resetPasswordValidator,
+  changePasswordValidator
 } = require('../validations/user.validations.js')
+const { isAuthorized } = require('../middlewares/auth.middewares.js')
 const router = Router()
 
 router.route('/sign-up').post(signUpValidator, catchAsync(UserControllers.signUp))
@@ -18,4 +20,7 @@ router
   .post(verifyPasswordTokenValidator, catchAsync(UserControllers.verifyPasswordToken))
 router.route('/reset-password').post(resetPasswordValidator, catchAsync(UserControllers.resetPassword))
 
+router.route('/my-profile').get(isAuthorized, catchAsync(UserControllers.getProfile))
+router.route('/change-password').post(isAuthorized, changePasswordValidator, catchAsync(UserControllers.changePassword))
+router.route('/refresh-token').post(isAuthorized, catchAsync(UserControllers.refreshToken))
 module.exports = router

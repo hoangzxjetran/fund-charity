@@ -40,5 +40,30 @@ class UserControllers {
       data: true
     })
   }
+
+  async getProfile(req, res) {
+    const user = req.user
+    res.status(HTTP_STATUS.OK).json({
+      data: user
+    })
+  }
+
+  async changePassword(req, res) {
+    const { userId } = req.user
+    const { currentPassword, newPassword } = req.body
+    const result = await usersServices.changePassword({ userId, currentPassword, newPassword })
+    res.status(HTTP_STATUS.OK).json({
+      data: result
+    })
+  }
+
+  async refreshToken(req, res) {
+    const { userId } = req.user
+    const { refreshToken } = req.body
+    const data = await usersServices.refreshToken(userId, refreshToken)
+    res.status(HTTP_STATUS.OK).json({
+      data
+    })
+  }
 }
 module.exports = new UserControllers()

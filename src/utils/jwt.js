@@ -10,11 +10,8 @@ dotenv.config()
 const generateToken = (payload, expiresIn) => {
   return new Promise((resolve, reject) => {
     jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn, algorithm: 'HS256' }, (err, token) => {
-      if (err) {
-        throw reject(err)
-      } else {
-        resolve(token)
-      }
+      if (err) return reject(err)
+      resolve(token)
     })
   })
 }
