@@ -65,5 +65,14 @@ class UserControllers {
       data
     })
   }
+
+  async updateProfile(req, res) {
+    const { userId } = req.user
+    const body = req.body
+    const data = await usersServices.updateMyProfile(userId, body)
+    res.status(HTTP_STATUS.OK).json({
+      data
+    })
+  }
 }
 module.exports = new UserControllers()

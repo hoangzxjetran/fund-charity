@@ -20,7 +20,10 @@ router
   .post(verifyPasswordTokenValidator, catchAsync(UserControllers.verifyPasswordToken))
 router.route('/reset-password').post(resetPasswordValidator, catchAsync(UserControllers.resetPassword))
 
-router.route('/my-profile').get(isAuthorized, catchAsync(UserControllers.getProfile))
+router.route('/my-profile')
+  .get(isAuthorized, catchAsync(UserControllers.getProfile))
+  .put(isAuthorized, catchAsync(UserControllers.updateProfile))
+
 router.route('/change-password').post(isAuthorized, changePasswordValidator, catchAsync(UserControllers.changePassword))
 router.route('/refresh-token').post(isAuthorized, catchAsync(UserControllers.refreshToken))
 module.exports = router

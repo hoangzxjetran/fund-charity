@@ -172,7 +172,11 @@ class UserServices {
     return true
   }
 
-  async updateMyProfile(user_id, body) {}
+  async updateMyProfile(userId, body) {
+    await db.User.update(body, { where: { userId } })
+    const updatedUser = await this.getUserById(userId)
+    return updatedUser
+  }
 
   async updateUser(user_id, body) {
     return result
