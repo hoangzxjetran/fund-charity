@@ -1,4 +1,4 @@
-const AppError = require('../controllers/error.controllers.js')
+const { AppError } = require('../controllers/error.controllers.js')
 const dotenv = require('dotenv')
 const jwt = require('jsonwebtoken')
 const HTTP_STATUS = require('../constants/httpStatus.js')

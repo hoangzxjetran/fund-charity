@@ -1,6 +1,10 @@
 const db = require('../models/index.js')
 const { tokenType } = require('../constants/enum.js')
 const { generateToken } = require('../utils/jwt.js')
+const { AppError } = require('../controllers/error.controllers.js')
+const { hashPassword, comparePassword } = require('../utils/bcrypt.js')
+const { USER_MESSAGES } = require('../constants/message.js')
+const HTTP_STATUS = require('../constants/httpStatus.js')
 
 class UserServices {
   signAccessToken(userId) {
@@ -26,7 +30,7 @@ class UserServices {
     return generateToken(
       {
         userId,
-        tokenType: TokenType.RefreshToken
+        tokenType: tokenType.RefreshToken
       },
       process.env.JWT_REFRESH_TOKEN_EXPIRES_IN || '7d'
     )
@@ -51,10 +55,22 @@ class UserServices {
       lastName,
       dateOfBirth,
       email,
-      password
+      password: hashPassword(password)
     })
-    console.log(newUser)
     return newUser
+  }
+
+  async signIn({ email, password }) {
+    const { dataValues: user } = await db.User.findOne({ where: { email } })
+    if (!user || !comparePassword(password, user?.password)) {
+      throw new AppError(USER_MESSAGES.LOGIN_INCORRECT, HTTP_STATUS.BAD_REQUEST)
+    }
+    const [accessToken, refreshToken] = await Promise.all([
+      this.signAccessToken(user.userId.toString()),
+      this.signRefreshToken(user.userId.toString())
+    ])
+    const { password: _, ...restUser } = user
+    return { ...restUser, accessToken, refreshToken }
   }
 }
 module.exports = new UserServices()

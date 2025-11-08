@@ -1,7 +1,7 @@
 const { checkSchema } = require('express-validator')
 const HTTP_STATUS = require('../constants/httpStatus.js')
 const { USER_MESSAGES } = require('../constants/message.js')
-const AppError = require('../controllers/error.controllers.js')
+const { AppError } = require('../controllers/error.controllers.js')
 const validate = require('../utils/validate.js')
 const usersServices = require('../services/users.services.js')
 
@@ -97,4 +97,37 @@ const signUpValidator = validate(
   )
 )
 
-module.exports = { signUpValidator }
+const signInValidator = validate(
+  checkSchema(
+    {
+      email: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.EMAIL_IS_REQUIRED
+        },
+        trim: true,
+        isEmail: {
+          errorMessage: USER_MESSAGES.EMAIL_IS_INVALID
+        }
+      },
+      password: {
+        trim: true,
+        notEmpty: {
+          errorMessage: USER_MESSAGES.PASSWORD_IS_REQUIRED
+        },
+        isLength: { options: { min: 8, max: 50 }, errorMessage: USER_MESSAGES.PASSWORD_LENGTH },
+        isStrongPassword: {
+          options: {
+            minLength: 8,
+            minNumbers: 1,
+            minLowercase: 1,
+            minUppercase: 1
+          },
+          errorMessage: USER_MESSAGES.PASSWORD_IS_STRONG
+        }
+      }
+    },
+    ['body']
+  )
+)
+
+module.exports = { signUpValidator, signInValidator }

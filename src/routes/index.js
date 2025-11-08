@@ -1,4 +1,4 @@
-const AppError = require('../controllers/error.controllers.js')
+const { AppError } = require('../controllers/error.controllers.js')
 const userRouter = require('./users.routes.js')
 const HTTP_STATUS = require('../constants/httpStatus.js')
 

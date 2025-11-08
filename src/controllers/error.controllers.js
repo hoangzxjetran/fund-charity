@@ -21,8 +21,8 @@ class ErrorEntity extends ErrorWithStatus {
     this.errors = errors
   }
 }
-module.exports = AppError
 module.exports = {
+  AppError,
   ErrorEntity,
   ErrorWithStatus
 }

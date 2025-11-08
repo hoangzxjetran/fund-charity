@@ -1,4 +1,4 @@
-const AppError = require('../controllers/error.controllers.js')
+const { AppError } = require('../controllers/error.controllers.js')
 const { SendEmailCommand, SESClient } = require('@aws-sdk/client-ses')
 const { config } = require('dotenv')
 const fs = require('fs')
