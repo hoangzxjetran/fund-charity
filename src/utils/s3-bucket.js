@@ -2,6 +2,7 @@ const { DeleteObjectCommand, S3Client } = require('@aws-sdk/client-s3')
 const { Upload } = require('@aws-sdk/lib-storage')
 const { config } = require('dotenv')
 const HTTP_STATUS = require('../constants/httpStatus.js')
+const { mediaType } = require('../constants/enum.js')
 config()
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
@@ -24,7 +25,7 @@ const uploadFileToS3 = async (params) => {
   await upload.done()
   const fileUrl = `https://${process.env.AWS_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${params.Key}`
   return {
-    mediaType: isVideo ? 1 : 0,
+    mediaType: isVideo ? mediaType.Video : mediaType.Image,
     url: fileUrl
   }
 }

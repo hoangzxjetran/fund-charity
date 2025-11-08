@@ -172,15 +172,12 @@ class UserServices {
     return true
   }
 
-  async updateMyProfile(userId, body) {
+  async updateProfile(userId, body) {
     await db.User.update(body, { where: { userId } })
     const updatedUser = await this.getUserById(userId)
     return updatedUser
   }
 
-  async updateUser(user_id, body) {
-    return result
-  }
   async changePassword(user_id, plainTextPassword) {}
 
   async getUsers({ search, page, limit, sortBy, sortOrder, isActive, role }) {
@@ -223,6 +220,15 @@ class UserServices {
       }
     }
   }
-  async deleteUser(user_id) {}
+  async deleteUser(userId) {
+    await db.User.update(
+      {
+        isActive: false,
+        updatedAt: new Date()
+      },
+      { where: { userId } }
+    )
+    return true
+  }
 }
 module.exports = new UserServices()

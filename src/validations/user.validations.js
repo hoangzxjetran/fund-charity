@@ -245,7 +245,13 @@ const resetPasswordValidator = validate(
 const changePasswordValidator = validate(
   checkSchema(
     {
-      password: {
+      currentPassword: {
+        trim: true,
+        notEmpty: {
+          errorMessage: USER_MESSAGES.OLD_PASSWORD_IS_REQUIRED
+        }
+      },
+      newPassword: {
         trim: true,
         notEmpty: {
           errorMessage: USER_MESSAGES.PASSWORD_IS_REQUIRED
@@ -261,7 +267,7 @@ const changePasswordValidator = validate(
           errorMessage: USER_MESSAGES.PASSWORD_IS_STRONG
         }
       },
-      confirm_password: {
+      confirmNewPassword: {
         trim: true,
         notEmpty: {
           errorMessage: USER_MESSAGES.CONFIRM_PASSWORD_IS_REQUIRED
@@ -278,7 +284,7 @@ const changePasswordValidator = validate(
         },
         custom: {
           options: (value, { req }) => {
-            if (value !== req.body.password) {
+            if (value !== req.body.confirmNewPassword) {
               throw new Error(USER_MESSAGES.CONFIRM_PASSWORD_MUST_MATCH)
             }
             return true
@@ -407,6 +413,42 @@ const getUsersValidator = validate(
   )
 )
 
+const userIdValidator = validate(
+  checkSchema(
+    {
+      userId: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.USER_ID_REQUIRED
+        },
+        isInt: {
+          options: { min: 1 },
+          errorMessage: USER_MESSAGES.USER_ID_INVALID
+        },
+        toInt: true
+      }
+    },
+    ['params']
+  )
+)
+
+const uploadAvatarValidator = validate(
+  checkSchema(
+    {
+      file: {
+        custom: {
+          options: (value, { req }) => {
+            if (!req.file) {
+              throw new AppError(USER_MESSAGES.AVATAR_IS_REQUIRED, HTTP_STATUS.BAD_REQUEST)
+            }
+            return true
+          }
+        }
+      }
+    },
+    ['file']
+  )
+)
+
 module.exports = {
   signUpValidator,
   signInValidator,
@@ -415,5 +457,7 @@ module.exports = {
   resetPasswordValidator,
   changePasswordValidator,
   getUsersValidator,
-  updateProfileValidator
+  updateProfileValidator,
+  userIdValidator,
+  uploadAvatarValidator
 }

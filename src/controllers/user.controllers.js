@@ -1,5 +1,6 @@
 const HTTP_STATUS = require('../constants/httpStatus.js')
 const usersServices = require('../services/users.services.js')
+const { uploadFileToS3 } = require('../utils/s3-bucket.js')
 class UserControllers {
   async signUp(req, res) {
     const { firstName, lastName, dateOfBirth, email, password } = req.body
@@ -69,7 +70,7 @@ class UserControllers {
   async updateProfile(req, res) {
     const { userId } = req.user
     const body = req.body
-    const data = await usersServices.updateMyProfile(userId, body)
+    const data = await usersServices.updateProfile(userId, body)
     res.status(HTTP_STATUS.OK).json({
       data
     })
@@ -83,6 +84,43 @@ class UserControllers {
     })
     res.status(HTTP_STATUS.OK).json({
       data
+    })
+  }
+
+  async getUser(req, res) {
+    const { userId } = req.params
+    const data = await usersServices.getUserById(userId)
+    res.status(HTTP_STATUS.OK).json({
+      data
+    })
+  }
+
+  async updateUser(req, res) {
+    const { userId } = req.params
+    const body = req.body
+    const data = await usersServices.updateProfile(userId, body)
+    res.status(HTTP_STATUS.OK).json({
+      data
+    })
+  }
+
+  async deleteUser(req, res) {
+    const { userId } = req.params
+    const result = await usersServices.deleteUser(userId)
+    res.status(HTTP_STATUS.NO_CONTENT).json({ data: result })
+  }
+
+  async uploadAvatarUser(req, res) {
+    console.log(req.file)
+    const params = {
+      Bucket: process.env.AWS_BUCKET,
+      ContentType: req.file?.mimetype,
+      Key: `user/avatar-${req.file?.filename}`,
+      Body: req.file?.buffer
+    }
+    const result = await uploadFileToS3(params)
+    return res.status(HTTP_STATUS.OK).json({
+      data: result
     })
   }
 }

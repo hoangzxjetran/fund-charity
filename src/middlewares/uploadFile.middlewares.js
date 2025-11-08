@@ -1,6 +1,7 @@
 const multer = require('multer')
 const sharp = require('sharp')
 const { v4 } = require('uuid')
+const { AppError } = require('../controllers/error.controllers.js')
 const HTTP_STATUS = require('../constants/httpStatus.js')
 
 const multerStorage = multer.memoryStorage()
@@ -11,6 +12,19 @@ const multerFilter = (req, file, cb) => {
   } else {
     cb(new AppError('Not an image or video! Please upload only images or videos', HTTP_STATUS.BAD_REQUEST), false)
   }
+}
+const resizeAvatar = async (req, res, next) => {
+  if (!req.file) return next()
+  if (req.file.mimetype.startsWith('video')) {
+    return next()
+  }
+  req.file.filename = `user-${v4()}.jpeg`
+  req.file.buffer = await sharp(req.file.buffer)
+    .resize({ width: 100, height: 100, fit: 'cover' })
+    .toFormat('jpeg')
+    .jpeg({ quality: 100 })
+    .toBuffer()
+  next()
 }
 
 const resizeImageRestaurant = async (req, res, next) => {
@@ -65,6 +79,13 @@ const renameVideo = (req, res, next) => {
   next()
 }
 
+const multerAvatar = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+  limits: {
+    fileSize: 1024 * 1024 * 10 // 10MB
+  }
+})
 const multerRestaurant = multer({
   storage: multerStorage,
   fileFilter: multerFilter,
@@ -88,13 +109,17 @@ const multerReview = multer({
     fileSize: 1024 * 1024 * 50 // 50MB
   }
 })
+
+const uploadAvatar = multerAvatar.single('file')
 const uploadReview = multerReview.single('file')
 const uploadMenu = multerMenu.single('file')
 module.exports = {
   renameVideo,
+  resizeAvatar,
   resizeImageMenu,
   resizeImageRestaurant,
   resizeImageReview,
+  uploadAvatar,
   uploadMenu,
   uploadRestaurant,
   uploadReview

@@ -63,7 +63,8 @@ const USER_MESSAGES = {
   USER_ID_REQUIRED: 'User ID is required',
   USER_ID_INVALID: 'User ID is invalid',
   REFRESH_TOKEN_IS_STRING: 'Refresh token must be a string',
-  REFRESH_TOKEN_IS_INVALID: 'Refresh token is invalid'
+  REFRESH_TOKEN_IS_INVALID: 'Refresh token is invalid',
+  AVATAR_IS_REQUIRED: 'Avatar is required',
 }
 
 const COMMON = {
