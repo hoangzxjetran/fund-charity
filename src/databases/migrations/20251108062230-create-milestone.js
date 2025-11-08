@@ -2,60 +2,55 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Funds', {
-      fundId: {
+    await queryInterface.createTable('Milestones', {
+      milestoneId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      methodId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'FundraisingMethods',
-          key: 'methodId'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
-      },
-      fundName: {
-        type: Sequelize.STRING
-      },
-      bannerUrl: {
-        type: Sequelize.STRING
+      title: {
+        type: Sequelize.STRING,
+        allowNull: false
       },
       description: {
-        type: Sequelize.TEXT
-      },
-      bankAccountNumber: {
-        type: Sequelize.STRING
-      },
-      bankName: {
-        type: Sequelize.STRING
-      },
-      urlQrCode: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT,
+        allowNull: true
       },
       targetAmount: {
-        type: Sequelize.DOUBLE
+        type: Sequelize.DOUBLE,
+        allowNull: false
       },
-      currentAmount: {
-        type: Sequelize.DOUBLE
+      achievedAmount: {
+        type: Sequelize.DOUBLE,
+        defaultValue: 0
       },
-      status: {
+      startDate: {
+        type: Sequelize.DATE,
+        allowNull: true
+      },
+      endDate: {
+        type: Sequelize.DATE,
+        allowNull: true
+      },
+      orderIndex: {
+        type: Sequelize.INTEGER,
+        allowNull: true
+      },
+      milestoneStatusId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'FundStatuses',
-          key: 'fundStatusId'
+          model: 'MilestoneStatuses',
+          key: 'milestoneStatusId'
         },
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
-      categoryFund: {
+      fundId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'CategoryFunds',
-          key: 'categoryId'
+          model: 'Funds',
+          key: 'fundId'
         },
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
@@ -73,6 +68,6 @@ module.exports = {
     })
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Funds')
+    await queryInterface.dropTable('Milestones')
   }
 }

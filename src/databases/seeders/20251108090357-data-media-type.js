@@ -1,6 +1,6 @@
 'use strict'
 
-const { roleType } = require('../../constants/enum')
+const { mediaType } = require('../../constants/enum')
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -15,14 +15,14 @@ module.exports = {
      * }], {});
      */
 
-    const roleData = Object.entries(roleType).map(([key, value]) => ({
-      roleId: value,
-      roleName: key,
+    const mediaData = Object.entries(mediaType).map(([key, value]) => ({
+      mediaType: value,
+      mediaName: key,
       createdAt: new Date(),
       updatedAt: new Date()
     }))
 
-    return queryInterface.bulkInsert('Roles', roleData, {})
+    return queryInterface.bulkInsert('Media', mediaData, {})
   },
 
   async down(queryInterface, Sequelize) {
@@ -32,6 +32,5 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-    return queryInterface.bulkDelete('Roles', null, {})
   }
 }

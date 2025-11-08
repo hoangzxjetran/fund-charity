@@ -1,7 +1,5 @@
 'use strict'
 
-const { roleType } = require('../../constants/enum')
-
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -14,15 +12,14 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
      */
-
-    const roleData = Object.entries(roleType).map(([key, value]) => ({
-      roleId: value,
-      roleName: key,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }))
-
-    return queryInterface.bulkInsert('Roles', roleData, {})
+    return queryInterface.bulkInsert(
+      'FundraisingMethods',
+      [
+        { methodId: 1, methodName: 'Milestone', createdAt: new Date(), updatedAt: new Date() },
+        { methodId: 2, methodName: 'Thời gian', createdAt: new Date(), updatedAt: new Date() }
+      ],
+      {}
+    )
   },
 
   async down(queryInterface, Sequelize) {
@@ -32,6 +29,7 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-    return queryInterface.bulkDelete('Roles', null, {})
+
+    return queryInterface.bulkDelete('FundraisingMethods', null, {})
   }
 }

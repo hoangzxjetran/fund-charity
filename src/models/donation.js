@@ -9,11 +9,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      console.log('Models loaded in Donation:', Object.keys(models))
       Donation.belongsTo(models.User, { foreignKey: 'userId' })
       Donation.belongsTo(models.Fund, { foreignKey: 'fundId' })
       Donation.hasOne(models.Transaction, { foreignKey: 'donationId' })
       Donation.hasMany(models.Notification, { foreignKey: 'donationId' })
+      Donation.belongsTo(models.Milestone, { foreignKey: 'milestoneId' })
     }
   }
   Donation.init(
@@ -26,7 +26,12 @@ module.exports = (sequelize, DataTypes) => {
       paymentStatus: DataTypes.STRING,
       transactionId: DataTypes.STRING,
       donateDate: DataTypes.DATE,
-      message: DataTypes.STRING
+      message: DataTypes.STRING,
+      milestoneId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: { model: 'Milestone', key: 'milestoneId' }
+      }
     },
     {
       sequelize,
