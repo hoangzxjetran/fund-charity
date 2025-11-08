@@ -5,6 +5,7 @@ const { AppError } = require('../controllers/error.controllers.js')
 const { hashPassword, comparePassword } = require('../utils/bcrypt.js')
 const { USER_MESSAGES } = require('../constants/message.js')
 const HTTP_STATUS = require('../constants/httpStatus.js')
+const { sendForgotPasswordEmail } = require('../utils/s3-ses.js')
 
 class UserServices {
   signAccessToken(userId) {
@@ -49,6 +50,12 @@ class UserServices {
     return !!user
   }
 
+  async getUserByEmail(email) {
+    const { dataValues: user } = await db.User.findOne({ where: { email } })
+    const { password, ...restUser } = user
+    return restUser
+  }
+
   async signUp({ firstName, lastName, dateOfBirth, email, password }) {
     const newUser = await db.User.create({
       firstName,
@@ -71,6 +78,20 @@ class UserServices {
     ])
     const { password: _, ...restUser } = user
     return { ...restUser, accessToken, refreshToken }
+  }
+
+  async forgotPassword({ userId, email }) {
+    const forgotPasswordToken = await this.signForgotPasswordToken(user.userId.toString())
+    await db.User.updateOne({
+      where: { userId },
+      accessTokenForgotPassword: forgotPasswordToken,
+      updatedAt: new Date()
+    })
+    sendForgotPasswordEmail({
+      toAddress: email,
+      passwordToken: token
+    })
+    return true
   }
 }
 module.exports = new UserServices()

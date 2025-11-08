@@ -1,5 +1,6 @@
 'use strict'
 const { Model } = require('sequelize')
+const { roleType } = require('../constants/enum')
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -25,13 +26,17 @@ module.exports = (sequelize, DataTypes) => {
       email: { type: DataTypes.STRING, unique: true },
       password: DataTypes.STRING,
       phoneNumber: DataTypes.STRING,
-      isActive: DataTypes.STRING,
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+      },
       avatar: DataTypes.STRING,
       refreshToken: DataTypes.STRING,
       accessTokenForgotPassword: DataTypes.STRING,
       roleId: {
         type: DataTypes.INTEGER,
-        references: { model: 'Role', key: 'roleId' }
+        references: { model: 'Role', key: 'roleId' },
+        defaultValue: roleType.User
       }
     },
     {

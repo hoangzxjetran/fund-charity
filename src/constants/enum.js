@@ -5,8 +5,8 @@ const userVerifyStatus = {
 }
 
 const mediaType = {
-  Image: 0,
-  Video: 1
+  Image: 1,
+  Video: 2
 }
 
 const tokenType = {
@@ -17,8 +17,8 @@ const tokenType = {
 }
 
 const roleType = {
-  User: 0,
-  Admin: 1
+  User: 1,
+  Admin: 2
 }
 
 module.exports = {

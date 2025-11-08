@@ -21,6 +21,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       categoryName: {
         type: DataTypes.STRING
+      },
+      logoIcon: {
+        type: DataTypes.STRING
       }
     },
     {

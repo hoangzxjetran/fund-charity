@@ -1,4 +1,7 @@
 'use strict'
+
+const { roleType } = require('../../constants/enum')
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -28,7 +31,8 @@ module.exports = {
         type: Sequelize.STRING
       },
       isActive: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        defaultValue: true
       },
       avatar: {
         type: Sequelize.STRING
@@ -46,7 +50,8 @@ module.exports = {
           key: 'roleId'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
+        onDelete: 'SET NULL',
+        defaultValue: roleType.User
       },
       createdAt: {
         allowNull: false,

@@ -130,4 +130,31 @@ const signInValidator = validate(
   )
 )
 
-module.exports = { signUpValidator, signInValidator }
+const forgotPasswordValidator = validate(
+  checkSchema(
+    {
+      email: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.EMAIL_IS_REQUIRED
+        },
+        trim: true,
+        isEmail: {
+          errorMessage: USER_MESSAGES.EMAIL_IS_INVALID
+        },
+        custom: {
+          options: async (value, { req }) => {
+            const user = await usersServices.getUserByEmail(value)
+            if (!user) {
+              throw new AppError(USER_MESSAGES.USER_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+            }
+            req.user = user
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)
+
+module.exports = { signUpValidator, signInValidator, forgotPasswordValidator }
