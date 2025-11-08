@@ -25,5 +25,20 @@ class UserControllers {
       data
     })
   }
+
+  async verifyPasswordToken(req, res) {
+    res.status(HTTP_STATUS.OK).json({
+      data: true
+    })
+  }
+
+  async resetPassword(req, res) {
+    const { userId } = req.user
+    const { password } = req.body
+    await usersServices.resetPassword({ userId, plainTextPassword: password })
+    res.status(HTTP_STATUS.OK).json({
+      data: true
+    })
+  }
 }
 module.exports = new UserControllers()

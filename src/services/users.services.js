@@ -51,9 +51,17 @@ class UserServices {
   }
 
   async getUserByEmail(email) {
-    const { dataValues: user } = await db.User.findOne({ where: { email } })
-    const { password, ...restUser } = user
-    return restUser
+    const data = await db.User.findOne({ where: { email } })
+    if (!data) return null
+    const user = data.get({ plain: true })
+    return user
+  }
+
+  async getUserById(userId) {
+    const data = await db.User.findOne({ where: { userId } })
+    if (!data) return null
+    const user = data.get({ plain: true })
+    return user
   }
 
   async signUp({ firstName, lastName, dateOfBirth, email, password }) {
@@ -68,7 +76,12 @@ class UserServices {
   }
 
   async signIn({ email, password }) {
-    const { dataValues: user } = await db.User.findOne({ where: { email } })
+    const foundUser = await db.User.findOne({ where: { email } })
+    if (!foundUser) {
+      throw new AppError(USER_MESSAGES.LOGIN_INCORRECT, HTTP_STATUS.BAD_REQUEST)
+    }
+
+    const { dataValues: user } = foundUser
     if (!user || !comparePassword(password, user?.password)) {
       throw new AppError(USER_MESSAGES.LOGIN_INCORRECT, HTTP_STATUS.BAD_REQUEST)
     }
@@ -81,17 +94,66 @@ class UserServices {
   }
 
   async forgotPassword({ userId, email }) {
-    const forgotPasswordToken = await this.signForgotPasswordToken(user.userId.toString())
-    await db.User.updateOne({
-      where: { userId },
-      accessTokenForgotPassword: forgotPasswordToken,
-      updatedAt: new Date()
-    })
+    const forgotPasswordToken = await this.signForgotPasswordToken(userId.toString())
+    await db.User.update(
+      {
+        accessTokenForgotPassword: forgotPasswordToken,
+        updatedAt: new Date()
+      },
+      {
+        where: { userId }
+      }
+    )
     sendForgotPasswordEmail({
       toAddress: email,
-      passwordToken: token
+      passwordToken: forgotPasswordToken
     })
     return true
   }
+
+  async resetPassword({ userId, plainTextPassword }) {
+    await db.User.update(
+      {
+        password: hashPassword(plainTextPassword),
+        updatedAt: new Date()
+      },
+      {
+        where: { userId }
+      }
+    )
+    return true
+  }
+
+  async changePassword(userId, oldPlainTextPassword, newPlainTextPassword) {
+    const user = await this.getUserById(userId)
+    if (!comparePassword(oldPlainTextPassword, user.password)) {
+      throw new AppError(USER_MESSAGES.OLD_PASSWORD_INCORRECT, HTTP_STATUS.BAD_REQUEST)
+    }
+    await db.User.update(
+      {
+        password: hashPassword(newPlainTextPassword),
+        updatedAt: new Date()
+      },
+      {
+        where: { userId }
+      }
+    )
+    return true
+  }
+  async myProfile(user_id) {}
+
+  async updateMyProfile(user_id, body) {}
+
+  async updateUser(user_id, body) {
+    return result
+  }
+  async refreshToken(user_id) {
+    const accessToken = await this.signAccessToken(user_id)
+    return accessToken
+  }
+  async changePassword(user_id, plainTextPassword) {}
+
+  async getListUser({ search, page, limit, sortBy, sortOrder, isActive, role }) {}
+  async deleteUser(user_id) {}
 }
 module.exports = new UserServices()

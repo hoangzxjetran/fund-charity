@@ -157,4 +157,144 @@ const forgotPasswordValidator = validate(
   )
 )
 
-module.exports = { signUpValidator, signInValidator, forgotPasswordValidator }
+const verifyPasswordTokenValidator = validate(
+  checkSchema(
+    {
+      forgotPasswordToken: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.FORGOT_PASSWORD_TOKEN_IS_REQUIRED
+        },
+        custom: {
+          options: async (value, { req }) => {
+            const decode = await verifyToken(value)
+            const user = await usersServices.getUserById(decode.userId)
+            if (user?.forgotPasswordToken !== value) {
+              throw new AppError(USER_MESSAGES.FORGOT_PASSWORD_TOKEN_IS_INVALID, HTTP_STATUS.UNAUTHORIZED)
+            }
+            req.user = user
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)
+
+const resetPasswordValidator = validate(
+  checkSchema(
+    {
+      password: {
+        trim: true,
+        notEmpty: {
+          errorMessage: USER_MESSAGES.PASSWORD_IS_REQUIRED
+        },
+        isLength: { options: { min: 8, max: 50 }, errorMessage: USER_MESSAGES.PASSWORD_LENGTH },
+        isStrongPassword: {
+          options: {
+            minLength: 8,
+            minNumbers: 1,
+            minLowercase: 1,
+            minUppercase: 1
+          },
+          errorMessage: USER_MESSAGES.PASSWORD_IS_STRONG
+        }
+      },
+      confirmPassword: {
+        trim: true,
+        notEmpty: {
+          errorMessage: USER_MESSAGES.CONFIRM_PASSWORD_IS_REQUIRED
+        },
+        isLength: { options: { min: 8, max: 50 }, errorMessage: USER_MESSAGES.PASSWORD_LENGTH },
+        isStrongPassword: {
+          options: {
+            minLength: 8,
+            minNumbers: 1,
+            minLowercase: 1,
+            minUppercase: 1
+          },
+          errorMessage: USER_MESSAGES.PASSWORD_IS_STRONG
+        },
+        custom: {
+          options: (value, { req }) => {
+            if (value !== req.body.password) {
+              throw new Error(USER_MESSAGES.CONFIRM_PASSWORD_MUST_MATCH)
+            }
+            return true
+          }
+        }
+      },
+      forgotPasswordToken: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.FORGOT_PASSWORD_TOKEN_IS_REQUIRED
+        },
+        custom: {
+          options: async (value, { req }) => {
+            if (req?.user?.forgotPasswordToken !== value) {
+              throw new AppError(USER_MESSAGES.FORGOT_PASSWORD_TOKEN_IS_INVALID, HTTP_STATUS.UNAUTHORIZED)
+            }
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)
+
+const changePasswordValidator = validate(
+  checkSchema(
+    {
+      password: {
+        trim: true,
+        notEmpty: {
+          errorMessage: USER_MESSAGES.PASSWORD_IS_REQUIRED
+        },
+        isLength: { options: { min: 8, max: 50 }, errorMessage: USER_MESSAGES.PASSWORD_LENGTH },
+        isStrongPassword: {
+          options: {
+            minLength: 8,
+            minNumbers: 1,
+            minLowercase: 1,
+            minUppercase: 1
+          },
+          errorMessage: USER_MESSAGES.PASSWORD_IS_STRONG
+        }
+      },
+      confirm_password: {
+        trim: true,
+        notEmpty: {
+          errorMessage: USER_MESSAGES.CONFIRM_PASSWORD_IS_REQUIRED
+        },
+        isLength: { options: { min: 8, max: 50 }, errorMessage: USER_MESSAGES.PASSWORD_LENGTH },
+        isStrongPassword: {
+          options: {
+            minLength: 8,
+            minNumbers: 1,
+            minLowercase: 1,
+            minUppercase: 1
+          },
+          errorMessage: USER_MESSAGES.PASSWORD_IS_STRONG
+        },
+        custom: {
+          options: (value, { req }) => {
+            if (value !== req.body.password) {
+              throw new Error(USER_MESSAGES.CONFIRM_PASSWORD_MUST_MATCH)
+            }
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)
+
+module.exports = {
+  signUpValidator,
+  signInValidator,
+  forgotPasswordValidator,
+  verifyPasswordTokenValidator,
+  resetPasswordValidator,
+  changePasswordValidator
+}
