@@ -1,6 +1,6 @@
 const { checkSchema } = require('express-validator')
 const HTTP_STATUS = require('../constants/httpStatus.js')
-const { USER_MESSAGES } = require('../constants/message.js')
+const { USER_MESSAGES, COMMON } = require('../constants/message.js')
 const { AppError } = require('../controllers/error.controllers.js')
 const validate = require('../utils/validate.js')
 const usersServices = require('../services/users.services.js')
@@ -289,6 +289,123 @@ const changePasswordValidator = validate(
     ['body']
   )
 )
+const updateProfileValidator = validate(
+  checkSchema(
+    {
+      firstName: {
+        optional: true,
+        trim: true,
+        isLength: { options: { min: 2, max: 30 }, errorMessage: USER_MESSAGES.FIRST_NAME_LENGTH }
+      },
+      lastName: {
+        optional: true,
+        trim: true,
+        isLength: { options: { min: 2, max: 30 }, errorMessage: USER_MESSAGES.LAST_NAME_LENGTH }
+      },
+      dateOfBirth: {
+        optional: true,
+        isISO8601: {
+          options: {
+            strictSeparator: true,
+            strict: true
+          },
+          errorMessage: USER_MESSAGES.DATE_OF_BIRTH_IS8601_INVALID
+        }
+      },
+      phoneNumber: {
+        optional: true,
+        isMobilePhone: {
+          options: 'any',
+          errorMessage: USER_MESSAGES.PHONE_NUMBER_IS_INVALID
+        },
+        trim: true
+      },
+      avatar: {
+        optional: true,
+        isURL: {
+          errorMessage: USER_MESSAGES.AVATAR_MUST_BE_URL
+        },
+        trim: true
+      }
+    },
+    ['body']
+  )
+)
+
+const getUsersValidator = validate(
+  checkSchema(
+    {
+      page: {
+        optional: true,
+        isInt: {
+          options: { min: 1 },
+          errorMessage: COMMON.PAGE_INVALID
+        },
+        toInt: true,
+        custom: {
+          options: (value, { req }) => {
+            if (value < 1) {
+              throw new AppError(COMMON.PAGE_SIZE_INVALID, HTTP_STATUS.UNPROCESSABLE_ENTITY)
+            }
+            return true
+          }
+        }
+      },
+      limit: {
+        optional: true,
+        isInt: {
+          options: { min: 1, max: 100 },
+          errorMessage: COMMON.LIMIT_INVALID
+        },
+        toInt: true,
+        custom: {
+          options: (value, { req }) => {
+            if (value < 1) {
+              throw new AppError(COMMON.LIMIT_INVALID, HTTP_STATUS.UNPROCESSABLE_ENTITY)
+            } else if (value > 100) {
+              throw new AppError(COMMON.LIMIT_MAX, HTTP_STATUS.UNPROCESSABLE_ENTITY)
+            }
+
+            return true
+          }
+        }
+      },
+      sortBy: {
+        optional: true,
+        isIn: {
+          options: [['firstName', 'lastName', 'email', 'createdAt', 'updatedAt']],
+          errorMessage: USER_MESSAGES.SORT_BY_INVALID
+        }
+      },
+      sortOrder: {
+        optional: true,
+        isIn: {
+          options: [['ASC', 'DESC']],
+          errorMessage: USER_MESSAGES.SORT_ORDER_INVALID
+        }
+      },
+      isActive: {
+        optional: true,
+        isBoolean: {
+          errorMessage: USER_MESSAGES.IS_ACTIVE_MUST_BE_BOOLEAN
+        },
+        toBoolean: true
+      },
+      role: {
+        optional: true,
+        isIn: {
+          options: [['user', 'admin']],
+          errorMessage: USER_MESSAGES.ROLE_INVALID
+        }
+      },
+      search: {
+        optional: true,
+        trim: true
+      }
+    },
+    ['query']
+  )
+)
 
 module.exports = {
   signUpValidator,
@@ -296,5 +413,7 @@ module.exports = {
   forgotPasswordValidator,
   verifyPasswordTokenValidator,
   resetPasswordValidator,
-  changePasswordValidator
+  changePasswordValidator,
+  getUsersValidator,
+  updateProfileValidator
 }

@@ -74,5 +74,16 @@ class UserControllers {
       data
     })
   }
+
+  async getUsers(req, res) {
+    const data = await usersServices.getUsers({
+      ...req.query,
+      page: req.query.page || 1,
+      limit: req.query.limit || 10
+    })
+    res.status(HTTP_STATUS.OK).json({
+      data
+    })
+  }
 }
 module.exports = new UserControllers()

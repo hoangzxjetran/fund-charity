@@ -183,7 +183,46 @@ class UserServices {
   }
   async changePassword(user_id, plainTextPassword) {}
 
-  async getListUser({ search, page, limit, sortBy, sortOrder, isActive, role }) {}
+  async getUsers({ search, page, limit, sortBy, sortOrder, isActive, role }) {
+    const offset = (page - 1) * limit
+    const whereClause = {}
+    if (isActive !== undefined) {
+      whereClause.isActive = isActive
+    }
+    if (role) {
+      whereClause.role = role
+    }
+    if (search) {
+      whereClause[db.Sequelize.Op.or] = [
+        { firstName: { [db.Sequelize.Op.iLike]: `%${search}%` } },
+        { lastName: { [db.Sequelize.Op.iLike]: `%${search}%` } },
+        { email: { [db.Sequelize.Op.iLike]: `%${search}%` } }
+      ]
+    }
+    const orderClause = []
+    if (sortBy) {
+      orderClause.push([sortBy, sortOrder && sortOrder.toUpperCase() === 'DESC' ? 'DESC' : 'ASC'])
+    } else {
+      orderClause.push(['createdAt', 'DESC'])
+    }
+
+    const { rows: users, count: total } = await db.User.findAndCountAll({
+      where: whereClause,
+      order: orderClause,
+      limit,
+      offset,
+      attributes: { exclude: ['password', 'refreshToken', 'accessTokenForgotPassword'] }
+    })
+
+    return {
+      data: users,
+      pagination: {
+        total: +total,
+        page: +page,
+        limit: +limit
+      }
+    }
+  }
   async deleteUser(user_id) {}
 }
 module.exports = new UserServices()
