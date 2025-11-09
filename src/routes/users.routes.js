@@ -42,6 +42,6 @@ router.route('/refresh-token').post(isAuthorized, catchAsync(UserControllers.ref
 
 router
   .route('/upload-avatar')
-  .post(uploadAvatarValidator, isAuthorized, uploadAvatar, resizeAvatar, catchAsync(UserControllers.uploadAvatarUser))
+  .post(isAuthorized, uploadAvatarValidator, uploadAvatar, resizeAvatar, catchAsync(UserControllers.uploadAvatarUser))
 
 module.exports = router

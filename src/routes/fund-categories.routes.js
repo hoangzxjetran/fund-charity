@@ -6,17 +6,13 @@ const {
   createFundCategoryValidator
 } = require('../validations/fund-categories.validations.js')
 const { uploadIconFundCategory, resizeIconFundCategory } = require('../middlewares/uploadFile.middlewares.js')
+const { isAuthorized, isAdmin } = require('../middlewares/auth.middewares.js')
 
 router
   .route('/')
-  .get(getFundCategoriesValidator, FundCategoriesControllers.getFundCategories)
-  .post(createFundCategoryValidator, FundCategoriesControllers.createFundCategory)
+  .get(isAuthorized, getFundCategoriesValidator, FundCategoriesControllers.getFundCategories)
+  .post(isAuthorized, isAdmin, createFundCategoryValidator, FundCategoriesControllers.createFundCategory)
 
-router.post(
-  '/upload-icon',
-  uploadIconFundCategory,
-  resizeIconFundCategory,
-  FundCategoriesControllers.uploadLogoIcon
-)
+router.post('/upload-icon', uploadIconFundCategory, resizeIconFundCategory, FundCategoriesControllers.uploadLogoIcon)
 
 module.exports = router
