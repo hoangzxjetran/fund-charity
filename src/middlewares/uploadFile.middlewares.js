@@ -27,6 +27,20 @@ const resizeAvatar = async (req, res, next) => {
   next()
 }
 
+const resizeIconFundCategory = async (req, res, next) => {
+  if (!req.file) return next()
+  if (req.file.mimetype.startsWith('video')) {
+    return next()
+  }
+  req.file.filename = `fund-categories-${v4()}.jpeg`
+  req.file.buffer = await sharp(req.file.buffer)
+    .resize({ width: 20, height: 20, fit: 'cover' })
+    .toFormat('jpeg')
+    .jpeg({ quality: 100 })
+    .toBuffer()
+  next()
+}
+
 const resizeImageRestaurant = async (req, res, next) => {
   if (!req.file) return next()
   if (req.file.mimetype.startsWith('video')) {
@@ -86,6 +100,13 @@ const multerAvatar = multer({
     fileSize: 1024 * 1024 * 10 // 10MB
   }
 })
+const multerIconFundCategory = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+  limits: {
+    fileSize: 1024 * 1024 * 10 // 10MB
+  }
+})
 const multerRestaurant = multer({
   storage: multerStorage,
   fileFilter: multerFilter,
@@ -111,15 +132,18 @@ const multerReview = multer({
 })
 
 const uploadAvatar = multerAvatar.single('file')
+const uploadIconFundCategory = multerIconFundCategory.single('file')
 const uploadReview = multerReview.single('file')
 const uploadMenu = multerMenu.single('file')
 module.exports = {
   renameVideo,
   resizeAvatar,
+  resizeIconFundCategory,
   resizeImageMenu,
   resizeImageRestaurant,
   resizeImageReview,
   uploadAvatar,
+  uploadIconFundCategory,
   uploadMenu,
   uploadRestaurant,
   uploadReview

@@ -64,7 +64,7 @@ const USER_MESSAGES = {
   USER_ID_INVALID: 'User ID is invalid',
   REFRESH_TOKEN_IS_STRING: 'Refresh token must be a string',
   REFRESH_TOKEN_IS_INVALID: 'Refresh token is invalid',
-  AVATAR_IS_REQUIRED: 'Avatar is required',
+  AVATAR_IS_REQUIRED: 'Avatar is required'
 }
 
 const COMMON = {
@@ -88,6 +88,13 @@ const COMMON = {
   IS_ACTIVE_MUST_BE_BOOLEAN: 'isActive must be a boolean',
   ROLE_INVALID: 'Role is invalid'
 }
+const FUND_CATEGORY_MESSAGES = {
+  CATEGORY_NAME_REQUIRED: 'Category name is required',
+  CATEGORY_NAME_MUST_BE_STRING: 'Category name must be a string',
+  CATEGORY_NAME_NOT_EMPTY: 'Category name must not be empty',
+  CATEGORY_NAME_LENGTH_INVALID: 'Category name must be between 3 and 50 characters',
+  CATEGORY_NAME_IS_EXIST: 'Category name already exists'
+}
 
 const ROLE_MESSAGES = {
   NAME_IS_REQUIRED: 'Role name is required',
@@ -97,9 +104,9 @@ const ROLE_MESSAGES = {
   ROLE_ID_IS_INVALID: 'Role ID is invalid'
 }
 
-
 module.exports = {
   USER_MESSAGES,
   COMMON,
   ROLE_MESSAGES,
+  FUND_CATEGORY_MESSAGES
 }
