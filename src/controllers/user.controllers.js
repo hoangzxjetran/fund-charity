@@ -83,7 +83,7 @@ class UserControllers {
       limit: req.query.limit || 10
     })
     res.status(HTTP_STATUS.OK).json({
-      data
+      ...data
     })
   }
 
@@ -111,7 +111,6 @@ class UserControllers {
   }
 
   async uploadAvatarUser(req, res) {
-    console.log(req.file)
     const params = {
       Bucket: process.env.AWS_BUCKET,
       ContentType: req.file?.mimetype,
@@ -119,7 +118,7 @@ class UserControllers {
       Body: req.file?.buffer
     }
     const result = await uploadFileToS3(params)
-    return res.status(HTTP_STATUS.OK).json({
+    return res.status(HTTP_STATUS.CREATED).json({
       data: result
     })
   }
