@@ -41,6 +41,37 @@ const resizeIconFundCategory = async (req, res, next) => {
   next()
 }
 
+const resizeBannerFund = async (req, res, next) => {
+  if (!req.file) return next()
+  if (req.file.mimetype.startsWith('video')) {
+    return next()
+  }
+  req.file.filename = `fund-banner-${v4()}.jpeg`
+  req.file.buffer = await sharp(req.file.buffer)
+    .resize({ width: 250, height: 250, fit: 'cover' })
+    .toFormat('jpeg')
+    .jpeg({ quality: 100 })
+    .toBuffer()
+  next()
+}
+
+const resizeImagesFund = async (req, res, next) => {
+  if (!req.files || req.files.length === 0) return next()
+  await Promise.all(
+    req.files.map(async (file) => {
+      if (file.mimetype.startsWith('image')) {
+        file.filename = `fund-media-${v4()}.jpeg`
+        file.buffer = await sharp(file.buffer)
+          .resize({ width: 400, height: 400, fit: 'cover' })
+          .toFormat('jpeg')
+          .jpeg({ quality: 90 })
+          .toBuffer()
+      }
+    })
+  )
+  next()
+}
+
 const resizeImageRestaurant = async (req, res, next) => {
   if (!req.file) return next()
   if (req.file.mimetype.startsWith('video')) {
@@ -107,6 +138,21 @@ const multerIconFundCategory = multer({
     fileSize: 1024 * 1024 * 10 // 10MB
   }
 })
+
+const multerBannerFund = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+  limits: {
+    fileSize: 1024 * 1024 * 50 // 20MB
+  }
+})
+const multerMediaFund = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+  limits: {
+    fileSize: 1024 * 1024 * 30 // 50MB
+  }
+})
 const multerRestaurant = multer({
   storage: multerStorage,
   fileFilter: multerFilter,
@@ -133,17 +179,24 @@ const multerReview = multer({
 
 const uploadAvatar = multerAvatar.single('file')
 const uploadIconFundCategory = multerIconFundCategory.single('file')
+const uploadBannerFund = multerBannerFund.single('file')
+const uploadMediaFund = multerMediaFund.array('files', 10)
 const uploadReview = multerReview.single('file')
 const uploadMenu = multerMenu.single('file')
+
 module.exports = {
   renameVideo,
   resizeAvatar,
   resizeIconFundCategory,
+  resizeBannerFund,
+  resizeImagesFund,
   resizeImageMenu,
   resizeImageRestaurant,
   resizeImageReview,
   uploadAvatar,
+  uploadBannerFund,
   uploadIconFundCategory,
+  uploadMediaFund,
   uploadMenu,
   uploadRestaurant,
   uploadReview

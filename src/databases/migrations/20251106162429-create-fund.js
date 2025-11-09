@@ -18,6 +18,23 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
       },
+      creatorId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Users',
+          key: 'userId'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+      },
+      startDate: {
+        type: Sequelize.DATE,
+        allowNull: true
+      },
+      endDate: {
+        type: Sequelize.DATE,
+        allowNull: true
+      },
       fundName: {
         type: Sequelize.STRING
       },
@@ -31,6 +48,12 @@ module.exports = {
         type: Sequelize.STRING
       },
       bankName: {
+        type: Sequelize.STRING
+      },
+      bankBranch: {
+        type: Sequelize.STRING
+      },
+      purpose: {
         type: Sequelize.STRING
       },
       urlQrCode: {

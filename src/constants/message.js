@@ -104,9 +104,58 @@ const ROLE_MESSAGES = {
   ROLE_ID_IS_INVALID: 'Role ID is invalid'
 }
 
+const FUND_MESSAGES = {
+  FUND_NAME_REQUIRED: 'Fund name is required',
+  METHOD_ID_REQUIRED: 'Fundraising methods is required',
+  METHOD_ID_INVALID: 'Fundraising methods ID must be a positive integer',
+  FUND_NAME_MUST_BE_STRING: 'Fund name must be a string',
+  FUND_NAME_NOT_EMPTY: 'Fund name must not be empty',
+  FUND_NAME_LENGTH_INVALID: 'Fund name must be between 3 and 100 characters',
+  AMOUNT_REQUIRED: 'Amount is required',
+  AMOUNT_MUST_BE_NUMBER: 'Amount must be a number',
+  AMOUNT_MINIMUM: 'Amount must be at least 0',
+  CATEGORY_ID_REQUIRED: 'Category ID is required',
+  CATEGORY_ID_MUST_BE_INTEGER: 'Category ID must be an integer',
+  START_DATE_INVALID: 'Start date must be a valid date',
+  END_DATE_INVALID: 'End date must be a valid date',
+  BANNER_URL_REQUIRED: 'Banner is required',
+  BANNER_URL_INVALID: 'Banner URL must be a valid URL',
+  DESCRIPTION_MUST_BE_STRING: 'Description must be a string',
+  DESCRIPTION_REQUIRED: 'Description is required',
+  BANK_ACCOUNT_NUMBER_MUST_BE_STRING: 'Bank account number must be a string',
+  BANK_ACCOUNT_NUMBER_IS_REQUIRED: 'Bank account number is required',
+  BANK_NAME_MUST_BE_STRING: 'Bank name must be a string',
+  BANK_NAME_REQUIRED: 'Bank name is required',
+  BANK_BRANCH_MUST_BE_STRING: 'Bank branch must be a string',
+  BANK_BRANCH_REQUIRED: 'Bank branch is required',
+  PURPOSE_MUST_BE_STRING: 'Purpose must be a string',
+  PURPOSE_REQUIRED: 'Purpose is required',
+  URL_QR_CODE_INVALID: 'QR Code URL must be a valid URL',
+  END_DATE_BEFORE_START_DATE: 'End date must be after start date',
+  MILESTONE_REQUIRED: 'Milestones are required for Milestone fundraising method',
+  MILESTONE_IS_ARRAY: 'Milestones must be an array',
+  MILESTONE_INVALID: 'Milestones must be an array of objects with name, amount, and dueDate',
+  MILESTONE_NAME_REQUIRED: 'Milestone name is required',
+  MILESTONE_AMOUNT_REQUIRED: 'Milestone amount is required',
+  MILESTONE_AMOUNT_MUST_BE_NUMBER: 'Milestone amount must be a number',
+  MILESTONE_AMOUNT_MINIMUM: 'Milestone amount must be at least 0',
+  MILESTONE_DUE_DATE_INVALID: 'Milestone due date must be a valid date',
+  MILESTONE_ITEM_INVALID:
+    'Each milestone must be a valid object with title,desc,targetAmount, achievedAmount, startDate, endDate, orderIndex',
+  MEDIA_FUND_INVALID: 'Media fund must be an array',
+  MEDIA_FUND_ITEM_INVALID: 'Each media fund item must be a valid object with type and url',
+  MEDIA_FUND_ITEM_TYPE_INVALID: 'Media fund type must be one of the following: image, video',
+  MEDIA_FUND_ITEM_URL_INVALID: 'Media fund URL must be a valid URL',
+  MEDIA_FUND_ITEM_REQUIRED: 'At least one media fund item is required',
+  MEDIA_FUND_ITEM_MAX: 'A maximum of 10 media fund items is allowed',
+  MEDIA_FUND_ITEM_MIN: 'At least one media fund item is required',
+  CREATOR_ID_IS_REQUIRED: 'Creator ID is required',
+  CREATOR_ID_IS_INVALID: 'Creator ID must be a positive integer'
+}
 module.exports = {
   USER_MESSAGES,
   COMMON,
   ROLE_MESSAGES,
-  FUND_CATEGORY_MESSAGES
+  FUND_CATEGORY_MESSAGES,
+  FUND_MESSAGES
 }

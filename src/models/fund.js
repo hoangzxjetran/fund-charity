@@ -42,6 +42,8 @@ module.exports = (sequelize, DataTypes) => {
       description: DataTypes.TEXT,
       bankAccountNumber: DataTypes.STRING,
       bankName: DataTypes.STRING,
+      bankBranch: DataTypes.STRING,
+      purpose: DataTypes.STRING,
       urlQrCode: DataTypes.STRING,
       targetAmount: DataTypes.DOUBLE,
       currentAmount: DataTypes.DOUBLE,

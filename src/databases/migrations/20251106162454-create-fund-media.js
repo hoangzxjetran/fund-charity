@@ -22,7 +22,13 @@ module.exports = {
         onDelete: 'SET NULL'
       },
       mediaType: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Media',
+          key: 'mediaType'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       createdAt: {
         allowNull: false,

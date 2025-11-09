@@ -14,8 +14,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   FundStatus.init(
     {
-      statusId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-      statusName: DataTypes.STRING
+      fundStatusId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+      fundStatusName: DataTypes.STRING
     },
     {
       sequelize,

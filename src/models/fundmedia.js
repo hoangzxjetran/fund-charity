@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   FundMedia.init(
     {
-      mediaId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+      fundMediaId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
       fundId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'Fund', key: 'fundId' } },
       url: DataTypes.STRING,
       mediaType: {
