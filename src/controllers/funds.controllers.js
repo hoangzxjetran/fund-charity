@@ -45,7 +45,7 @@ class FundsControllers {
   }
 
   async getFunds(req, res) {
-    const { page, limit, search, methodId,categoryId, status, sortBy, sortOrder } = req.query
+    const { page, limit, search, methodId, categoryId, status, sortBy, sortOrder } = req.query
     const data = await fundsServices.getFunds({
       page,
       limit,
@@ -58,6 +58,14 @@ class FundsControllers {
     })
     res.status(HTTP_STATUS.OK).json({
       data
+    })
+  }
+
+  async getFundById(req, res) {
+    const { fundId } = req.params
+    const data = await fundsServices.getFundById(fundId)
+    res.status(data ? HTTP_STATUS.OK : HTTP_STATUS.NOT_FOUND).json({
+      data: data || null
     })
   }
 }

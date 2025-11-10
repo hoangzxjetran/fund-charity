@@ -4,7 +4,8 @@ const FundsControllers = require('../controllers/funds.controllers.js')
 const {
   createFundValidator,
   uploadBannerFundValidator,
-  getFundsValidator
+  getFundsValidator,
+  getFundByIdValidator
 } = require('../validations/fund-validations.js')
 const {
   uploadBannerFund,
@@ -18,6 +19,8 @@ router
   .route('/')
   .post(isAuthorized, createFundValidator, FundsControllers.createFund)
   .get(getFundsValidator, FundsControllers.getFunds)
+
+router.route('/:fundId').get(getFundByIdValidator, FundsControllers.getFundById)
 router
   .route('/upload-banner')
   .post(isAuthorized, uploadBannerFundValidator, uploadBannerFund, resizeBannerFund, FundsControllers.uploadBannerFund)

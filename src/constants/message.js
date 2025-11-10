@@ -155,7 +155,9 @@ const FUND_MESSAGES = {
     'Sort by must be one of the following: startDate, endDate, targetAmount, currentAmount, status, createdAt',
   SORT_ORDER_INVALID: 'Sort order must be either "asc" or "desc"',
   STATUS_INVALID: 'Status must be one of the following: pending, active, completed, cancelled',
-  CATEGORY_ID_MUST_BE_INTEGER: 'Category ID must be an integer'
+  CATEGORY_ID_MUST_BE_INTEGER: 'Category ID must be an integer',
+  FUND_ID_REQUIRED: 'Fund ID is required',
+  FUND_ID_INVALID: 'Fund ID must be a positive integer'
 }
 module.exports = {
   USER_MESSAGES,

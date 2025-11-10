@@ -519,9 +519,28 @@ const getFundsValidator = validate(
   )
 )
 
+const getFundByIdValidator = validate(
+  checkSchema(
+    {
+      fundId: {
+        notEmpty: {
+          errorMessage: FUND_MESSAGES.FUND_ID_REQUIRED
+        },
+        isInt: {
+          options: { min: 1 },
+          errorMessage: FUND_MESSAGES.FUND_ID_INVALID
+        },
+        toInt: true
+      }
+    },
+    ['params']
+  )
+)
+
 module.exports = {
   createFundValidator,
   uploadBannerFundValidator,
   updateFundValidator,
-  getFundsValidator
+  getFundsValidator,
+  getFundByIdValidator
 }

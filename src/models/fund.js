@@ -13,9 +13,10 @@ module.exports = (sequelize, DataTypes) => {
       Fund.belongsTo(models.FundStatus, { foreignKey: 'status', as: 'fundStatus' })
       Fund.belongsTo(models.CategoryFund, { foreignKey: 'categoryFund', as: 'fundCategory' })
       Fund.belongsTo(models.User, { foreignKey: 'creatorId', as: 'creator' })
-      Fund.hasMany(models.FundMedia, { foreignKey: 'fundId' })
+      Fund.hasMany(models.FundMedia, { foreignKey: 'fundId' ,as: 'fundMedia'})
       Fund.hasMany(models.Donation, { foreignKey: 'fundId' })
       Fund.hasMany(models.CharityCampaign, { foreignKey: 'fundId' })
+      Fund.hasMany(models.Milestone, { foreignKey: 'fundId', as: 'milestones' })
     }
   }
   Fund.init(

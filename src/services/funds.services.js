@@ -103,7 +103,7 @@ class FundsServices {
         {
           model: db.CategoryFund,
           as: 'fundCategory',
-          attributes: ['categoryId', 'categoryName']
+          attributes: ['categoryId', 'categoryName', 'logoIcon']
         }
       ]
     })
@@ -116,6 +116,46 @@ class FundsServices {
         limit: +limit
       }
     }
+  }
+
+  async getFundById(fundId) {
+    const fund = await db.Fund.findByPk(fundId, {
+      attributes: {
+        exclude: ['methodId', 'categoryFund', 'status']
+      },
+      include: [
+        {
+          model: db.User,
+          as: 'creator',
+          attributes: ['userId', 'firstName', 'lastName', 'email']
+        },
+        {
+          model: db.FundraisingMethod,
+          as: 'fundraising',
+          attributes: ['methodId', 'methodName']
+        },
+        {
+          model: db.FundStatus,
+          as: 'fundStatus',
+          attributes: ['fundStatusId', 'fundStatusName']
+        },
+        {
+          model: db.CategoryFund,
+          as: 'fundCategory',
+          attributes: ['categoryId', 'categoryName', 'logoIcon']
+        },
+        {
+          model: db.FundMedia,
+          as: 'fundMedia',
+          attributes: ['fundMediaId', 'mediaType', 'url']
+        },
+        {
+          model: db.Milestone,
+          as: 'milestones'
+        }
+      ]
+    })
+    return fund
   }
 }
 
