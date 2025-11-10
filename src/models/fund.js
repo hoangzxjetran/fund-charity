@@ -9,10 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Fund.belongsTo(models.FundraisingMethod, { foreignKey: 'methodId' })
-      Fund.belongsTo(models.FundStatus, { foreignKey: 'status' })
-      Fund.belongsTo(models.CategoryFund, { foreignKey: 'categoryFund' })
-      Fund.belongsTo(models.User, { foreignKey: 'creatorId' })
+      Fund.belongsTo(models.FundraisingMethod, { foreignKey: 'methodId', as: 'fundraising' })
+      Fund.belongsTo(models.FundStatus, { foreignKey: 'status', as: 'fundStatus' })
+      Fund.belongsTo(models.CategoryFund, { foreignKey: 'categoryFund', as: 'fundCategory' })
+      Fund.belongsTo(models.User, { foreignKey: 'creatorId', as: 'creator' })
       Fund.hasMany(models.FundMedia, { foreignKey: 'fundId' })
       Fund.hasMany(models.Donation, { foreignKey: 'fundId' })
       Fund.hasMany(models.CharityCampaign, { foreignKey: 'fundId' })

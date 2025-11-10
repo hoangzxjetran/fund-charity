@@ -43,6 +43,23 @@ class FundsControllers {
       data
     })
   }
+
+  async getFunds(req, res) {
+    const { page, limit, search, methodId,categoryId, status, sortBy, sortOrder } = req.query
+    const data = await fundsServices.getFunds({
+      page,
+      limit,
+      search,
+      methodId,
+      categoryId,
+      status,
+      sortBy,
+      sortOrder
+    })
+    res.status(HTTP_STATUS.OK).json({
+      data
+    })
+  }
 }
 
 module.exports = new FundsControllers()

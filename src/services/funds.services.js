@@ -54,6 +54,69 @@ class FundsServices {
       console.error('❌ Transaction rolled back:', error)
     }
   }
+
+  async getFunds({ page = 1, limit = 10, search, methodId, categoryId, status, sortBy, sortOrder }) {
+    const offset = (page - 1) * limit
+    const whereClause = {}
+    if (search) {
+      whereClause.fundName = { [db.Sequelize.Op.iLike]: `%${search}%` }
+    }
+    if (methodId) {
+      whereClause.methodId = methodId
+    }
+    if (categoryId) {
+      whereClause.categoryFund = categoryId
+    }
+    if (status) {
+      whereClause.status = status
+    }
+
+    const orderClause = []
+    if (sortBy) {
+      const orderDirection = sortOrder && sortOrder.toLowerCase() === 'desc' ? 'DESC' : 'ASC'
+      orderClause.push([sortBy, orderDirection])
+    } else {
+      orderClause.push(['createdAt', 'DESC'])
+    }
+
+    const { rows: funds, count: total } = await db.Fund.findAndCountAll({
+      where: whereClause,
+      offset,
+      limit,
+      order: orderClause,
+      include: [
+        {
+          model: db.User,
+          as: 'creator',
+          attributes: ['userId', 'firstName', 'lastName', 'email']
+        },
+        {
+          model: db.FundraisingMethod,
+          as: 'fundraising',
+          attributes: ['methodId', 'methodName']
+        },
+        {
+          model: db.FundStatus,
+          as: 'fundStatus',
+          attributes: ['fundStatusId', 'fundStatusName']
+        },
+        {
+          model: db.CategoryFund,
+          as: 'fundCategory',
+          attributes: ['categoryId', 'categoryName']
+        }
+      ]
+    })
+
+    return {
+      funds,
+      pagination: {
+        total,
+        page: +page,
+        limit: +limit
+      }
+    }
+  }
 }
 
 module.exports = new FundsServices()

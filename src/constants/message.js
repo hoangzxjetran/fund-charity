@@ -150,7 +150,12 @@ const FUND_MESSAGES = {
   MEDIA_FUND_ITEM_MAX: 'A maximum of 10 media fund items is allowed',
   MEDIA_FUND_ITEM_MIN: 'At least one media fund item is required',
   CREATOR_ID_IS_REQUIRED: 'Creator ID is required',
-  CREATOR_ID_IS_INVALID: 'Creator ID must be a positive integer'
+  CREATOR_ID_IS_INVALID: 'Creator ID must be a positive integer',
+  SORT_BY_INVALID:
+    'Sort by must be one of the following: startDate, endDate, targetAmount, currentAmount, status, createdAt',
+  SORT_ORDER_INVALID: 'Sort order must be either "asc" or "desc"',
+  STATUS_INVALID: 'Status must be one of the following: pending, active, completed, cancelled',
+  CATEGORY_ID_MUST_BE_INTEGER: 'Category ID must be an integer'
 }
 module.exports = {
   USER_MESSAGES,
