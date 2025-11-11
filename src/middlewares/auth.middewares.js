@@ -20,7 +20,8 @@ const isAuthorized = async (req, res, next) => {
         next(new AppError(USER_MESSAGES.USER_NOT_FOUND, HTTP_STATUS.UNAUTHORIZED))
         return
       }
-      req.user = freshUser
+      const { refreshToken, ...userData } = freshUser
+      req.user = userData
     }
     next()
   } catch (error) {
