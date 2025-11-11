@@ -68,6 +68,15 @@ class FundsControllers {
       data: data || null
     })
   }
+
+  async updateFund(req, res) {
+    const { fundId } = req.params
+    const body = req.body
+    const data = await fundsServices.updateFund(fundId, body)
+    res.status(HTTP_STATUS.OK).json({
+      data: data || null
+    })
+  }
 }
 
 module.exports = new FundsControllers()

@@ -157,7 +157,9 @@ const FUND_MESSAGES = {
   STATUS_INVALID: 'Status must be one of the following: pending, active, completed, cancelled',
   CATEGORY_ID_MUST_BE_INTEGER: 'Category ID must be an integer',
   FUND_ID_REQUIRED: 'Fund ID is required',
-  FUND_ID_INVALID: 'Fund ID must be a positive integer'
+  FUND_ID_INVALID: 'Fund ID must be a positive integer',
+  NOT_FOUND: 'Fund not found',
+  MILESTONE_NOT_ALLOWED: 'Milestones are not allowed for Time-Based fundraising method'
 }
 module.exports = {
   USER_MESSAGES,

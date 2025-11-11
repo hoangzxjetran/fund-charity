@@ -1,4 +1,7 @@
 const { milestoneStatus, fundraisingMethod, fundStatus } = require('../constants/enum.js')
+const HTTP_STATUS = require('../constants/httpStatus.js')
+const { FUND_MESSAGES } = require('../constants/message.js')
+const { AppError } = require('../controllers/error.controllers.js')
 const db = require('../models/index.js')
 
 class FundsServices {
@@ -156,6 +159,64 @@ class FundsServices {
       ]
     })
     return fund
+  }
+
+  async updateFund(fundId, data) {
+    const t = await db.sequelize.transaction()
+    try {
+      const { methodId, milestones, mediaFund, ...fundData } = data
+      const fund = await db.Fund.findByPk(fundId, { transaction: t })
+      if (!fund) {
+        throw new AppError(HTTP_STATUS.NOT_FOUND, FUND_MESSAGES.NOT_FOUND)
+      }
+      const cleanFundData = Object.fromEntries(
+        Object.entries(fundData).filter(([_, v]) => v !== undefined && v !== null)
+      )
+      await fund.update(cleanFundData, { transaction: t })
+      if (mediaFund && mediaFund.length > 0) {
+        await db.FundMedia.destroy({
+          where: { fundId },
+          transaction: t
+        })
+
+        const mediaToCreate = mediaFund.map((m) => ({
+          ...m,
+          fundId
+        }))
+        await db.FundMedia.bulkCreate(mediaToCreate, { transaction: t })
+      }
+      if (methodId === fundraisingMethod.Milestone && milestones) {
+        await db.Milestone.destroy({
+          where: { fundId },
+          transaction: t
+        })
+        const milestonesToCreate = milestones.map((m) => ({
+          ...m,
+          fundId,
+          milestoneStatusId: milestoneStatus.Pending
+        }))
+        await db.Milestone.bulkCreate(milestonesToCreate, { transaction: t })
+      }
+      await t.commit()
+      const updatedFund = await db.Fund.findByPk(fundId, {
+        attributes: {
+          exclude: ['methodId', 'categoryFund', 'status']
+        },
+        include: [
+          { model: db.User, as: 'creator', attributes: ['userId', 'firstName', 'lastName', 'email'] },
+          { model: db.FundraisingMethod, as: 'fundraising', attributes: ['methodId', 'methodName'] },
+          { model: db.FundStatus, as: 'fundStatus', attributes: ['fundStatusId', 'fundStatusName'] },
+          { model: db.CategoryFund, as: 'fundCategory', attributes: ['categoryId', 'categoryName', 'logoIcon'] },
+          { model: db.FundMedia, as: 'fundMedia' },
+          { model: db.Milestone, as: 'milestones' }
+        ]
+      })
+      return updatedFund
+    } catch (error) {
+      await t.rollback()
+      console.error('❌ Update Fund failed, rolled back:', error)
+      throw error
+    }
   }
 }
 

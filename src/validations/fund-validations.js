@@ -241,7 +241,13 @@ const updateFundValidator = validate(
         options: (value) => {
           const fundraisingMethodName = convertStringObjToNumberObj(fundraisingMethod)
           if (!fundraisingMethodName[value]) {
-            throw new Error(FUND_MESSAGES.METHOD_ID_INVALID)
+            throw new AppError(HTTP_STATUS.UNPROCESSABLE_ENTITY, FUND_MESSAGES.METHOD_ID_INVALID)
+          }
+          if (value === fundraisingMethod.Milestone && !value.milestones.length) {
+            throw new AppError(HTTP_STATUS.UNPROCESSABLE_ENTITY, FUND_MESSAGES.MILESTONE_REQUIRED)
+          }
+          if (value === fundraisingMethod.TimeBased && value.milestones.length) {
+            throw new AppError(HTTP_STATUS.UNPROCESSABLE_ENTITY, FUND_MESSAGES.MILESTONE_NOT_ALLOWED)
           }
           return true
         }
