@@ -3,6 +3,7 @@ const validate = require('../utils/validate')
 const { COMMON, VOLUNTEER_MESSAGES } = require('../constants/message')
 const { convertStringObjToNumberObj } = require('../utils/common')
 const { AppError } = require('../controllers/error.controllers')
+const { volunteerStatus } = require('../constants/enum')
 
 const getVolunteersInCampaignValidator = validate(
   checkSchema({
@@ -14,7 +15,7 @@ const getVolunteersInCampaignValidator = validate(
       isInt: {
         errorMessage: VOLUNTEER_MESSAGES.CAMPAIGN_ID_INVALID
       },
-      toInt: true
+      // toInt: true
     },
     page: {
       optional: true,
@@ -73,7 +74,7 @@ const getVolunteersInCampaignValidator = validate(
       optional: true,
       custom: {
         options: (value, { req }) => {
-          const allowedStatuses = convertStringObjToNumberObj(volunteerStatuses)
+          const allowedStatuses = convertStringObjToNumberObj(volunteerStatus)
           if (!allowedStatuses[value]) {
             throw new AppError(VOLUNTEER_MESSAGES.STATUS_INVALID, HTTP_STATUS.UNPROCESSABLE_ENTITY)
           }
@@ -112,7 +113,35 @@ const registerCampaignValidator = validate(
   })
 )
 
+const updateStatusValidator = validate(
+  checkSchema({
+    registrationId: {
+      notEmpty: {
+        errorMessage: VOLUNTEER_MESSAGES.REGISTRATION_ID_REQUIRED
+      },
+      isInt: {
+        errorMessage: VOLUNTEER_MESSAGES.REGISTRATION_ID_INVALID
+      }
+    },
+    status: {
+      notEmpty: {
+        errorMessage: VOLUNTEER_MESSAGES.STATUS_REQUIRED
+      },
+      custom: {
+        options: (value, { req }) => {
+          const allowedStatuses = convertStringObjToNumberObj(volunteerStatus)
+          if (!allowedStatuses[value]) {
+            throw new AppError(VOLUNTEER_MESSAGES.STATUS_INVALID, HTTP_STATUS.UNPROCESSABLE_ENTITY)
+          }
+          return true
+        }
+      }
+    }
+  })
+)
+
 module.exports = {
   getVolunteersInCampaignValidator,
-  registerCampaignValidator
+  registerCampaignValidator,
+  updateStatusValidator
 }

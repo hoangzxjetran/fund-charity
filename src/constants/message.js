@@ -188,12 +188,15 @@ const VOLUNTEER_MESSAGES = {
   VOLUNTEER_NAME_MUST_BE_STRING: 'Volunteer name must be a string',
   VOLUNTEER_NAME_NOT_EMPTY: 'Volunteer name must not be empty',
   VOLUNTEER_NAME_LENGTH_INVALID: 'Volunteer name must be between 3 and 100 characters',
+  STATUS_REQUIRED: 'Status is required',
   STATUS_INVALID: 'Status must be one of the following: pending, active, rejected',
   REGISTER_DATE_INVALID: 'Register date must be a valid date',
   REGISTER_DATE_REQUIRED: 'Register date is required',
   ALREADY_REGISTERED: 'Volunteer has already registered for this campaign',
   NOT_REGISTERED: 'Volunteer is not registered for this campaign',
-  REGISTRATION_FAILED: 'Volunteer registration failed'
+  REGISTRATION_FAILED: 'Volunteer registration failed',
+  REGISTRATION_ID_REQUIRED: 'registration ID is required',
+  REGISTRATION_ID_INVALID: 'registration ID must be a positive integer',
 }
 module.exports = {
   USER_MESSAGES,

@@ -83,6 +83,31 @@ class VolunteersServices {
     }
     return true
   }
+
+  async updateStatus({ registrationId, status }) {
+    await db.VolunteerRegistration.update(
+      { status },
+      {
+        where: { registrationId }
+      }
+    )
+    const updated = await db.VolunteerRegistration.findByPk(registrationId, {
+      include: [
+        {
+          model: db.VolunteerStatus,
+          as: 'statusInfo',
+          attributes: ['statusId', 'statusName']
+        },
+        {
+          model: db.User,
+          as: 'volunteer',
+          attributes: ['userId', 'firstName', 'lastName', 'email']
+        }
+      ]
+    })
+
+    return updated
+  }
 }
 
 module.exports = new VolunteersServices()

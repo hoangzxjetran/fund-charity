@@ -26,5 +26,17 @@ class VolunteersControllers {
       data: result
     })
   }
+
+  async updateStatus(req, res) {
+    const { registrationId } = req.params
+    const { status } = req.body
+    const data = await volunteersServices.updateStatus({
+      registrationId,
+      status
+    })
+    res.status(HTTP_STATUS.OK).json({
+      data
+    })
+  }
 }
 module.exports = new VolunteersControllers()
