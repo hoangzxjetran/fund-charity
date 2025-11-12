@@ -167,7 +167,7 @@ class FundsServices {
       const { methodId, milestones, mediaFund, ...fundData } = data
       const fund = await db.Fund.findByPk(fundId, { transaction: t })
       if (!fund) {
-        throw new AppError(HTTP_STATUS.NOT_FOUND, FUND_MESSAGES.NOT_FOUND)
+        throw new AppError(FUND_MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND)
       }
       const cleanFundData = Object.fromEntries(
         Object.entries(fundData).filter(([_, v]) => v !== undefined && v !== null)

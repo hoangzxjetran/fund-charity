@@ -15,7 +15,12 @@ module.exports = (sequelize, DataTypes) => {
   }
   CharityCampaign.init(
     {
-      campaignId: DataTypes.INTEGER,
+      campaignId: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+      },
       fundId: {
         type: DataTypes.INTEGER,
         references: { model: 'Fund', key: 'fundId' }

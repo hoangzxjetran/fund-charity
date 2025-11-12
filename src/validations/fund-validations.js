@@ -5,6 +5,7 @@ const { fundraisingMethod, mediaType, fundStatus } = require('../constants/enum'
 const { convertStringObjToNumberObj } = require('../utils/common')
 const HTTP_STATUS = require('../constants/httpStatus')
 const { AppError } = require('../controllers/error.controllers')
+const { isBefore, parseISO } = require('date-fns')
 
 const uploadBannerFundValidator = validate(
   checkSchema(
@@ -241,13 +242,13 @@ const updateFundValidator = validate(
         options: (value) => {
           const fundraisingMethodName = convertStringObjToNumberObj(fundraisingMethod)
           if (!fundraisingMethodName[value]) {
-            throw new AppError(HTTP_STATUS.UNPROCESSABLE_ENTITY, FUND_MESSAGES.METHOD_ID_INVALID)
+            throw new AppError(FUND_MESSAGES.METHOD_ID_INVALID, HTTP_STATUS.UNPROCESSABLE_ENTITY)
           }
           if (value === fundraisingMethod.Milestone && !value.milestones.length) {
-            throw new AppError(HTTP_STATUS.UNPROCESSABLE_ENTITY, FUND_MESSAGES.MILESTONE_REQUIRED)
+            throw new AppError(FUND_MESSAGES.MILESTONE_REQUIRED, HTTP_STATUS.UNPROCESSABLE_ENTITY)
           }
           if (value === fundraisingMethod.TimeBased && value.milestones.length) {
-            throw new AppError(HTTP_STATUS.UNPROCESSABLE_ENTITY, FUND_MESSAGES.MILESTONE_NOT_ALLOWED)
+            throw new AppError(FUND_MESSAGES.MILESTONE_NOT_ALLOWED, HTTP_STATUS.UNPROCESSABLE_ENTITY)
           }
           return true
         }
@@ -314,7 +315,9 @@ const updateFundValidator = validate(
       },
       custom: {
         options: (value, { req }) => {
-          if (req.body.startDate && value < req.body.startDate) {
+          const start = parseISO(req.body.startDate)
+          const end = parseISO(value)
+          if (isBefore(end, start)) {
             throw new AppError(FUND_MESSAGES.END_DATE_BEFORE_START_DATE)
           }
           return true
@@ -472,7 +475,7 @@ const getFundsValidator = validate(
           options: (value) => {
             const fundraisingMethodName = convertStringObjToNumberObj(fundraisingMethod)
             if (!fundraisingMethodName[value]) {
-              throw new AppError(HTTP_STATUS.UNPROCESSABLE_ENTITY, FUND_MESSAGES.METHOD_ID_INVALID)
+              throw new AppError(FUND_MESSAGES.METHOD_ID_INVALID, HTTP_STATUS.UNPROCESSABLE_ENTITY)
             }
             return true
           }
@@ -488,7 +491,7 @@ const getFundsValidator = validate(
           options: (value) => {
             const fundStatusName = convertStringObjToNumberObj(fundStatus)
             if (!fundStatusName[value]) {
-              throw new AppError(HTTP_STATUS.UNPROCESSABLE_ENTITY, FUND_MESSAGES.STATUS_INVALID)
+              throw new AppError(FUND_MESSAGES.STATUS_INVALID, HTTP_STATUS.UNPROCESSABLE_ENTITY)
             }
             return true
           }

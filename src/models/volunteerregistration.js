@@ -9,14 +9,22 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      VolunteerRegistration.belongsTo(models.User, { foreignKey: 'userId' })
+      VolunteerRegistration.belongsTo(models.User, { foreignKey: 'userId', as: 'volunteer' })
       VolunteerRegistration.belongsTo(models.CharityCampaign, { foreignKey: 'campaignId' })
-      VolunteerRegistration.belongsTo(models.VolunteerStatus, { foreignKey: 'status' })
+      VolunteerRegistration.belongsTo(models.VolunteerStatus, {
+        foreignKey: 'status',
+        targetKey: 'statusId',
+        as: 'statusInfo'
+      })
     }
   }
   VolunteerRegistration.init(
     {
-      registrationId: DataTypes.INTEGER,
+      registrationId: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+      },
       userId: {
         type: DataTypes.INTEGER,
         references: { model: 'User', key: 'userId' }
@@ -29,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
 
       status: {
         type: DataTypes.INTEGER,
-        references: { model: 'VolunteerStatus', key: 'statusId' }
+        references: { model: 'VolunteerStatus', key: 'statusId', as: 'volunteerStatus' }
       }
     },
     {

@@ -161,10 +161,46 @@ const FUND_MESSAGES = {
   NOT_FOUND: 'Fund not found',
   MILESTONE_NOT_ALLOWED: 'Milestones are not allowed for Time-Based fundraising method'
 }
+
+const CAMPAIGN_MESSAGES = {
+  CAMPAIGN_ID_REQUIRED: 'Campaign ID is required',
+  CAMPAIGN_ID_INVALID: 'Campaign ID must be a positive integer',
+  CAMPAIGN_NAME_REQUIRED: 'Campaign name is required',
+  CAMPAIGN_NAME_MUST_BE_STRING: 'Campaign name must be a string',
+  CAMPAIGN_NAME_NOT_EMPTY: 'Campaign name must not be empty',
+  CAMPAIGN_NAME_LENGTH_INVALID: 'Campaign name must be between 3 and 100 characters',
+  START_DATE_INVALID: 'Start date must be a valid date',
+  END_DATE_INVALID: 'End date must be a valid date',
+  LOCATION_MUST_BE_STRING: 'Location must be a string',
+  LOCATION_NOT_EMPTY: 'Location must not be empty',
+  LOCATION_LENGTH_INVALID: 'Location must be between 3 and 200 characters',
+  DESCRIPTION_MUST_BE_STRING: 'Description must be a string',
+  DESCRIPTION_NOT_EMPTY: 'Description must not be empty',
+  CAMPAIGN_NOT_FOUND: 'Campaign not found'
+}
+
+const VOLUNTEER_MESSAGES = {
+  CAMPAIGN_ID_REQUIRED: 'Campaign ID is required',
+  CAMPAIGN_ID_INVALID: 'Campaign ID must be a positive integer',
+  VOLUNTEER_ID_REQUIRED: 'Volunteer ID is required',
+  VOLUNTEER_ID_INVALID: 'Volunteer ID must be a positive integer',
+  VOLUNTEER_NAME_REQUIRED: 'Volunteer name is required',
+  VOLUNTEER_NAME_MUST_BE_STRING: 'Volunteer name must be a string',
+  VOLUNTEER_NAME_NOT_EMPTY: 'Volunteer name must not be empty',
+  VOLUNTEER_NAME_LENGTH_INVALID: 'Volunteer name must be between 3 and 100 characters',
+  STATUS_INVALID: 'Status must be one of the following: pending, active, rejected',
+  REGISTER_DATE_INVALID: 'Register date must be a valid date',
+  REGISTER_DATE_REQUIRED: 'Register date is required',
+  ALREADY_REGISTERED: 'Volunteer has already registered for this campaign',
+  NOT_REGISTERED: 'Volunteer is not registered for this campaign',
+  REGISTRATION_FAILED: 'Volunteer registration failed'
+}
 module.exports = {
   USER_MESSAGES,
   COMMON,
   ROLE_MESSAGES,
   FUND_CATEGORY_MESSAGES,
-  FUND_MESSAGES
+  FUND_MESSAGES,
+  CAMPAIGN_MESSAGES,
+  VOLUNTEER_MESSAGES
 }
