@@ -4,6 +4,8 @@ const { USER_MESSAGES, COMMON } = require('../constants/message.js')
 const { AppError } = require('../controllers/error.controllers.js')
 const validate = require('../utils/validate.js')
 const usersServices = require('../services/users.services.js')
+const { verifyToken } = require('../utils/jwt.js')
+const { roleType } = require('../constants/enum.js')
 
 const signUpValidator = validate(
   checkSchema(
@@ -168,10 +170,11 @@ const verifyPasswordTokenValidator = validate(
           options: async (value, { req }) => {
             const decode = await verifyToken(value)
             const user = await usersServices.getUserById(decode.userId)
-            if (user?.forgotPasswordToken !== value) {
+            if (user?.accessTokenForgotPassword !== value) {
               throw new AppError(USER_MESSAGES.FORGOT_PASSWORD_TOKEN_IS_INVALID, HTTP_STATUS.UNAUTHORIZED)
             }
             req.user = user
+            console.log(req.user)
             return true
           }
         }
@@ -230,9 +233,12 @@ const resetPasswordValidator = validate(
         },
         custom: {
           options: async (value, { req }) => {
-            if (req?.user?.forgotPasswordToken !== value) {
+            const decode = await verifyToken(value)
+            const user = await usersServices.getUserById(decode.userId)
+            if (user?.accessTokenForgotPassword !== value) {
               throw new AppError(USER_MESSAGES.FORGOT_PASSWORD_TOKEN_IS_INVALID, HTTP_STATUS.UNAUTHORIZED)
             }
+            req.user = user
             return true
           }
         }
@@ -378,29 +384,39 @@ const getUsersValidator = validate(
       },
       sortBy: {
         optional: true,
-        isIn: {
-          options: [['firstName', 'lastName', 'email', 'createdAt', 'updatedAt']],
-          errorMessage: USER_MESSAGES.SORT_BY_INVALID
+        custom: {
+          options: (value) => {
+            const validSortByFields = ['firstName', 'lastName', 'email', 'createdAt', 'updatedAt']
+            if (!validSortByFields.includes(value)) {
+              throw new AppError(COMMON.SORT_BY_INVALID, HTTP_STATUS.UNPROCESSABLE_ENTITY)
+            }
+            return true
+          }
         }
       },
       sortOrder: {
         optional: true,
-        isIn: {
-          options: [['ASC', 'DESC']],
-          errorMessage: USER_MESSAGES.SORT_ORDER_INVALID
+        custom: {
+          options: (value) => {
+            const lowerCased = value.toLowerCase()
+            if (lowerCased !== 'asc' && lowerCased !== 'desc') {
+              throw new AppError(COMMON.SORT_ORDER_INVALID, HTTP_STATUS.UNPROCESSABLE_ENTITY)
+            }
+            return true
+          }
         }
       },
       isActive: {
         optional: true,
         isBoolean: {
-          errorMessage: USER_MESSAGES.IS_ACTIVE_MUST_BE_BOOLEAN
+          errorMessage: COMMON.IS_ACTIVE_MUST_BE_BOOLEAN
         },
         toBoolean: true
       },
       role: {
         optional: true,
         isIn: {
-          options: [['user', 'admin']],
+          options: [Object.keys(roleType)],
           errorMessage: USER_MESSAGES.ROLE_INVALID
         }
       },

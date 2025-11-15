@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
         scope: { ownerType: 'Organization' },
         as: 'wallets'
       })
+      Organization.belongsTo(models.OrgStatus, {
+        foreignKey: 'statusId',
+        as: 'status'
+      })
     }
   }
   Organization.init(

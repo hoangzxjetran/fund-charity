@@ -1,5 +1,5 @@
 const db = require('../models/index.js')
-const { tokenType } = require('../constants/enum.js')
+const { tokenType, roleType } = require('../constants/enum.js')
 const { generateToken, verifyToken } = require('../utils/jwt.js')
 const { AppError } = require('../controllers/error.controllers.js')
 const { hashPassword, comparePassword } = require('../utils/bcrypt.js')
@@ -74,32 +74,127 @@ class UserServices {
   }
 
   async getUserByEmail(email) {
-    const data = await db.User.findOne({ where: { email } })
+    const data = await db.User.findOne({
+      where: { email },
+      include: [
+        {
+          model: db.UserRole,
+          as: 'roles',
+          attributes: ['userRoleId', 'createdAt', 'updatedAt'],
+          include: [
+            { model: db.Role, as: 'role', attributes: ['roleId', 'roleName'] },
+            {
+              model: db.Organization,
+              as: 'organization',
+              attributes: ['orgId', 'orgName', 'statusId'],
+              required: false
+            }
+          ]
+        }
+      ]
+    })
     if (!data) return null
     const { password, accessTokenForgotPassword, ...user } = data.get({ plain: true })
     return user
   }
 
   async getUserById(userId) {
-    const data = await db.User.findOne({ where: { userId } })
+    const data = await db.User.findOne({
+      where: { userId },
+      include: [
+        {
+          model: db.UserRole,
+          as: 'roles',
+          attributes: ['userRoleId', 'createdAt', 'updatedAt'],
+          include: [
+            { model: db.Role, as: 'role', attributes: ['roleId', 'roleName'] },
+            {
+              model: db.Organization,
+              as: 'organization',
+              attributes: ['orgId', 'orgName', 'statusId'],
+              required: false
+            }
+          ]
+        }
+      ]
+    })
     if (!data) return null
-    const { password, accessTokenForgotPassword, ...restUser } = data.get({ plain: true })
+    const { password, ...restUser } = data.get({ plain: true })
     return restUser
   }
 
-  async signUp({ firstName, lastName, dateOfBirth, email, password }) {
-    const newUser = await db.User.create({
-      firstName,
-      lastName,
-      dateOfBirth,
-      email,
-      password: hashPassword(password)
+  async signUp({ firstName, lastName, dateOfBirth, email, password, roleId = roleType.User, orgId = null }) {
+    const t = await db.sequelize.transaction()
+    let newUser
+    try {
+      newUser = await db.User.create(
+        {
+          firstName,
+          lastName,
+          dateOfBirth,
+          email,
+          password: hashPassword(password)
+        },
+        { transaction: t }
+      )
+      await db.UserRole.create(
+        {
+          userId: newUser.userId,
+          roleId,
+          orgId
+        },
+        { transaction: t }
+      )
+
+      await t.commit()
+    } catch (error) {
+      if (!t.finished) await t.rollback()
+      throw error
+    }
+    const dataUser = await db.User.findOne({
+      where: { userId: newUser.userId },
+      attributes: { exclude: ['password', 'accessTokenForgotPassword'] },
+      include: [
+        {
+          model: db.UserRole,
+          as: 'roles',
+          attributes: ['userRoleId', 'createdAt', 'updatedAt'],
+          include: [
+            { model: db.Role, as: 'role', attributes: ['roleId', 'roleName'] },
+            {
+              model: db.Organization,
+              as: 'organization',
+              attributes: ['orgId', 'orgName', 'statusId'],
+              required: false
+            }
+          ]
+        }
+      ]
     })
-    return newUser
+    return dataUser
   }
 
   async signIn({ email, password }) {
-    const foundUser = await db.User.findOne({ where: { email } })
+    const foundUser = await db.User.findOne({
+      where: { email },
+      include: [
+        {
+          model: db.UserRole,
+          as: 'roles',
+          attributes: ['userRoleId', 'createdAt', 'updatedAt'],
+          include: [
+            { model: db.Role, as: 'role', attributes: ['roleId', 'roleName'] },
+            {
+              model: db.Organization,
+              as: 'organization',
+              attributes: ['orgId', 'orgName', 'statusId'],
+              required: false
+            }
+          ]
+        }
+      ]
+    })
+
     if (!foundUser) {
       throw new AppError(USER_MESSAGES.LOGIN_INCORRECT, HTTP_STATUS.BAD_REQUEST)
     }
@@ -121,8 +216,12 @@ class UserServices {
         where: { userId: user.userId }
       }
     )
+    const rolesClean = user?.roles?.map((r) => ({
+      role: r.role,
+      organization: r.organization || null
+    }))
     const { password: _, accessTokenForgotPassword, ...restUser } = user
-    return { ...restUser, accessToken, refreshToken }
+    return { ...restUser, roles: rolesClean, accessToken, refreshToken }
   }
 
   async forgotPassword({ userId, email }) {
@@ -146,6 +245,7 @@ class UserServices {
   async resetPassword({ userId, plainTextPassword }) {
     await db.User.update(
       {
+        accessTokenForgotPassword: null,
         password: hashPassword(plainTextPassword),
         updatedAt: new Date()
       },
@@ -178,48 +278,88 @@ class UserServices {
     return updatedUser
   }
 
-  async changePassword(user_id, plainTextPassword) {}
-
-  async getUsers({ search, page, limit, sortBy, sortOrder, isActive, role }) {
+  async getUsers({ search, page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'DESC', isActive, role }) {
+    page = parseInt(page, 10) || 1
+    limit = parseInt(limit, 10) || 10
+    if (page < 1) page = 1
+    if (limit < 1) limit = 10
     const offset = (page - 1) * limit
+
     const whereClause = {}
-    if (isActive !== undefined) {
+    if (typeof isActive === 'boolean') {
       whereClause.isActive = isActive
     }
+    const userRoleWhere = {}
     if (role) {
-      whereClause.role = role
-    }
-    if (search) {
-      whereClause[db.Sequelize.Op.or] = [
-        { firstName: { [db.Sequelize.Op.iLike]: `%${search}%` } },
-        { lastName: { [db.Sequelize.Op.iLike]: `%${search}%` } },
-        { email: { [db.Sequelize.Op.iLike]: `%${search}%` } }
-      ]
-    }
-    const orderClause = []
-    if (sortBy) {
-      orderClause.push([sortBy, sortOrder && sortOrder.toUpperCase() === 'DESC' ? 'DESC' : 'ASC'])
-    } else {
-      orderClause.push(['createdAt', 'DESC'])
+      userRoleWhere.roleId = roleType[role] || role
     }
 
-    const { rows: users, count: total } = await db.User.findAndCountAll({
+    if (search) {
+      const likeSearch = `%${search.toLowerCase()}%`
+      whereClause[db.Sequelize.Op.or] = [
+        db.Sequelize.where(db.Sequelize.fn('LOWER', db.Sequelize.col('User.firstName')), 'LIKE', likeSearch),
+        db.Sequelize.where(db.Sequelize.fn('LOWER', db.Sequelize.col('User.lastName')), 'LIKE', likeSearch),
+        db.Sequelize.where(db.Sequelize.fn('LOWER', db.Sequelize.col('User.email')), 'LIKE', likeSearch)
+      ]
+    }
+
+    // Sort an toàn: chỉ cho phép những cột hợp lệ
+    const validSortBy = ['firstName', 'lastName', 'email', 'createdAt', 'updatedAt']
+    if (!validSortBy.includes(sortBy)) sortBy = 'createdAt'
+    sortOrder = sortOrder.toUpperCase() === 'DESC' ? 'DESC' : 'ASC'
+
+    // Count riêng
+    const total = await db.User.count({
       where: whereClause,
-      order: orderClause,
+      include: role
+        ? [
+            {
+              model: db.UserRole,
+              as: 'roles',
+              where: userRoleWhere,
+              required: true
+            }
+          ]
+        : []
+    })
+
+    // Lấy dữ liệu
+    const users = await db.User.findAll({
+      where: whereClause,
+      order: [[sortBy, sortOrder]],
       limit,
       offset,
-      attributes: { exclude: ['password', 'refreshToken', 'accessTokenForgotPassword'] }
+      attributes: { exclude: ['password', 'refreshToken', 'accessTokenForgotPassword'] },
+      include: [
+        {
+          model: db.UserRole,
+          as: 'roles',
+          attributes: ['userRoleId', 'roleId', 'orgId', 'createdAt', 'updatedAt'],
+          where: role ? userRoleWhere : undefined,
+          required: !!role,
+          include: [
+            { model: db.Role, as: 'role', attributes: ['roleId', 'roleName'] },
+            {
+              model: db.Organization,
+              as: 'organization',
+              attributes: ['orgId', 'orgName', 'statusId'],
+              required: false
+            }
+          ]
+        }
+      ]
     })
 
     return {
       data: users,
       pagination: {
-        total: +total,
-        page: +page,
-        limit: +limit
+        total,
+        page,
+        limit
       }
     }
   }
+
   async deleteUser(userId) {
     await db.User.update(
       {

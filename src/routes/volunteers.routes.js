@@ -6,7 +6,7 @@ const {
   getVolunteersInCampaignValidator,
   updateStatusValidator
 } = require('../validations/volunteers.validations.js')
-const { isAuthorized } = require('../middlewares/auth.middewares.js')
+const { isAuthorized } = require('../middlewares/auth.middlewares.js')
 
 router
   .route('/:campaignId')

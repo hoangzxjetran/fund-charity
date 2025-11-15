@@ -6,7 +6,7 @@ const {
   createCampaignValidator
 } = require('../validations/charity-campaigns.validations.js')
 const charityCampaignsControllers = require('../controllers/charity-campaigns.controllers.js')
-const { isAuthorized } = require('../middlewares/auth.middewares.js')
+const { isAuthorized } = require('../middlewares/auth.middlewares.js')
 
 router
   .route('/:fundId')

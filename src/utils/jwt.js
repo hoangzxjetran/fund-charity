@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken')
 const HTTP_STATUS = require('../constants/httpStatus.js')
 const { USER_MESSAGES } = require('../constants/message.js')
 const pkg = require('jsonwebtoken')
-const { JsonWebTokenError } = pkg
 dotenv.config()
 
 const generateToken = (payload, expiresIn) => {
@@ -21,10 +20,13 @@ const verifyToken = async (token) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
     return decoded
   } catch (error) {
-    if (error instanceof JsonWebTokenError) {
+    if (error instanceof jwt.TokenExpiredError || error instanceof jwt.NotBeforeError) {
+      throw new AppError(USER_MESSAGES.UN_AUTHORIZATION, HTTP_STATUS.UNAUTHORIZED)
+    } else if (error instanceof jwt.JsonWebTokenError) {
+      throw new AppError(USER_MESSAGES.TOKEN_INVALID, HTTP_STATUS.UNAUTHORIZED)
+    } else {
       throw new AppError(USER_MESSAGES.UN_AUTHORIZATION, HTTP_STATUS.UNAUTHORIZED)
     }
-    throw error
   }
 }
 

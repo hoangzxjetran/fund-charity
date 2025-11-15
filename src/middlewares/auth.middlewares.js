@@ -31,10 +31,16 @@ const isAuthorized = async (req, res, next) => {
 
 const isAdmin = (req, res, next) => {
   const user = req.user
-  if (!user || user.roleId !== roleType.Admin) {
-    next(new AppError(USER_MESSAGES.FORBIDDEN, HTTP_STATUS.FORBIDDEN))
-    return
+  if (!user) {
+    return next(new AppError(USER_MESSAGES.FORBIDDEN, HTTP_STATUS.FORBIDDEN))
   }
+console.log(req.user)
+  const hasAdminRole = user.roles?.some((userRole) => userRole.role?.roleId === roleType.Admin)
+
+  if (!hasAdminRole) {
+    return next(new AppError(USER_MESSAGES.FORBIDDEN, HTTP_STATUS.FORBIDDEN))
+  }
+
   next()
 }
 

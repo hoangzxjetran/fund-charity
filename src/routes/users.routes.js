@@ -14,7 +14,7 @@ const {
   userIdValidator,
   uploadAvatarValidator
 } = require('../validations/user.validations.js')
-const { isAuthorized, isAdmin } = require('../middlewares/auth.middewares.js')
+const { isAuthorized, isAdmin } = require('../middlewares/auth.middlewares.js')
 const { resizeAvatar, uploadAvatar } = require('../middlewares/uploadFile.middlewares.js')
 const router = Router()
 router.route('/').get(getUsersValidator, isAuthorized, isAdmin, catchAsync(UserControllers.getUsers))

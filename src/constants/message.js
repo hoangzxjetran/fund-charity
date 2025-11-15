@@ -64,7 +64,10 @@ const USER_MESSAGES = {
   USER_ID_INVALID: 'User ID is invalid',
   REFRESH_TOKEN_IS_STRING: 'Refresh token must be a string',
   REFRESH_TOKEN_IS_INVALID: 'Refresh token is invalid',
-  AVATAR_IS_REQUIRED: 'Avatar is required'
+  AVATAR_IS_REQUIRED: 'Avatar is required',
+  TOKEN_INVALID: 'Token is invalid',
+  ROLE_INVALID: 'Role is invalid',
+  SORT_BY_INVALID: 'Sort by is include firstName, lastName, email, createdAt, updatedAt',
 }
 
 const COMMON = {
@@ -196,7 +199,7 @@ const VOLUNTEER_MESSAGES = {
   NOT_REGISTERED: 'Volunteer is not registered for this campaign',
   REGISTRATION_FAILED: 'Volunteer registration failed',
   REGISTRATION_ID_REQUIRED: 'registration ID is required',
-  REGISTRATION_ID_INVALID: 'registration ID must be a positive integer',
+  REGISTRATION_ID_INVALID: 'registration ID must be a positive integer'
 }
 module.exports = {
   USER_MESSAGES,

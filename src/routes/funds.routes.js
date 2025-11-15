@@ -14,7 +14,7 @@ const {
   uploadMediaFund,
   resizeImagesFund
 } = require('../middlewares/uploadFile.middlewares.js')
-const { isAuthorized } = require('../middlewares/auth.middewares.js')
+const { isAuthorized } = require('../middlewares/auth.middlewares.js')
 
 router
   .route('/')
