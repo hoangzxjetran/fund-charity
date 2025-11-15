@@ -9,29 +9,20 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Donation.belongsTo(models.User, { foreignKey: 'userId' })
-      Donation.belongsTo(models.Fund, { foreignKey: 'fundId' })
-      Donation.hasOne(models.Transaction, { foreignKey: 'donationId' })
-      Donation.hasMany(models.Notification, { foreignKey: 'donationId' })
-      Donation.belongsTo(models.Milestone, { foreignKey: 'milestoneId' })
+      Donation.belongsTo(models.User, { foreignKey: 'userId', as: 'user' })
+      Donation.belongsTo(models.Campaign, { foreignKey: 'campaignId', as: 'campaign' })
+      Donation.hasMany(models.Transaction, { foreignKey: 'donationId', as: 'transactions' })
     }
   }
   Donation.init(
     {
-      donationId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-      userId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'User', key: 'userId' } },
-      fundId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'Fund', key: 'fundId' } },
-      amount: DataTypes.DOUBLE,
-      paymentMethod: { type: DataTypes.STRING, allowNull: false },
-      paymentStatus: DataTypes.STRING,
-      transactionId: DataTypes.STRING,
-      donateDate: DataTypes.DATE,
-      message: DataTypes.STRING,
-      milestoneId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: { model: 'Milestone', key: 'milestoneId' }
-      }
+      donationId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+      userId: { type: DataTypes.INTEGER, allowNull: false },
+      campaignId: { type: DataTypes.INTEGER, allowNull: false },
+      amount: { type: DataTypes.DECIMAL(18, 2), allowNull: false },
+      paymentStatus: { type: DataTypes.STRING(50), defaultValue: 'pending' },
+      donateDate: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+      message: { type: DataTypes.STRING(255) }
     },
     {
       sequelize,

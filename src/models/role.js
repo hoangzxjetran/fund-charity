@@ -9,13 +9,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Role.hasMany(models.User, { foreignKey: 'roleId' })
+      Role.hasMany(models.UserRole, { foreignKey: 'roleId', as: 'userRoles' })
     }
   }
   Role.init(
     {
-      roleId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-      roleName: DataTypes.STRING
+      roleId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+      roleName: { type: DataTypes.STRING(50) }
     },
     {
       sequelize,

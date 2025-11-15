@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+'use strict'
+const { Model } = require('sequelize')
 module.exports = (sequelize, DataTypes) => {
   class Transaction extends Model {
     /**
@@ -11,25 +9,32 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Transaction.belongsTo(models.Donation, { foreignKey: 'donationId' });
+      Transaction.belongsTo(models.Donation, { foreignKey: 'donationId', as: 'donation' })
+      Transaction.belongsTo(models.Wallet, { foreignKey: 'walletId', as: 'wallet' })
+      Transaction.belongsTo(models.Bank, { foreignKey: 'bankId', as: 'bank' })
+      Transaction.belongsTo(models.TransactionType, { foreignKey: 'typeId', as: 'type' })
+      Transaction.belongsTo(models.TransactionStatus, { foreignKey: 'statusId', as: 'status' })
     }
   }
-  Transaction.init({
-    transactionId: DataTypes.INTEGER,
-    donationId:{
-      type: DataTypes.INTEGER,
-      references: { model: 'Donation', key: 'donationId' }
+  Transaction.init(
+    {
+      transactionId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+      donationId: { type: DataTypes.INTEGER },
+      walletId: { type: DataTypes.INTEGER, allowNull: false },
+      bankId: { type: DataTypes.INTEGER },
+      accountNumber: { type: DataTypes.STRING(50) },
+      accountHolder: { type: DataTypes.STRING(255) },
+      amount: { type: DataTypes.DECIMAL(18, 2), allowNull: false },
+      transactionTime: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+      proofImage: { type: DataTypes.STRING(255) },
+      typeId: { type: DataTypes.INTEGER, allowNull: false },
+      statusId: { type: DataTypes.INTEGER, allowNull: false },
+      bankRef: { type: DataTypes.STRING(100) }
     },
-    bankName: DataTypes.STRING,
-    accountNumber: DataTypes.STRING,
-    accountName: DataTypes.STRING,
-    amount: DataTypes.DOUBLE,
-    transactionTime: DataTypes.DATE,
-    proofImage: DataTypes.STRING,
-    status: DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'Transaction',
-  });
-  return Transaction;
-};
+    {
+      sequelize,
+      modelName: 'Transaction'
+    }
+  )
+  return Transaction
+}

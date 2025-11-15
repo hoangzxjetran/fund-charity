@@ -9,36 +9,18 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      VolunteerRegistration.belongsTo(models.User, { foreignKey: 'userId', as: 'volunteer' })
-      VolunteerRegistration.belongsTo(models.CharityCampaign, { foreignKey: 'campaignId' })
-      VolunteerRegistration.belongsTo(models.VolunteerStatus, {
-        foreignKey: 'status',
-        targetKey: 'statusId',
-        as: 'statusInfo'
-      })
+      VolunteerRegistration.belongsTo(models.User, { foreignKey: 'userId', as: 'user' })
+      VolunteerRegistration.belongsTo(models.Campaign, { foreignKey: 'campaignId', as: 'campaign' })
+      VolunteerRegistration.belongsTo(models.VolunteerStatus, { foreignKey: 'statusId', as: 'status' })
     }
   }
   VolunteerRegistration.init(
     {
-      registrationId: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-      },
-      userId: {
-        type: DataTypes.INTEGER,
-        references: { model: 'User', key: 'userId' }
-      },
-      campaignId: {
-        type: DataTypes.INTEGER,
-        references: { model: 'CharityCampaign', key: 'campaignId' }
-      },
-      registrationDate: DataTypes.DATE,
-
-      status: {
-        type: DataTypes.INTEGER,
-        references: { model: 'VolunteerStatus', key: 'statusId', as: 'volunteerStatus' }
-      }
+      registrationId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+      userId: { type: DataTypes.INTEGER, allowNull: false },
+      campaignId: { type: DataTypes.INTEGER, allowNull: false },
+      statusId: { type: DataTypes.INTEGER, allowNull: false },
+      registeredAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
     },
     {
       sequelize,

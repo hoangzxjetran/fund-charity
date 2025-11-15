@@ -1,6 +1,5 @@
 'use strict'
 const { Model } = require('sequelize')
-const { roleType } = require('../constants/enum')
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -10,34 +9,27 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      User.belongsTo(models.Role, { foreignKey: 'roleId' })
-      User.hasMany(models.Donation, { foreignKey: 'userId' })
-      User.hasMany(models.Fund, { foreignKey: 'creatorId' })
-      User.hasMany(models.VolunteerRegistration, { foreignKey: 'userId' })
-      User.hasMany(models.Notification, { foreignKey: 'userId' })
+      User.hasMany(models.UserRole, { foreignKey: 'userId', as: 'roles' })
+      User.hasMany(models.Donation, { foreignKey: 'userId', as: 'donations' })
+      User.hasMany(models.VolunteerRegistration, { foreignKey: 'userId', as: 'volunteerRegistrations' })
+      User.hasMany(models.Withdrawal, { foreignKey: 'requestedBy', as: 'requestedWithdrawals' })
+      User.hasMany(models.Withdrawal, { foreignKey: 'approvedBy', as: 'approvedWithdrawals' })
+      User.hasMany(models.Notification, { foreignKey: 'userId', as: 'notifications' })
+      User.hasMany(models.Wallet, { foreignKey: 'ownerId', scope: { ownerType: 'User' }, as: 'wallets' })
     }
   }
   User.init(
     {
-      userId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-      firstName: DataTypes.STRING,
-      lastName: DataTypes.STRING,
-      dateOfBirth: DataTypes.DATE,
-      email: { type: DataTypes.STRING, unique: true },
-      password: DataTypes.STRING,
-      phoneNumber: DataTypes.STRING,
-      isActive: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: true
-      },
-      avatar: DataTypes.STRING,
-      refreshToken: DataTypes.STRING,
-      accessTokenForgotPassword: DataTypes.STRING,
-      roleId: {
-        type: DataTypes.INTEGER,
-        references: { model: 'Role', key: 'roleId' },
-        defaultValue: roleType.User
-      }
+      userId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+      firstName: { type: DataTypes.STRING(50) },
+      lastName: { type: DataTypes.STRING(50) },
+      email: { type: DataTypes.STRING(100), allowNull: false, unique: true },
+      password: { type: DataTypes.STRING(100), allowNull: false },
+      phoneNumber: { type: DataTypes.STRING(15) },
+      avatar: { type: DataTypes.STRING(255) },
+      isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
+      refreshToken: { type: DataTypes.STRING(255) },
+      accessTokenForgotPassword: { type: DataTypes.STRING(255) }
     },
     {
       sequelize,

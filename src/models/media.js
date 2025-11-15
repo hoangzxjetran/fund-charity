@@ -9,13 +9,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Media.hasMany(models.FundMedia, { foreignKey: 'mediaType' })
+      Media.hasMany(models.CampaignMedia, { foreignKey: 'mediaTypeId', as: 'campaignMedia' })
+      Media.hasMany(models.OrgMedia, { foreignKey: 'mediaTypeId', as: 'orgMedia' })
     }
   }
   Media.init(
     {
-      mediaType: DataTypes.INTEGER,
-      mediaName: DataTypes.STRING
+      mediaTypeId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+      mediaName: { type: DataTypes.STRING(50) }
     },
     {
       sequelize,

@@ -3,12 +3,25 @@ const userVerifyStatus = {
   Verified: 1,
   Banned: 2
 }
-const milestoneStatus = {
+const orgStatus = {
   Pending: 1,
-  InProgress: 2,
-  Paused: 3,
-  Completed: 4,
-  Cancelled: 5
+  Reject: 2,
+  Active: 3,
+  Banned: 4
+}
+
+const campaignStatus = {
+  Active: 1,
+  Paused: 2,
+  Completed: 3,
+  Closed: 4
+}
+
+const roleType = {
+  User: 1,
+  Admin: 2,
+  Organization: 3,
+  MemberOfOrganization: 4
 }
 
 const donationStatus = {
@@ -16,14 +29,6 @@ const donationStatus = {
   Completed: 2,
   Failed: 3,
   Refunded: 4
-}
-
-const fundStatus = {
-  Draft: 1,
-  Active: 2,
-  Suspended: 3,
-  Completed: 4,
-  Cancelled: 5
 }
 
 const volunteerStatus = {
@@ -46,25 +51,47 @@ const tokenType = {
   ResetPasswordToken: 2,
   EmailVerifyToken: 3
 }
-
-const roleType = {
+const walletType = {
   User: 1,
-  Admin: 2
+  Organization: 2,
+  Campaign: 3,
+  Admin: 4
 }
 
-const fundraisingMethod = {
-  Milestone: 1,
-  TimeBased: 2
+const transactionType = {
+  Inflow: 1,
+  Outflow: 2
+}
+const transactionStatus = {
+  Pending: 1,
+  Completed: 2,
+  Failed: 3
+}
+
+const withdrawalStatus = {
+  Pending: 1,
+  Approved: 2,
+  Rejected: 3,
+  Completed: 4
+}
+const walletStatus = {
+  Active: 1,
+  Suspended: 2,
+  Closed: 3
 }
 
 module.exports = {
   userVerifyStatus,
+  orgStatus,
+  campaignStatus,
+  roleType,
+  donationStatus,
+  volunteerStatus,
   mediaType,
   tokenType,
-  roleType,
-  milestoneStatus,
-  donationStatus,
-  fundStatus,
-  volunteerStatus,
-  fundraisingMethod
+  walletType,
+  transactionType,
+  transactionStatus,
+  withdrawalStatus,
+  walletStatus
 }

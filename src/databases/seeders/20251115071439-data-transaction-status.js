@@ -13,23 +13,23 @@ module.exports = {
      * }], {});
      */
     return queryInterface.bulkInsert(
-      'VolunteerStatuses',
+      'TransactionStatuses',
       [
         {
-          volunteerStatusId: 1,
-          statusName: 'Chờ xét duyệt',
+          transactionStatusId: 1,
+          statusName: 'Pending',
           createdAt: new Date(),
           updatedAt: new Date()
         },
         {
-          volunteerStatusId: 2,
-          statusName: 'Đang hoạt động',
+          transactionStatusId: 2,
+          statusName: 'Completed',
           createdAt: new Date(),
           updatedAt: new Date()
         },
         {
-          volunteerStatusId: 3,
-          statusName: 'Từ chối',
+          transactionStatusId: 3,
+          statusName: 'Failed',
           createdAt: new Date(),
           updatedAt: new Date()
         }
@@ -45,6 +45,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-    return queryInterface.bulkDelete('VolunteerStatuses', null, {})
+    await queryInterface.bulkDelete('TransactionStatuses', null, {})
   }
 }

@@ -9,23 +9,63 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Notification.belongsTo(models.User, { foreignKey: 'userId' })
-      Notification.belongsTo(models.Donation, { foreignKey: 'donationId' })
+      Notification.belongsTo(models.User, {
+        foreignKey: 'userId',
+        as: 'user'
+      })
+
+      // Donation
+      Notification.belongsTo(models.Donation, {
+        foreignKey: 'relatedDonationId',
+        as: 'donation'
+      })
+
+      // Withdrawal
+      Notification.belongsTo(models.Withdrawal, {
+        foreignKey: 'relatedWithdrawalId',
+        as: 'withdrawal'
+      })
+
+      // Campaign
+      Notification.belongsTo(models.Campaign, {
+        foreignKey: 'relatedCampaignId',
+        as: 'campaign'
+      })
     }
   }
   Notification.init(
     {
-      notificationId: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-      userId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'User', key: 'userId' } },
-      title: DataTypes.STRING,
-      content: DataTypes.STRING,
-      type: DataTypes.STRING,
-      isRead: DataTypes.STRING,
-      createdAt: DataTypes.DATE,
-      donationId: {
+      notificationId: {
         type: DataTypes.INTEGER,
-        allowNull: true,
-        references: { model: 'Donation', key: 'donationId' }
+        primaryKey: true,
+        autoIncrement: true
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      title: {
+        type: DataTypes.STRING(255),
+        allowNull: false
+      },
+      content: {
+        type: DataTypes.STRING(500)
+      },
+      type: {
+        type: DataTypes.STRING(50)
+      },
+      isRead: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+      },
+      relatedDonationId: {
+        type: DataTypes.INTEGER
+      },
+      relatedWithdrawalId: {
+        type: DataTypes.INTEGER
+      },
+      relatedCampaignId: {
+        type: DataTypes.INTEGER
       }
     },
     {

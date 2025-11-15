@@ -16,7 +16,7 @@ module.exports = {
      */
 
     const mediaData = Object.entries(mediaType).map(([key, value]) => ({
-      mediaType: value,
+      mediaTypeId: value,
       mediaName: key,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -32,5 +32,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
+    return queryInterface.bulkDelete('Media', null, {})
   }
 }
