@@ -5,98 +5,91 @@ const { AppError } = require('../controllers/error.controllers.js')
 const db = require('../models/index.js')
 
 class VolunteersServices {
-  async getVolunteersInCampaign(campaignId, params) {
-    const { page = 1, limit = 10, search = '', sortBy = 'createdAt', sortOrder = 'DESC', status } = params
+  async getVolunteersInCampaign({
+    campaignId,
+    page,
+    limit,
+    search = '',
+    sortBy = 'registeredAt',
+    sortOrder = 'DESC',
+    statusId
+  }) {
+    page = parseInt(page) || 1
+    limit = parseInt(limit) || 10
     const offset = (page - 1) * limit
-
     const whereClause = { campaignId }
 
-    if (search) {
-      whereClause[db.Sequelize.Op.or] = [
-        { '$volunteer.firstName$': { [db.Sequelize.Op.iLike]: `%${search}%` } },
-        { '$volunteer.lastName$': { [db.Sequelize.Op.iLike]: `%${search}%` } },
-        { '$volunteer.email$': { [db.Sequelize.Op.iLike]: `%${search}%` } }
-      ]
+    if (statusId) whereClause.statusId = statusId
+    const userWhere = {}
+    if (search && search.trim() !== '') {
+      const like = { [db.Sequelize.Op.like]: `%${search}%` }
+      userWhere[db.Sequelize.Op.or] = [{ firstName: like }, { lastName: like }, { email: like }]
     }
-
-    if (status) {
-      whereClause.status = status
-    }
-
     const { rows, count } = await db.VolunteerRegistration.findAndCountAll({
       where: whereClause,
-      attributes: {
-        exclude: ['status', 'userId']
-      },
       include: [
         {
           model: db.User,
-          as: 'volunteer',
-          attributes: ['userId', 'firstName', 'lastName', 'email']
+          as: 'userInfo',
+          attributes: ['userId', 'firstName', 'lastName', 'email'],
+          ...(search ? { where: userWhere } : {})
         },
         {
           model: db.VolunteerStatus,
-          as: 'statusInfo',
-          attributes: ['statusId', 'statusName']
+          as: 'status',
+          attributes: ['volunteerStatusId', 'statusName']
         }
       ],
+      attributes: { exclude: ['userId', 'statusId'] },
       order: [[sortBy, sortOrder]],
       limit,
-      offset
+      offset,
+      distinct: true
     })
 
-    const formattedData = rows.map((row) => ({
-      registrationId: row.registrationId,
-      registrationDate: row.registrationDate,
-      createdAt: row.createdAt,
-      updatedAt: row.updatedAt,
-      volunteer: {
-        userId: row.volunteer.userId,
-        firstName: row.volunteer.firstName,
-        lastName: row.volunteer.lastName,
-        email: row.volunteer.email,
-        statusInfo: {
-          statusId: row.statusInfo.statusId,
-          statusName: row.statusInfo.statusName
-        }
-      }
-    }))
     return {
-      data: formattedData,
+      data: rows,
       pagination: {
         total: count,
-        page: +page,
-        limit: +limit
+        page,
+        limit
       }
     }
   }
 
-  async registerToCampaign({ campaignId, userId, registrationDate }) {
-    const isSuccess = await db.VolunteerRegistration.create({
+  async registerToCampaign({ campaignId, userId }) {
+    const result = await db.VolunteerRegistration.create({
       campaignId,
       userId,
-      registrationDate,
-      status: volunteerStatus.PendingApproval
+      registeredAt: new Date(),
+      statusId: volunteerStatus.PendingApproval
     })
-    if (!isSuccess) {
-      throw new AppError(VOLUNTEER_MESSAGES.REGISTRATION_FAILED, HTTP_STATUS.INTERNAL_SERVER_ERROR)
-    }
-    return true
-  }
-
-  async updateStatus({ registrationId, status }) {
-    await db.VolunteerRegistration.update(
-      { status },
-      {
-        where: { registrationId }
-      }
-    )
-    const updated = await db.VolunteerRegistration.findByPk(registrationId, {
+    const volunteer = await result.reload({
+      attributes: {
+        exclude: ['statusId']
+      },
       include: [
         {
           model: db.VolunteerStatus,
-          as: 'statusInfo',
-          attributes: ['statusId', 'statusName']
+          as: 'status',
+          attributes: ['volunteerStatusId', 'statusName']
+        }
+      ]
+    })
+    return volunteer
+  }
+  async updateStatus({ registrationId, statusId }) {
+    const existing = await db.VolunteerRegistration.findByPk(registrationId)
+    if (!existing) {
+      throw new AppError(VOLUNTEER_MESSAGES.REGISTRATION_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
+    await existing.update({ statusId })
+    const updated = await existing.reload({
+      include: [
+        {
+          model: db.VolunteerStatus,
+          as: 'status',
+          attributes: ['volunteerStatusId', 'statusName']
         },
         {
           model: db.User,

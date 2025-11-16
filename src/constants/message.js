@@ -182,7 +182,8 @@ const VOLUNTEER_MESSAGES = {
   NOT_REGISTERED: 'Volunteer is not registered for this campaign',
   REGISTRATION_FAILED: 'Volunteer registration failed',
   REGISTRATION_ID_REQUIRED: 'registration ID is required',
-  REGISTRATION_ID_INVALID: 'registration ID must be a positive integer'
+  REGISTRATION_ID_INVALID: 'registration ID must be a positive integer',
+  REGISTRATION_NOT_FOUND: 'Volunteer registration not found',
 }
 
 const ORGANIZATION_MESSAGES = {

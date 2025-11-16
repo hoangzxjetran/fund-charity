@@ -15,7 +15,7 @@ const getVolunteersInCampaignValidator = validate(
       isInt: {
         errorMessage: VOLUNTEER_MESSAGES.CAMPAIGN_ID_INVALID
       },
-      // toInt: true
+      toInt: true
     },
     page: {
       optional: true,
@@ -96,19 +96,6 @@ const registerCampaignValidator = validate(
         errorMessage: VOLUNTEER_MESSAGES.CAMPAIGN_ID_INVALID
       },
       toInt: true
-    },
-    registrationDate: {
-      in: ['body'],
-      notEmpty: {
-        errorMessage: VOLUNTEER_MESSAGES.REGISTER_DATE_REQUIRED
-      },
-      isISO8601: {
-        options: {
-          strictSeparator: true,
-          strict: true
-        },
-        errorMessage: VOLUNTEER_MESSAGES.REGISTER_DATE_INVALID
-      }
     }
   })
 )
@@ -123,18 +110,13 @@ const updateStatusValidator = validate(
         errorMessage: VOLUNTEER_MESSAGES.REGISTRATION_ID_INVALID
       }
     },
-    status: {
+    statusId: {
       notEmpty: {
         errorMessage: VOLUNTEER_MESSAGES.STATUS_REQUIRED
       },
-      custom: {
-        options: (value, { req }) => {
-          const allowedStatuses = convertStringObjToNumberObj(volunteerStatus)
-          if (!allowedStatuses[value]) {
-            throw new AppError(VOLUNTEER_MESSAGES.STATUS_INVALID, HTTP_STATUS.UNPROCESSABLE_ENTITY)
-          }
-          return true
-        }
+      isIn: {
+        options: [Object.values(volunteerStatus)],
+        errorMessage: VOLUNTEER_MESSAGES.STATUS_INVALID
       }
     }
   })

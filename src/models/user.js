@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       User.hasMany(models.UserRole, { foreignKey: 'userId', as: 'roles' })
       User.hasMany(models.Donation, { foreignKey: 'userId', as: 'donations' })
-      User.hasMany(models.VolunteerRegistration, { foreignKey: 'userId', as: 'volunteerRegistrations' })
+      User.hasMany(models.VolunteerRegistration, { foreignKey: 'userId', as: 'userInfo' })
       User.hasMany(models.Withdrawal, { foreignKey: 'requestedBy', as: 'requestedWithdrawals' })
       User.hasMany(models.Withdrawal, { foreignKey: 'approvedBy', as: 'approvedWithdrawals' })
       User.hasMany(models.Notification, { foreignKey: 'userId', as: 'notifications' })
