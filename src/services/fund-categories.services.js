@@ -10,7 +10,7 @@ class FundCategoriesServices {
       }
     }
 
-    const data = await db.CategoryFund.findAndCountAll({
+    const data = await db.CategoryFundraising.findAndCountAll({
       where: whereClause,
       limit,
       offset: (page - 1) * limit,
@@ -26,14 +26,14 @@ class FundCategoriesServices {
     }
   }
   async isExistCategoryName(categoryName) {
-    const response = await db.CategoryFund.findOne({ where: { categoryName } })
+    const response = await db.CategoryFundraising.findOne({ where: { categoryName } })
     if (!response) return false
     const { dataValues: category } = response
     return !!category
   }
 
   async createFundCategory({ categoryName, logoIcon }) {
-    const newCategory = await db.CategoryFund.create({ categoryName, logoIcon })
+    const newCategory = await db.CategoryFundraising.create({ categoryName, logoIcon })
     return newCategory
   }
 }
