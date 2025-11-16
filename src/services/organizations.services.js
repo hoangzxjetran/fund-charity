@@ -78,7 +78,14 @@ class OrganizationServices {
         },
         {
           model: db.Campaign,
-          as: 'campaigns'
+          as: 'campaigns',
+          attributes: { exclude: ['statusId'] },
+          include: [
+            {
+              model: db.CampaignStatus,
+              as: 'status'
+            }
+          ]
         },
         {
           model: db.UserRole,

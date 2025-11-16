@@ -27,8 +27,21 @@ module.exports = (sequelize, DataTypes) => {
       description: { type: DataTypes.TEXT },
       startDate: { type: DataTypes.DATE },
       endDate: { type: DataTypes.DATE },
-      targetAmount: { type: DataTypes.DECIMAL(18, 2) },
-      currentAmount: { type: DataTypes.DECIMAL(18, 2), defaultValue: 0 },
+      targetAmount: {
+        type: DataTypes.DECIMAL(18, 2),
+        get() {
+          const rawValue = this.getDataValue('targetAmount')
+          return rawValue ? parseFloat(rawValue) : 0
+        }
+      },
+      currentAmount: {
+        type: DataTypes.DECIMAL(18, 2),
+        defaultValue: 0,
+        get() {
+          const rawValue = this.getDataValue('currentAmount')
+          return rawValue ? parseFloat(rawValue) : 0
+        }
+      },
       statusId: { type: DataTypes.INTEGER, allowNull: false }
     },
     {

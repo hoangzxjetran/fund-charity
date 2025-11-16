@@ -165,23 +165,6 @@ const FUND_MESSAGES = {
   MILESTONE_NOT_ALLOWED: 'Milestones are not allowed for Time-Based fundraising method'
 }
 
-const CAMPAIGN_MESSAGES = {
-  CAMPAIGN_ID_REQUIRED: 'Campaign ID is required',
-  CAMPAIGN_ID_INVALID: 'Campaign ID must be a positive integer',
-  CAMPAIGN_NAME_REQUIRED: 'Campaign name is required',
-  CAMPAIGN_NAME_MUST_BE_STRING: 'Campaign name must be a string',
-  CAMPAIGN_NAME_NOT_EMPTY: 'Campaign name must not be empty',
-  CAMPAIGN_NAME_LENGTH_INVALID: 'Campaign name must be between 3 and 100 characters',
-  START_DATE_INVALID: 'Start date must be a valid date',
-  END_DATE_INVALID: 'End date must be a valid date',
-  LOCATION_MUST_BE_STRING: 'Location must be a string',
-  LOCATION_NOT_EMPTY: 'Location must not be empty',
-  LOCATION_LENGTH_INVALID: 'Location must be between 3 and 200 characters',
-  DESCRIPTION_MUST_BE_STRING: 'Description must be a string',
-  DESCRIPTION_NOT_EMPTY: 'Description must not be empty',
-  CAMPAIGN_NOT_FOUND: 'Campaign not found'
-}
-
 const VOLUNTEER_MESSAGES = {
   CAMPAIGN_ID_REQUIRED: 'Campaign ID is required',
   CAMPAIGN_ID_INVALID: 'Campaign ID must be a positive integer',
@@ -232,6 +215,32 @@ const ORGANIZATION_MESSAGES = {
   MEDIA_MUST_BE_ARRAY: 'Organization media must be an array',
   MEDIA_MAX_ITEMS: 'Organization media must not contain more than {max} items',
   BANKS_MUST_BE_ARRAY: 'Organization banks must be an array'
+}
+
+const CAMPAIGN_MESSAGES = {
+  CATEGORY_ID_MUST_BE_INT: 'Category ID must be an integer',
+  CATEGORY_ID_REQUIRED: 'Category ID is required',
+  CAMPAIGN_ID_REQUIRED: 'Campaign ID is required',
+  CAMPAIGN_ID_MUST_BE_INT: 'Campaign ID must be an integer',
+  TITLE_REQUIRED: 'Title is required',
+  TITLE_MUST_BE_STRING: 'Title must be a string',
+  DESCRIPTION_MUST_BE_STRING: 'Description must be a string',
+  START_DATE_INVALID: 'Start date is invalid',
+  END_DATE_INVALID: 'End date is invalid',
+  TARGET_AMOUNT_REQUIRED: 'Target amount is required',
+  TARGET_AMOUNT_MUST_BE_NUMBER: 'Target amount must be a number',
+  MEDIA_MUST_BE_ARRAY: 'Media must be an array',
+  END_DATE_MUST_BE_AFTER_START_DATE: 'End date must be after start date',
+  CAMPAIGN_NOT_FOUND: 'Campaign not found',
+  MEDIA_URL_REQUIRED: 'Media URL is required',
+  MEDIA_TYPE_ID_REQUIRED: 'Media type ID is required',
+  MEDIA_TYPE_ID_MUST_BE_INT: 'Media type ID must be an integer',
+  CAMPAIGN_ID_INVALID: 'Campaign ID is invalid',
+  CAMPAIGN_ID_REQUIRED: 'Campaign ID is required',
+  STATUS_ID_INVALID: 'Status ID is invalid',
+  SORT_BY_INVALID: 'Sort by must be one of the following: title, startDate, createdAt, targetAmount, currentAmount',
+  SORT_ORDER_INVALID: 'Sort order must be either "asc" or "desc"',
+  STATUS_INVALID: 'Status must be one of the following: active,paused, completed, closed'
 }
 module.exports = {
   USER_MESSAGES,

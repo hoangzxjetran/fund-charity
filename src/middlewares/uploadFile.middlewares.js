@@ -44,6 +44,22 @@ const resizeOrgMedia = async (req, res, next) => {
   )
   next()
 }
+const resizeCampaignMedia = async (req, res, next) => {
+  if (!req.files.length) return next()
+  await Promise.all(
+    req.files.map(async (file) => {
+      if (file.mimetype.startsWith('image')) {
+        file.filename = `campaign-media-${v4()}.jpeg`
+        file.buffer = await sharp(file.buffer)
+          .resize({ width: 400, height: 400, fit: 'cover' })
+          .toFormat('jpeg')
+          .jpeg({ quality: 90 })
+          .toBuffer()
+      }
+    })
+  )
+  next()
+}
 
 const resizeAvatar = async (req, res, next) => {
   if (!req.file) return next()
@@ -170,6 +186,13 @@ const multerOrgMedia = multer({
     fileSize: 1024 * 1024 * 50 // 50MB
   }
 })
+const multerCampaignMedia = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+  limits: {
+    fileSize: 1024 * 1024 * 30 // 30MB
+  }
+})
 const multerAvatar = multer({
   storage: multerStorage,
   fileFilter: multerFilter,
@@ -225,6 +248,7 @@ const multerReview = multer({
 
 const uploadOrgAvatar = multerOrgAvatar.single('file')
 const uploadOrgMedia = multerOrgMedia.array('files', 5)
+const uploadCampaignMedia = multerCampaignMedia.array('files', 10)
 const uploadAvatar = multerAvatar.single('file')
 const uploadIconFundCategory = multerIconFundCategory.single('file')
 const uploadBannerFund = multerBannerFund.single('file')
@@ -236,6 +260,7 @@ module.exports = {
   renameVideo,
   resizeOrgAvatar,
   resizeOrgMedia,
+  resizeCampaignMedia,
   resizeAvatar,
   resizeIconFundCategory,
   resizeBannerFund,
@@ -245,6 +270,7 @@ module.exports = {
   resizeImageReview,
   uploadOrgAvatar,
   uploadOrgMedia,
+  uploadCampaignMedia,
   uploadAvatar,
   uploadBannerFund,
   uploadIconFundCategory,

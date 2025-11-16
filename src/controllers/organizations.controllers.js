@@ -41,7 +41,7 @@ class OrganizationControllers {
     const params = {
       Bucket: process.env.AWS_BUCKET,
       ContentType: req.file?.mimetype,
-      Key: `org/${req.file?.filename}`,
+      Key: req.file?.filename,
       Body: req.file?.buffer
     }
     const result = await uploadFileToS3(params)
@@ -113,7 +113,7 @@ class OrganizationControllers {
       files.map(async (file) => {
         const params = {
           Bucket: process.env.AWS_BUCKET,
-          Key: `org-media-${file.filename}`,
+          Key: file.filename,
           Body: file.buffer,
           ContentType: file.mimetype
         }

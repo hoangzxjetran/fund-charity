@@ -34,7 +34,6 @@ const isAdmin = (req, res, next) => {
   if (!user) {
     return next(new AppError(USER_MESSAGES.FORBIDDEN, HTTP_STATUS.FORBIDDEN))
   }
-console.log(req.user)
   const hasAdminRole = user.roles?.some((userRole) => userRole.role?.roleId === roleType.Admin)
 
   if (!hasAdminRole) {

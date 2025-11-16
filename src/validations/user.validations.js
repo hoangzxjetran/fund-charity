@@ -174,7 +174,6 @@ const verifyPasswordTokenValidator = validate(
               throw new AppError(USER_MESSAGES.FORGOT_PASSWORD_TOKEN_IS_INVALID, HTTP_STATUS.UNAUTHORIZED)
             }
             req.user = user
-            console.log(req.user)
             return true
           }
         }
