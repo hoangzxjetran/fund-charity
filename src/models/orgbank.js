@@ -10,14 +10,13 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       OrgBank.belongsTo(models.Organization, { foreignKey: 'orgId', as: 'organization' })
-      OrgBank.belongsTo(models.Bank, { foreignKey: 'bankId', as: 'bank' })
     }
   }
   OrgBank.init(
     {
       bankAccountId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
       orgId: { type: DataTypes.INTEGER, allowNull: false },
-      bankId: { type: DataTypes.INTEGER, allowNull: false },
+      bankName: { type: DataTypes.STRING(255) },
       accountNumber: { type: DataTypes.STRING(50) },
       accountHolder: { type: DataTypes.STRING(255) },
       branch: { type: DataTypes.STRING(255) }

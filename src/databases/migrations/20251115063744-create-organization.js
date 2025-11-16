@@ -12,6 +12,7 @@ module.exports = {
       website: { type: Sequelize.STRING(255) },
       avatar: { type: Sequelize.STRING(255) },
       statusId: { type: Sequelize.INTEGER, allowNull: false, references: { model: 'OrgStatuses', key: 'orgStatusId' } },
+      createdBy: { type: Sequelize.INTEGER, allowNull: false, references: { model: 'Users', key: 'userId' } },
       createdAt: { type: Sequelize.DATE, defaultValue: Sequelize.NOW },
       updatedAt: { type: Sequelize.DATE, defaultValue: Sequelize.NOW }
     })

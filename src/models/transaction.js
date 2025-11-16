@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Transaction.belongsTo(models.Donation, { foreignKey: 'donationId', as: 'donation' })
       Transaction.belongsTo(models.Wallet, { foreignKey: 'walletId', as: 'wallet' })
-      Transaction.belongsTo(models.Bank, { foreignKey: 'bankId', as: 'bank' })
       Transaction.belongsTo(models.TransactionType, { foreignKey: 'typeId', as: 'type' })
       Transaction.belongsTo(models.TransactionStatus, { foreignKey: 'statusId', as: 'status' })
     }
@@ -21,9 +20,10 @@ module.exports = (sequelize, DataTypes) => {
       transactionId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
       donationId: { type: DataTypes.INTEGER },
       walletId: { type: DataTypes.INTEGER, allowNull: false },
-      bankId: { type: DataTypes.INTEGER },
+      bankName: { type: DataTypes.STRING(255) },
       accountNumber: { type: DataTypes.STRING(50) },
       accountHolder: { type: DataTypes.STRING(255) },
+      branch: { type: DataTypes.STRING(255) },
       amount: { type: DataTypes.DECIMAL(18, 2), allowNull: false },
       transactionTime: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
       proofImage: { type: DataTypes.STRING(255) },

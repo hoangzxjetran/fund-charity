@@ -35,6 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       website: { type: DataTypes.STRING(255) },
       avatar: { type: DataTypes.STRING(255) },
       statusId: { type: DataTypes.INTEGER, allowNull: false },
+      createdBy: { type: DataTypes.INTEGER, allowNull: false },
       createdAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
       updatedAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
     },

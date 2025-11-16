@@ -67,7 +67,7 @@ const USER_MESSAGES = {
   AVATAR_IS_REQUIRED: 'Avatar is required',
   TOKEN_INVALID: 'Token is invalid',
   ROLE_INVALID: 'Role is invalid',
-  SORT_BY_INVALID: 'Sort by is include firstName, lastName, email, createdAt, updatedAt',
+  SORT_BY_INVALID: 'Sort by is include firstName, lastName, email, createdAt, updatedAt'
 }
 
 const COMMON = {
@@ -201,6 +201,38 @@ const VOLUNTEER_MESSAGES = {
   REGISTRATION_ID_REQUIRED: 'registration ID is required',
   REGISTRATION_ID_INVALID: 'registration ID must be a positive integer'
 }
+
+const ORGANIZATION_MESSAGES = {
+  BANK_IS_REQUIRED: 'Bank information is required',
+  BANK_NAME_REQUIRED: 'Bank name is required',
+  BANK_NAME_MUST_BE_STRING: 'Bank name must be a string',
+  ACCOUNT_NUMBER_REQUIRED: 'Account number is required',
+  ACCOUNT_NUMBER_MUST_BE_STRING: 'Account number must be a string',
+  ACCOUNT_HOLDER_REQUIRED: 'Account holder is required',
+  ACCOUNT_HOLDER_MUST_BE_STRING: 'Account holder must be a string',
+  BRANCH_REQUIRED: 'Branch is required',
+  BRANCH_MUST_BE_STRING: 'Branch must be a string',
+  ORG_NAME_REQUIRED: 'Organization name is required',
+  ORG_NAME_MUST_BE_STRING: 'Organization name must be a string',
+  ORG_NAME_NOT_EMPTY: 'Organization name must not be empty',
+  ORG_NAME_LENGTH_INVALID: 'Organization name must be between 3 and 100 characters',
+  EMAIL_INVALID: 'Email must be a valid email address',
+  PHONE_NUMBER_INVALID: 'Phone number must be a valid phone number',
+  PHONE_NUMBER_MUST_BE_STRING: 'Phone number must be a string',
+  ADDRESS_MUST_BE_STRING: 'Address must be a string',
+  DESCRIPTION_MUST_BE_STRING: 'Description must be a string',
+  WEBSITE_MUST_BE_STRING: 'Website must be a string',
+  WEBSITE_INVALID: 'Website must be a valid URL',
+  AVATAR_MUST_BE_STRING: 'Avatar must be a string',
+  STATUS_ID_REQUIRED: 'Status ID is required',
+  STATUS_ID_INVALID: 'Status ID must be a positive integer',
+  ORGANIZATION_NOT_FOUND: 'Organization not found',
+  ORG_ID_REQUIRED: 'Organization ID is required',
+  ORG_ID_INVALID: 'Organization ID must be a positive integer',
+  MEDIA_MUST_BE_ARRAY: 'Organization media must be an array',
+  MEDIA_MAX_ITEMS: 'Organization media must not contain more than {max} items',
+  BANKS_MUST_BE_ARRAY: 'Organization banks must be an array'
+}
 module.exports = {
   USER_MESSAGES,
   COMMON,
@@ -208,5 +240,6 @@ module.exports = {
   FUND_CATEGORY_MESSAGES,
   FUND_MESSAGES,
   CAMPAIGN_MESSAGES,
-  VOLUNTEER_MESSAGES
+  VOLUNTEER_MESSAGES,
+  ORGANIZATION_MESSAGES
 }

@@ -6,7 +6,7 @@ module.exports = {
       transactionId: { type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
       donationId: { type: Sequelize.INTEGER, references: { model: 'Donations', key: 'donationId' } },
       walletId: { type: Sequelize.INTEGER, allowNull: false, references: { model: 'Wallets', key: 'walletId' } },
-      bankId: { type: Sequelize.INTEGER, references: { model: 'Banks', key: 'bankId' } },
+      bankName: { type: Sequelize.STRING(255) },
       accountNumber: { type: Sequelize.STRING(50) },
       accountHolder: { type: Sequelize.STRING(255) },
       amount: { type: Sequelize.DECIMAL(18, 2), allowNull: false },

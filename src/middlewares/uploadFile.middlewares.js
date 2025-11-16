@@ -13,6 +13,38 @@ const multerFilter = (req, file, cb) => {
     cb(new AppError('Not an image or video! Please upload only images or videos', HTTP_STATUS.BAD_REQUEST), false)
   }
 }
+
+const resizeOrgAvatar = async (req, res, next) => {
+  if (!req.file) return next()
+  if (req.file.mimetype.startsWith('video')) {
+    return next()
+  }
+  req.file.filename = `org-${v4()}.jpeg`
+  req.file.buffer = await sharp(req.file.buffer)
+    .resize({ width: 400, height: 400, fit: 'cover' })
+    .toFormat('jpeg')
+    .jpeg({ quality: 100 })
+    .toBuffer()
+  next()
+}
+
+const resizeOrgMedia = async (req, res, next) => {
+  if (!req.files.length) return next()
+  await Promise.all(
+    req.files.map(async (file) => {
+      if (file.mimetype.startsWith('image')) {
+        file.filename = `org-media-${v4()}.jpeg`
+        file.buffer = await sharp(file.buffer)
+          .resize({ width: 100, height: 100, fit: 'cover' })
+          .toFormat('jpeg')
+          .jpeg({ quality: 100 })
+          .toBuffer()
+      }
+    })
+  )
+  next()
+}
+
 const resizeAvatar = async (req, res, next) => {
   if (!req.file) return next()
   if (req.file.mimetype.startsWith('video')) {
@@ -124,6 +156,20 @@ const renameVideo = (req, res, next) => {
   next()
 }
 
+const multerOrgAvatar = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+  limits: {
+    fileSize: 1024 * 1024 * 10 // 10MB
+  }
+})
+const multerOrgMedia = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+  limits: {
+    fileSize: 1024 * 1024 * 50 // 50MB
+  }
+})
 const multerAvatar = multer({
   storage: multerStorage,
   fileFilter: multerFilter,
@@ -177,6 +223,8 @@ const multerReview = multer({
   }
 })
 
+const uploadOrgAvatar = multerOrgAvatar.single('file')
+const uploadOrgMedia = multerOrgMedia.array('files', 5)
 const uploadAvatar = multerAvatar.single('file')
 const uploadIconFundCategory = multerIconFundCategory.single('file')
 const uploadBannerFund = multerBannerFund.single('file')
@@ -186,6 +234,8 @@ const uploadMenu = multerMenu.single('file')
 
 module.exports = {
   renameVideo,
+  resizeOrgAvatar,
+  resizeOrgMedia,
   resizeAvatar,
   resizeIconFundCategory,
   resizeBannerFund,
@@ -193,6 +243,8 @@ module.exports = {
   resizeImageMenu,
   resizeImageRestaurant,
   resizeImageReview,
+  uploadOrgAvatar,
+  uploadOrgMedia,
   uploadAvatar,
   uploadBannerFund,
   uploadIconFundCategory,
