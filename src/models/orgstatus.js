@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true
       },
 
-      statusName: {
+      orgStatusName: {
         type: DataTypes.STRING,
         allowNull: false
       }

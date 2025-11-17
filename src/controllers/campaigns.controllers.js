@@ -3,6 +3,19 @@ const campaignsServices = require('../services/campaigns.services')
 const { uploadFileToS3 } = require('../utils/s3-bucket')
 
 class CampaignsControllers {
+  async getAll(req, res, next) {
+    const { page, limit, search, sortBy, sortOrder, status, categoryId } = req.query
+    const data = await campaignsServices.getAll({
+      page,
+      limit,
+      search,
+      sortBy,
+      sortOrder,
+      status,
+      categoryId
+    })
+    res.status(HTTP_STATUS.OK).json(data)
+  }
   async createCampaign(req, res, next) {
     const { orgId } = req.params
     const { categoryId, title, description, startDate, endDate, targetAmount, media } = req.body

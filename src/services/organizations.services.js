@@ -1,4 +1,4 @@
-const { orgStatus, roleType, walletStatus } = require('../constants/enum')
+const { orgStatus, roleType, walletStatus, walletType } = require('../constants/enum')
 const HTTP_STATUS = require('../constants/httpStatus')
 const { ORGANIZATION_MESSAGES } = require('../constants/message')
 const { AppError } = require('../controllers/error.controllers')
@@ -50,7 +50,7 @@ class OrganizationServices {
       const wallet = await db.Wallet.create(
         {
           ownerId: orgId,
-          ownerType: 'Organization',
+          ownerType: walletType.Organization,
           balance: 0,
           statusId: walletStatus.Active
         },
@@ -71,7 +71,13 @@ class OrganizationServices {
 
   async getOrganizationById(organizationId) {
     const organization = await db.Organization.findByPk(organizationId, {
+      attributes: { exclude: ['statusId'] },
       include: [
+        {
+          model: db.OrgStatus,
+          as: 'status',
+          attributes: ['orgStatusId', 'orgStatusName']
+        },
         {
           model: db.OrgBank,
           as: 'banks'
@@ -130,7 +136,15 @@ class OrganizationServices {
       where: whereClause,
       limit,
       offset,
-      order: [[sortBy, sortOrder]]
+      order: [[sortBy, sortOrder]],
+      attributes: { exclude: ['statusId'] },
+      include: [
+        {
+          model: db.OrgStatus,
+          as: 'status',
+          attributes: ['orgStatusId', 'orgStatusName']
+        }
+      ]
     })
     return {
       data: organizations.rows,
@@ -149,7 +163,7 @@ class OrganizationServices {
       ]
     })
 
-    if (!organization) throw new AppErrorError(ORGANIZATION_MESSAGES.ORGANIZATION_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    if (!organization) throw new AppError(ORGANIZATION_MESSAGES.ORGANIZATION_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
 
     return await db.sequelize.transaction(async (t) => {
       await organization.update(

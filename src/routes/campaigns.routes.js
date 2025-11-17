@@ -11,11 +11,12 @@ const {
 } = require('../validations/campaigns.validations')
 const { isAuthorized } = require('../middlewares/auth.middlewares')
 
+router.route('/').get(getCampaignsValidator, CampaignsControllers.getAll)
 router.route('/uploads').post(isAuthorized, uploadCampaignMedia, resizeCampaignMedia, CampaignsControllers.uploadMedia)
 router
   .route('/:orgId')
   .post(isAuthorized, orgIdValidator, createCampaignValidator, CampaignsControllers.createCampaign)
-  .get(orgIdValidator, getCampaignsValidator, updateCampaignValidator, CampaignsControllers.getCampaigns)
+  .get(orgIdValidator, getCampaignsValidator, CampaignsControllers.getCampaigns)
 
 router
   .route('/detail/:campaignId')

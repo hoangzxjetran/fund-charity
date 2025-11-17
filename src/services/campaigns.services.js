@@ -128,8 +128,13 @@ class CampaignsServices {
   async getCampaignById(campaignId) {
     const campaign = await db.Campaign.findOne({
       where: { campaignId },
-      attributes: { exclude: ['statusId', 'categoryId'] },
+      attributes: { exclude: ['statusId', 'categoryId', 'orgId'] },
       include: [
+        {
+          model: db.Organization,
+          as: 'organization',
+          attributes: ['orgId', 'orgName', 'orgName', 'avatar']
+        },
         {
           model: db.CategoryFundraising,
           as: 'category',
@@ -163,7 +168,6 @@ class CampaignsServices {
     const campaign = await db.Campaign.findByPk(campaignId, {
       include: [{ model: db.CampaignMedia, as: 'media' }]
     })
-    console.log(data)
     if (!campaign) throw new AppError(CAMPAIGN_MESSAGES.CAMPAIGN_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
 
     return await db.sequelize.transaction(async (t) => {
@@ -209,6 +213,69 @@ class CampaignsServices {
       throw new AppError(CAMPAIGN_MESSAGES.CAMPAIGN_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
     }
     return !!result
+  }
+
+  async getAll({ page, limit, search, sortBy, sortOrder, status, categoryId }) {
+    page = parseInt(page) || 1
+    limit = parseInt(limit) || 10
+    const offset = (page - 1) * limit
+    const whereClause = {}
+
+    if (search) {
+      whereClause.title = { [db.Sequelize.Op.like]: `%${search}%` }
+    }
+    if (status) {
+      whereClause.statusId = status
+    }
+    if (categoryId) {
+      whereClause.categoryId = categoryId
+    }
+    const { rows: campaigns, count } = await db.Campaign.findAndCountAll({
+      where: whereClause,
+      limit,
+      offset,
+      order: [[sortBy || 'createdAt', sortOrder || 'DESC']],
+      attributes: { exclude: ['statusId', 'categoryId', 'orgId'] },
+      distinct: true,
+      col: 'campaignId',
+      include: [
+        {
+          model: db.Organization,
+          as: 'organization',
+          attributes: ['orgId', 'orgName', 'orgName', 'avatar']
+        },
+        {
+          model: db.CategoryFundraising,
+          as: 'category',
+          attributes: ['categoryId', 'categoryName', 'logoIcon']
+        },
+        {
+          model: db.CampaignStatus,
+          as: 'status',
+          attributes: ['campaignStatusId', 'statusName']
+        },
+        {
+          model: db.CampaignMedia,
+          as: 'media',
+          attributes: { exclude: ['mediaTypeId'] },
+          include: [
+            {
+              model: db.Media,
+              as: 'mediaType',
+              attributes: ['mediaTypeId', 'mediaName']
+            }
+          ]
+        }
+      ]
+    })
+    return {
+      data: campaigns,
+      pagination: {
+        page,
+        limit,
+        total: count
+      }
+    }
   }
 }
 module.exports = new CampaignsServices()
