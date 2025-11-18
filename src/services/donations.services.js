@@ -1,10 +1,47 @@
 const { donationStatus, walletType } = require('../constants/enum.js')
 const HTTP_STATUS = require('../constants/httpStatus.js')
 const { DONATION_MESSAGES } = require('../constants/message.js')
-const { AppError } = require('../controllers/error.controllers.js')
 const db = require('../models/index.js')
 const { createPaymentUrl } = require('../utils/vnpay')
 class DonationsServices {
+  async getDonationsByCampaign({ campaignId, page, limit, search = '', sortBy = 'donateDate', sortOrder = 'DESC' }) {
+    page = parseInt(page) || 1
+    limit = parseInt(limit) || 10
+    const offset = (page - 1) * limit
+    const whereClause = { campaignId, paymentStatus: 'Success' }
+    if (search) {
+      whereClause['$or'] = [
+        { '$User.firstName$': { [db.Sequelize.Op.iLike]: `%${search}%` } },
+        { '$User.lastName$': { [db.Sequelize.Op.iLike]: `%${search}%` } },
+        { '$User.email$': { [db.Sequelize.Op.iLike]: `%${search}%` } },
+        { email: { [db.Sequelize.Op.iLike]: `%${search}%` } },
+        { phoneNumber: { [db.Sequelize.Op.iLike]: `%${search}%` } }
+      ]
+    }
+    const { rows: donations, count: total } = await db.Donation.findAndCountAll({
+      where: whereClause,
+      include: [
+        { model: db.User, as: 'user', required: false },
+        {
+          model: db.Campaign,
+          as: 'campaign',
+          required: true
+        }
+      ],
+      order: [[sortBy, sortOrder]],
+      limit,
+      offset
+    })
+    return {
+      donations,
+      pagination: {
+        total,
+        page,
+        limit
+      }
+    }
+  }
+
   async createDonation({ userId, campaignId, amount, isAnonymous = false }) {
     const t = await Donations.sequelize.transaction()
     try {
@@ -97,4 +134,4 @@ class DonationsServices {
     }
   }
 }
-module.exports = DonationsServices
+module.exports = new DonationsServices()

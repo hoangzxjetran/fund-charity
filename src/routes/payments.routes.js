@@ -5,6 +5,6 @@ const catchAsync = require('../middlewares/catchAsync.middleware')
 
 const paymentRouter = Router()
 
-paymentRouter.get('/create', createPaymentValidator, catchAsync(PaymentsControllers.createPayment))
+paymentRouter.post('/create', createPaymentValidator, catchAsync(PaymentsControllers.createPayment))
 paymentRouter.get('/check', catchAsync(PaymentsControllers.checkPayment))
 module.exports = paymentRouter
