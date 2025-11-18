@@ -93,7 +93,7 @@ class VolunteersServices {
         },
         {
           model: db.User,
-          as: 'volunteer',
+          as: 'userInfo',
           attributes: ['userId', 'firstName', 'lastName', 'email']
         }
       ]

@@ -1,7 +1,9 @@
 const db = require('../models/index.js')
 
 class FundCategoriesServices {
-  async getFundCategories({ page = 1, limit = 10, search }) {
+  async getFundCategories({ page, limit, search }) {
+    page = parseInt(page) || 1
+    limit = parseInt(limit) || 10
     const whereClause = {}
 
     if (search) {
@@ -20,8 +22,8 @@ class FundCategoriesServices {
       data: data.rows,
       pagination: {
         total: data.count,
-        page: +page,
-        limit: +limit
+        page,
+        limit
       }
     }
   }
