@@ -183,7 +183,7 @@ const VOLUNTEER_MESSAGES = {
   REGISTRATION_FAILED: 'Volunteer registration failed',
   REGISTRATION_ID_REQUIRED: 'registration ID is required',
   REGISTRATION_ID_INVALID: 'registration ID must be a positive integer',
-  REGISTRATION_NOT_FOUND: 'Volunteer registration not found',
+  REGISTRATION_NOT_FOUND: 'Volunteer registration not found'
 }
 
 const ORGANIZATION_MESSAGES = {
@@ -243,6 +243,24 @@ const CAMPAIGN_MESSAGES = {
   SORT_ORDER_INVALID: 'Sort order must be either "asc" or "desc"',
   STATUS_INVALID: 'Status must be one of the following: active,paused, completed, closed'
 }
+
+const PAYMENT_MESSAGES = {
+  CAMPAIGN_ID_REQUIRED: 'Campaign ID is required',
+  CAMPAIGN_ID_INVALID: 'Campaign ID must be a positive integer',
+  AMOUNT_REQUIRED: 'Amount is required',
+  AMOUNT_MUST_BE_NUMBER: 'Amount must be a number',
+  AMOUNT_MINIMUM: 'Amount must be at least 1000',
+  ANONYMOUS_MUST_BE_BOOLEAN: 'isAnonymous must be a boolean',
+  EMAIL_INVALID: 'Email is invalid',
+  ADDRESS_INVALID: 'Address is invalid',
+  MESSAGE_INVALID: 'Message is invalid',
+  MESSAGE_INVALID: 'Message is invalid',
+  PHONE_NUMBER_INVALID: 'Phone number is invalid'
+}
+
+const DONATION_MESSAGES = {
+  DONATION_NOT_FOUND: 'Donation not found'
+}
 module.exports = {
   USER_MESSAGES,
   COMMON,
@@ -251,5 +269,7 @@ module.exports = {
   FUND_MESSAGES,
   CAMPAIGN_MESSAGES,
   VOLUNTEER_MESSAGES,
-  ORGANIZATION_MESSAGES
+  ORGANIZATION_MESSAGES,
+  PAYMENT_MESSAGES,
+  DONATION_MESSAGES
 }

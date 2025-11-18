@@ -17,8 +17,13 @@ module.exports = (sequelize, DataTypes) => {
   Donation.init(
     {
       donationId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-      userId: { type: DataTypes.INTEGER, allowNull: false },
+      userId: { type: DataTypes.INTEGER, allowNull: true },
       campaignId: { type: DataTypes.INTEGER, allowNull: false },
+      email: { type: DataTypes.STRING(100), allowNull: true },
+      fullName: { type: DataTypes.STRING(100), allowNull: true },
+      phoneNumber: { type: DataTypes.STRING(15), allowNull: true },
+      address: { type: DataTypes.STRING(255), allowNull: true },
+      isAnonymous: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
       amount: { type: DataTypes.DECIMAL(18, 2), allowNull: false },
       paymentStatus: { type: DataTypes.STRING(50), defaultValue: 'pending' },
       donateDate: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
