@@ -11,14 +11,19 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Wallet.belongsTo(models.WalletStatus, { foreignKey: 'statusId', as: 'status' })
       Wallet.hasMany(models.Transaction, { foreignKey: 'walletId', as: 'transactions' })
+      Wallet.belongsTo(models.WalletType, { foreignKey: 'walletTypeId', as: 'type' })
     }
   }
   Wallet.init(
     {
       walletId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-      ownerType: { type: DataTypes.STRING(50), allowNull: false },
+      walletTypeId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
       ownerId: { type: DataTypes.INTEGER, allowNull: false },
       balance: { type: DataTypes.DECIMAL(18, 2), defaultValue: 0 },
+      receiveAmount: { type: DataTypes.DECIMAL(18, 2), defaultValue: 0 },
       statusId: { type: DataTypes.INTEGER, allowNull: false }
     },
     {

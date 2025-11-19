@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       Donation.belongsTo(models.User, { foreignKey: 'userId', as: 'user' })
       Donation.belongsTo(models.Campaign, { foreignKey: 'campaignId', as: 'campaign' })
       Donation.hasMany(models.Transaction, { foreignKey: 'donationId', as: 'transactions' })
+      Donation.belongsTo(models.DonationStatus, { foreignKey: 'statusId', as: 'status' })
     }
   }
   Donation.init(
@@ -25,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       address: { type: DataTypes.STRING(255), allowNull: true },
       isAnonymous: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
       amount: { type: DataTypes.DECIMAL(18, 2), allowNull: false },
-      paymentStatus: { type: DataTypes.STRING(50), defaultValue: 'pending' },
+      statusId: { type: DataTypes.INTEGER, allowNull: false },
       donateDate: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
       message: { type: DataTypes.STRING(255) }
     },
