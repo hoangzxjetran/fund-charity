@@ -10,16 +10,18 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       OrgBank.belongsTo(models.Organization, { foreignKey: 'orgId', as: 'organization' })
+      OrgBank.belongsTo(models.Campaign, { foreignKey: 'campaignId', as: 'campaign' })
     }
   }
   OrgBank.init(
     {
       bankAccountId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-      orgId: { type: DataTypes.INTEGER, allowNull: false },
+      orgId: { type: DataTypes.INTEGER, allowNull: true },
       bankName: { type: DataTypes.STRING(255) },
       accountNumber: { type: DataTypes.STRING(50) },
       accountHolder: { type: DataTypes.STRING(255) },
-      branch: { type: DataTypes.STRING(255) }
+      branch: { type: DataTypes.STRING(255) },
+      campaignId: { type: DataTypes.INTEGER, allowNull: true }
     },
     {
       sequelize,

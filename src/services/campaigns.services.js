@@ -2,7 +2,7 @@ const db = require('../models/index')
 const { AppError } = require('../controllers/error.controllers')
 const HTTP_STATUS = require('../constants/httpStatus')
 const { CAMPAIGN_MESSAGES } = require('../constants/message')
-const { campaignStatus } = require('../constants/enum')
+const { campaignStatus, walletType, walletStatus } = require('../constants/enum')
 class CampaignsServices {
   async getCampaigns({ orgId, page, limit, search, sortBy, sortOrder, status, categoryId }) {
     page = parseInt(page) || 1
@@ -38,6 +38,10 @@ class CampaignsServices {
           attributes: ['campaignStatusId', 'statusName']
         },
         {
+          model: db.OrgBank,
+          as: 'bankDetails'
+        },
+        {
           model: db.CampaignMedia,
           as: 'media',
           attributes: { exclude: ['mediaTypeId'] },
@@ -65,7 +69,20 @@ class CampaignsServices {
   async createCampaign(data) {
     const transaction = await db.sequelize.transaction()
     try {
-      const { orgId, categoryId, title, description, startDate, endDate, targetAmount, media = [] } = data
+      const {
+        orgId,
+        categoryId,
+        title,
+        description,
+        startDate,
+        endDate,
+        targetAmount,
+        bankName,
+        bankAccount,
+        branch,
+        accountHolder,
+        media = []
+      } = data
       const newCampaign = await db.Campaign.create(
         {
           orgId,
@@ -77,6 +94,25 @@ class CampaignsServices {
           targetAmount,
           currentAmount: 0,
           statusId: campaignStatus.Active
+        },
+        { transaction }
+      )
+      await db.OrgBank.create(
+        {
+          orgId,
+          bankName,
+          accountNumber: bankAccount,
+          branch,
+          accountHolder,
+          campaignId: newCampaign.campaignId
+        },
+        { transaction }
+      )
+      await db.Wallet.create(
+        {
+          walletTypeId: walletType.Campaign,
+          ownerId: newCampaign.campaignId,
+          statusId: walletStatus.Active
         },
         { transaction }
       )
@@ -103,6 +139,10 @@ class CampaignsServices {
           {
             model: db.CampaignStatus,
             as: 'status'
+          },
+          {
+            model: db.OrgBank,
+            as: 'bankDetails'
           },
           {
             model: db.CampaignMedia,
@@ -143,6 +183,11 @@ class CampaignsServices {
         {
           model: db.CampaignStatus,
           as: 'status'
+        },
+        {
+          model: db.OrgBank,
+          as: 'bankDetails',
+          where: { campaignId }
         },
         {
           model: db.CampaignMedia,

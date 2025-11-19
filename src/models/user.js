@@ -1,5 +1,6 @@
 'use strict'
 const { Model } = require('sequelize')
+const { walletType } = require('../constants/enum')
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -15,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.Withdrawal, { foreignKey: 'requestedBy', as: 'requestedWithdrawals' })
       User.hasMany(models.Withdrawal, { foreignKey: 'approvedBy', as: 'approvedWithdrawals' })
       User.hasMany(models.Notification, { foreignKey: 'userId', as: 'notifications' })
-      User.hasMany(models.Wallet, { foreignKey: 'ownerId', scope: { ownerType: 'User' }, as: 'wallets' })
+      User.hasMany(models.Wallet, { foreignKey: 'ownerId', scope: { walletTypeId: walletType.User }, as: 'wallets' })
     }
   }
   User.init(

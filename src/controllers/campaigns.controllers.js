@@ -18,7 +18,19 @@ class CampaignsControllers {
   }
   async createCampaign(req, res, next) {
     const { orgId } = req.params
-    const { categoryId, title, description, startDate, endDate, targetAmount, media } = req.body
+    const {
+      categoryId,
+      title,
+      description,
+      startDate,
+      endDate,
+      targetAmount,
+      bankName,
+      bankAccount,
+      branch,
+      accountHolder,
+      media
+    } = req.body
     const data = await campaignsServices.createCampaign({
       orgId,
       categoryId,
@@ -27,6 +39,10 @@ class CampaignsControllers {
       startDate,
       endDate,
       targetAmount,
+      bankName,
+      bankAccount,
+      branch,
+      accountHolder,
       media
     })
     res.status(HTTP_STATUS.CREATED).json({

@@ -1,5 +1,5 @@
 const { checkSchema } = require('express-validator')
-const { FUND_MESSAGES, CAMPAIGN_MESSAGES, ORGANIZATION_MESSAGES, COMMON } = require('../constants/message')
+const { CAMPAIGN_MESSAGES, ORGANIZATION_MESSAGES, COMMON } = require('../constants/message')
 const { AppError } = require('../controllers/error.controllers')
 const { parseISO, isBefore } = require('date-fns')
 const validate = require('../utils/validate')
@@ -67,6 +67,42 @@ const createCampaignValidator = validate(
       targetAmount: {
         notEmpty: { errorMessage: CAMPAIGN_MESSAGES.TARGET_AMOUNT_REQUIRED },
         isDecimal: { errorMessage: CAMPAIGN_MESSAGES.TARGET_AMOUNT_MUST_BE_NUMBER }
+      },
+      bankName: {
+        notEmpty: {
+          errorMessage: ORGANIZATION_MESSAGES.BANK_NAME_REQUIRED
+        },
+        isString: {
+          errorMessage: ORGANIZATION_MESSAGES.BANK_NAME_MUST_BE_STRING
+        },
+        trim: true
+      },
+      bankAccount: {
+        notEmpty: {
+          errorMessage: ORGANIZATION_MESSAGES.ACCOUNT_NUMBER_REQUIRED
+        },
+        isString: {
+          errorMessage: ORGANIZATION_MESSAGES.ACCOUNT_NUMBER_MUST_BE_STRING
+        },
+        trim: true
+      },
+      accountHolder: {
+        notEmpty: {
+          errorMessage: ORGANIZATION_MESSAGES.ACCOUNT_HOLDER_REQUIRED
+        },
+        isString: {
+          errorMessage: ORGANIZATION_MESSAGES.ACCOUNT_HOLDER_MUST_BE_STRING
+        },
+        trim: true
+      },
+      branch: {
+        notEmpty: {
+          errorMessage: ORGANIZATION_MESSAGES.BRANCH_REQUIRED
+        },
+        isString: {
+          errorMessage: ORGANIZATION_MESSAGES.BRANCH_MUST_BE_STRING
+        },
+        trim: true
       },
       media: {
         optional: true,
@@ -218,6 +254,26 @@ const updateCampaignValidator = validate(
           errorMessage: CAMPAIGN_MESSAGES.STATUS_ID_INVALID
         },
         isInt: { errorMessage: CAMPAIGN_MESSAGES.STATUS_ID_INVALID }
+      },
+      bankName: {
+        optional: true,
+        isString: true,
+        trim: true
+      },
+      bankAccount: {
+        optional: true,
+        isString: true,
+        trim: true
+      },
+      branch: {
+        optional: true,
+        isString: true,
+        trim: true
+      },
+      accountHolder: {
+        optional: true,
+        isString: true,
+        trim: true
       },
       media: {
         optional: true,

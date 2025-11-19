@@ -38,7 +38,7 @@ class OrganizationServices {
           {
             orgId,
             bankName: bank.bankName,
-            bankAccount: bank.bankAccount,
+            accountNumber: bank.bankAccount,
             branch: bank.branch,
             accountHolder: bank.accountHolder,
             statusId: orgStatus.Active
@@ -50,7 +50,7 @@ class OrganizationServices {
       const wallet = await db.Wallet.create(
         {
           ownerId: orgId,
-          ownerType: walletType.Organization,
+          walletTypeId: walletType.Organization,
           balance: 0,
           statusId: walletStatus.Active
         },
