@@ -1,6 +1,9 @@
 const { donationStatus, walletType, transactionType, transactionStatus } = require('../constants/enum')
+const { DONATION_MESSAGES } = require('../constants/message')
 const db = require('../models')
 const { getIO } = require('../utils/socket')
+const { AppError } = require('../controllers/error.controllers.js')
+const HTTP_STATUS = require('../constants/httpStatus')
 const { createPaymentUrl, verifyResponse } = require('../utils/vnpay')
 class PaymentServices {
   async createPayment({
@@ -21,13 +24,13 @@ class PaymentServices {
           userId,
           campaignId,
           amount,
-          paymentStatus: 'Pending',
           isAnonymous: isAnonymous,
           email,
           address,
           phoneNumber,
           message,
-          donateDate: new Date()
+          donateDate: new Date(),
+          statusId: donationStatus.Pending
         },
         { transaction: t }
       )
@@ -54,83 +57,79 @@ class PaymentServices {
     const { data, valid } = result
 
     if (!valid) return result
-
+    const donationId = data.vnp_TxnRef
+    const campaignId = data.vnp_OrderInfo.split('_')[3]
+    const donationData = await db.Donation.findOne({ where: { donationId } })
+    const donation = donationData ? donationData.dataValues : null
+    if (!donation) {
+      throw new AppError(DONATION_MESSAGES.DONATION_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
+    if (donation.statusId === donationStatus.Completed) {
+      throw new AppError(DONATION_MESSAGES.ALREADY_PROCESS, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    }
     if (data.vnp_ResponseCode === '00') {
       const transaction = await db.sequelize.transaction()
       try {
-        const donationId = data.vnp_TxnRef
-        const campaignId = data.vnp_OrderInfo.split('_')[3]
-        const updatedCampaign = await db.Campaign.findByPk(campaignId, { transaction })
-        const creatorId = updatedCampaign.creatorId
-        await db.Donation.update({ paymentStatus: donationStatus.Success }, { where: { donationId }, transaction })
-        const result = await db.Campaign.findByPk(campaignId, {
-          include: [
-            {
-              model: db.Organization,
-              as: 'organization'
-            }
-          ]
-        })
-        const campaign = result.dataValues
+        await db.Donation.update(
+          { statusId: donationStatus.Completed },
+          { where: { donationId, campaignId }, transaction }
+        )
         await db.Campaign.increment(
           { currentAmount: data.vnp_Amount / 100 },
           { where: { campaignId }, transaction, Lock: transaction.LOCK.UPDATE }
         )
+        const walletData = await db.Wallet.findOne({
+          where: { walletTypeId: walletType.Campaign, ownerId: campaignId },
+          transaction,
+          Lock: transaction.LOCK.UPDATE
+        })
+        await db.Wallet.increment(
+          { balance: data.vnp_Amount / 100, receiveAmount: data.vnp_Amount / 100 },
+          {
+            where: { walletTypeId: walletType.Campaign, ownerId: campaignId },
+            transaction,
+            Lock: transaction.LOCK.UPDATE
+          }
+        )
+        const walletCampaign = walletData.dataValues
+        await db.Transaction.create(
+          {
+            donationId,
+            walletId: walletCampaign.walletId,
+            walletTypeId: walletType.Campaign,
+            amount: data.vnp_Amount / 100,
+            transactionTime: new Date(),
+            typeId: transactionType.Inflow,
+            statusId: transactionStatus.Completed
+          },
+          { transaction }
+        )
 
-        // await db.Wallet.increment(
-        //   { balance: data.vnp_Amount / 100 },
-        //   { where: { ownerType: 'Admin' }, transaction, Lock: transaction.LOCK.UPDATE }
-        // )
-        // const orgWallet = await db.Wallet.findOne({
-        //   where: { ownerType: 'Organization', ownerId: campaign.organization.orgId },
-        //   transaction
-        // })
-
-        // await db.Transaction.create(
-        //   {
-        //     donationId,
-        //     walletId: orgWallet.walletId,
-        //     walletType: 'Organization',
-        //     ownerId: campaign.organization.orgId,
-        //     amount: data.vnp_Amount / 100,
-        //     transactionTime: new Date(),
-        //     typeId: transactionType.Inflow,
-        //     statusId: 2
-        //   },
-        //   { transaction }
-        // )
-
-        // const resultAdmin = await db.User.findOne({ where: { firstName: 'Admin', lastName: 'Admin' } })
-        // const admin = resultAdmin.dataValues
-        // console.log(admin, creatorId)
-        // const notifications = [
-        //   // {
-        //   //   userId: creatorId,
-        //   //   title: 'Nhận được quyên góp mới',
-        //   //   content: `Bạn đã nhận được một khoản quyên góp trị giá ${data.vnp_Amount / 100} VND cho chiến dịch của mình.`
-        //   // },
-        //   {
-        //     userId: admin.userId,
-        //     title: 'Thông báo quyên góp',
-        //     content: `Một khoản quyên góp mới trị giá ${data.vnp_Amount / 100} VND đã được thực hiện.`
-        //   }
-        // ]
-        // if (userId) {
-        //   notifications.push({
-        //     userId,
-        //     title: 'Quyên góp thành công',
-        //     content: `Bạn đã quyên góp cho chiến dịch ID: ${campaignId} thành công. Cảm ơn bạn!`
-        //   })
-        // }
-        // const createdNotifications = await db.Notification.bulkCreate(notifications, { transaction })
-        // const io = getIO()
-        // createdNotifications.forEach((notif) => {
-        //   if (notif.userId) {
-        //     io.to(String(notif.userId)).emit('notification', notif)
-        //   } else {
-        //     io.to('admin_room').emit('notification', notif)
-        //   }
-        // })
+        const resultAdmin = await db.User.findOne({ where: { firstName: 'Admin', lastName: 'Admin' } })
+        const admin = resultAdmin.dataValues
+        const notifications = [
+          {
+            userId: admin.userId,
+            title: 'Thông báo quyên góp',
+            content: `Một khoản quyên góp mới trị giá ${data.vnp_Amount / 100} VND đã được thực hiện.`
+          }
+        ]
+        if (userId) {
+          notifications.push({
+            userId,
+            title: 'Quyên góp thành công',
+            content: `Bạn đã quyên góp cho chiến dịch ID: ${campaignId} thành công. Cảm ơn bạn!`
+          })
+        }
+        const createdNotifications = await db.Notification.bulkCreate(notifications, { transaction })
+        const io = getIO()
+        createdNotifications.forEach((notif) => {
+          if (notif.userId) {
+            io.to(String(notif.userId)).emit('notification', notif)
+          } else {
+            io.to('admin_room').emit('notification', notif)
+          }
+        })
         await transaction.commit()
       } catch (err) {
         await transaction.rollback()

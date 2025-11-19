@@ -259,7 +259,8 @@ const PAYMENT_MESSAGES = {
 }
 
 const DONATION_MESSAGES = {
-  DONATION_NOT_FOUND: 'Donation not found'
+  DONATION_NOT_FOUND: 'Donation not found',
+  ALREADY_PROCESS: 'Transaction already processed'
 }
 module.exports = {
   USER_MESSAGES,

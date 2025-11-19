@@ -43,7 +43,7 @@ module.exports = {
         'Wallets',
         [
           {
-            ownerType: 'Admin',
+            walletTypeId: walletType.Admin,
             ownerId: newUserId,
             statusId: walletStatus.Active,
             createdAt: new Date(),

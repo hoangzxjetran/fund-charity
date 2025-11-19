@@ -8,24 +8,26 @@ class DonationsServices {
     page = parseInt(page) || 1
     limit = parseInt(limit) || 10
     const offset = (page - 1) * limit
-    const whereClause = { campaignId, paymentStatus: 'Success' }
+    const whereClause = { campaignId, statusId: donationStatus.Completed }
     if (search) {
       whereClause['$or'] = [
-        { '$User.firstName$': { [db.Sequelize.Op.iLike]: `%${search}%` } },
-        { '$User.lastName$': { [db.Sequelize.Op.iLike]: `%${search}%` } },
-        { '$User.email$': { [db.Sequelize.Op.iLike]: `%${search}%` } },
-        { email: { [db.Sequelize.Op.iLike]: `%${search}%` } },
-        { phoneNumber: { [db.Sequelize.Op.iLike]: `%${search}%` } }
+        { '$User.firstName$': { [db.Sequelize.Op.like]: `%${search}%` } },
+        { '$User.lastName$': { [db.Sequelize.Op.like]: `%${search}%` } },
+        { '$User.email$': { [db.Sequelize.Op.like]: `%${search}%` } },
+        { email: { [db.Sequelize.Op.like]: `%${search}%` } },
+        { phoneNumber: { [db.Sequelize.Op.like]: `%${search}%` } }
       ]
     }
     const { rows: donations, count: total } = await db.Donation.findAndCountAll({
       where: whereClause,
+      attributes: {
+        exclude: ['userId', 'statusId']
+      },
       include: [
         { model: db.User, as: 'user', required: false },
         {
-          model: db.Campaign,
-          as: 'campaign',
-          required: true
+          model: db.DonationStatus,
+          as: 'status'
         }
       ],
       order: [[sortBy, sortOrder]],
@@ -33,7 +35,7 @@ class DonationsServices {
       offset
     })
     return {
-      donations,
+      data: donations,
       pagination: {
         total,
         page,
@@ -81,7 +83,7 @@ class DonationsServices {
       }
 
       const adminWallet = await db.Wallet.findOne({
-        where: { ownerType: walletType.Admin },
+        where: { campaignId: donation.campaignId, walletTypeId: walletType.Campaign },
         transaction: t,
         lock: t.LOCK.UPDATE
       })
