@@ -7,6 +7,7 @@ const campaignsRouter = require('./campaigns.routes.js')
 const volunteersRouter = require('./volunteers.routes.js')
 const paymentsRouter = require('./payments.routes.js')
 const donationsRouter = require('./donations.routes.js')
+const notificationRouter = require('./notifications.routes.js')
 const HTTP_STATUS = require('../constants/httpStatus.js')
 
 const route = (app) => {
@@ -17,6 +18,7 @@ const route = (app) => {
   app.use('/v1/volunteers', volunteersRouter)
   app.use('/v1/payments', paymentsRouter)
   app.use('/v1/donations', donationsRouter)
+  app.use('/v1/notifications', notificationRouter)
 
   app.all(/(.*)/, (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server!`, HTTP_STATUS.NOT_FOUND))

@@ -1,0 +1,36 @@
+const db = require('../models')
+class NotificationServices {
+  async getNotificationsByUserId({ userId, page, limit }) {
+    page = parseInt(page) || 1
+    limit = parseInt(limit) || 10
+    const offset = (page - 1) * limit
+    const { rows, count } = await db.Notification.findAndCountAll({
+      where: { userId },
+      attributes: { exclude: ['relatedDonationId', 'relatedWithdrawalId', 'relatedCampaignId'] },
+      include: [
+        {
+          model: db.User,
+          as: 'user',
+          attributes: ['userId', 'firstName', 'lastName', 'email', 'avatar']
+        },
+        {
+          model: db.Campaign,
+          as: 'campaign',
+          attributes: ['campaignId', 'title', 'description']
+        }
+      ],
+      limit,
+      offset,
+      order: [['createdAt', 'DESC']]
+    })
+    return {
+      data: rows,
+      pagination: {
+        total: count,
+        page,
+        limit
+      }
+    }
+  }
+}
+module.exports = new NotificationServices()

@@ -22,8 +22,10 @@ router
   .get(getOrganizationsValidator, catchAsync(OrganizationControllers.getOrganizations))
 router
   .route('/upload-avatar')
-  .post(isAuthorized, uploadOrgAvatar, resizeOrgAvatar, OrganizationControllers.uploadOrgAvatar)
-router.route('/upload-media').post(isAuthorized, uploadOrgMedia, resizeOrgMedia, OrganizationControllers.uploadMedia)
+  .post(isAuthorized, uploadOrgAvatar, resizeOrgAvatar, catchAsync(OrganizationControllers.uploadOrgAvatar))
+router
+  .route('/upload-media')
+  .post(isAuthorized, uploadOrgMedia, resizeOrgMedia, catchAsync(OrganizationControllers.uploadMedia))
 router
   .route('/:orgId')
   .get(organizationIdValidator, catchAsync(OrganizationControllers.getOrganizationById))

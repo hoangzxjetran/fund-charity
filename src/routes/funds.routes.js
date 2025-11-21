@@ -19,14 +19,20 @@ const { isAuthorized } = require('../middlewares/auth.middlewares.js')
 router
   .route('/')
   .post(isAuthorized, createFundValidator, FundsControllers.createFund)
-  .get(getFundsValidator, FundsControllers.getFunds)
+  .get(getFundsValidator, catchAsync(FundsControllers.getFunds))
 
 router
   .route('/:fundId')
-  .get(getFundByIdValidator, FundsControllers.getFundById)
-  .put(isAuthorized, updateFundValidator, FundsControllers.updateFund)
+  .get(getFundByIdValidator, catchAsync(FundsControllers.getFundById))
+  .put(isAuthorized, updateFundValidator, catchAsync(FundsControllers.updateFund))
 router
   .route('/upload-banner')
-  .post(isAuthorized, uploadBannerFundValidator, uploadBannerFund, resizeBannerFund, FundsControllers.uploadBannerFund)
-router.route('/upload-media').post(uploadMediaFund, resizeImagesFund, FundsControllers.uploadMediaFund)
+  .post(
+    isAuthorized,
+    uploadBannerFundValidator,
+    uploadBannerFund,
+    resizeBannerFund,
+    catchAsync(FundsControllers.uploadBannerFund)
+  )
+router.route('/upload-media').post(uploadMediaFund, resizeImagesFund, catchAsync(FundsControllers.uploadMediaFund))
 module.exports = router

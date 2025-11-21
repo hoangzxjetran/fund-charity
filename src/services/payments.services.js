@@ -60,7 +60,6 @@ class PaymentServices {
     const campaignId = data.vnp_OrderInfo.split('_')[3]
     const donationRow = await db.Donation.findOne({ where: { donationId } })
     const donation = donationRow?.get()
-    console.log(donation)
 
     if (!donation) {
       throw new AppError(DONATION_MESSAGES.DONATION_NOT_FOUND, HTTP_STATUS.NOT_FOUND)

@@ -7,12 +7,18 @@ const {
 } = require('../validations/fund-categories.validations.js')
 const { uploadIconFundCategory, resizeIconFundCategory } = require('../middlewares/uploadFile.middlewares.js')
 const { isAuthorized, isAdmin } = require('../middlewares/auth.middlewares.js')
+const catchAsync = require('../middlewares/catchAsync.middleware.js')
 
 router
   .route('/')
-  .get(isAuthorized, getFundCategoriesValidator, FundCategoriesControllers.getFundCategories)
-  .post(isAuthorized, isAdmin, createFundCategoryValidator, FundCategoriesControllers.createFundCategory)
+  .get(isAuthorized, getFundCategoriesValidator, catchAsync(FundCategoriesControllers.getFundCategories))
+  .post(isAuthorized, isAdmin, createFundCategoryValidator, catchAsync(FundCategoriesControllers.createFundCategory))
 
-router.post('/upload-icon', uploadIconFundCategory, resizeIconFundCategory, FundCategoriesControllers.uploadLogoIcon)
+router.post(
+  '/upload-icon',
+  uploadIconFundCategory,
+  resizeIconFundCategory,
+  catchAsync(FundCategoriesControllers.uploadLogoIcon)
+)
 
 module.exports = router
