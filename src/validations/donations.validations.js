@@ -1,6 +1,9 @@
 const { checkSchema } = require('express-validator')
-const { CAMPAIGN_MESSAGES, COMMON } = require('../constants/message')
+const { CAMPAIGN_MESSAGES, COMMON, DONATION_MESSAGES } = require('../constants/message')
 const validate = require('../utils/validate')
+const { parseISO, isBefore } = require('date-fns')
+const { AppError } = require('../controllers/error.controllers')
+const HTTP_STATUS = require('../constants/httpStatus')
 
 const campaignIdValidator = validate(
   checkSchema(
@@ -68,6 +71,24 @@ const getDonationsValidator = validate(
         isIn: {
           options: [['ASC', 'DESC']],
           errorMessage: COMMON.SORT_ORDER_INVALID
+        }
+      },
+      startDate: {
+        optional: true,
+        isISO8601: { errorMessage: DONATION_MESSAGES.START_DATE_INVALID }
+      },
+      endDate: {
+        optional: true,
+        isISO8601: { errorMessage: DONATION_MESSAGES.END_DATE_INVALID },
+        custom: {
+          options: (value, { req }) => {
+            const startDate = req.query.startDate ? parseISO(req.query.startDate) : new Date()
+            const endDate = parseISO(value)
+            if (isBefore(endDate, startDate)) {
+              throw new AppError(DONATION_MESSAGES.END_DATE_MUST_BE_AFTER_START_DATE, HTTP_STATUS.BAD_REQUEST)
+            }
+            return true
+          }
         }
       }
     },

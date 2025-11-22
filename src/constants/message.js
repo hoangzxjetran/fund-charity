@@ -260,7 +260,10 @@ const PAYMENT_MESSAGES = {
 
 const DONATION_MESSAGES = {
   DONATION_NOT_FOUND: 'Donation not found',
-  ALREADY_PROCESS: 'Transaction already processed'
+  ALREADY_PROCESS: 'Transaction already processed',
+  START_DATE_INVALID: 'Start date is invalid',
+  END_DATE_INVALID: 'End date is invalid',
+  END_DATE_MUST_BE_AFTER_START_DATE: 'End date must be after start date'
 }
 
 const NOTIFICATION_MESSAGES = {

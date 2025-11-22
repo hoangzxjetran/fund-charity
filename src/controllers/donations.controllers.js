@@ -10,8 +10,17 @@ class DonationsControllers {
   async getDonations(req, res) {
     // Implementation for retrieving donations
     const { campaignId } = req.params
-    const { page, limit, search, sortBy, sortOrder } = req.query
-    const data = await DonationsServices.getDonationsByCampaign({ campaignId, page, limit, search, sortBy, sortOrder })
+    const { page, limit, search, sortBy, sortOrder, startDate, endDate } = req.query
+    const data = await DonationsServices.getDonationsByCampaign({
+      campaignId,
+      page,
+      limit,
+      search,
+      sortBy,
+      sortOrder,
+      startDate,
+      endDate
+    })
     return res.status(HTTP_STATUS.OK).json(data)
   }
 

@@ -4,7 +4,16 @@ const { DONATION_MESSAGES } = require('../constants/message.js')
 const db = require('../models/index.js')
 const { createPaymentUrl } = require('../utils/vnpay')
 class DonationsServices {
-  async getDonationsByCampaign({ campaignId, page, limit, search = '', sortBy = 'donateDate', sortOrder = 'DESC' }) {
+  async getDonationsByCampaign({
+    campaignId,
+    page,
+    limit,
+    search = '',
+    sortBy = 'donateDate',
+    sortOrder = 'DESC',
+    startDate,
+    endDate
+  }) {
     page = parseInt(page) || 1
     limit = parseInt(limit) || 10
     const offset = (page - 1) * limit
@@ -17,6 +26,13 @@ class DonationsServices {
         { email: { [db.Sequelize.Op.like]: `%${search}%` } },
         { phoneNumber: { [db.Sequelize.Op.like]: `%${search}%` } }
       ]
+    }
+    if (startDate) {
+      whereClause.donateDate = { [db.Sequelize.Op.gte]: new Date(startDate) }
+    }
+    if (endDate) {
+      whereClause.donateDate = whereClause.donateDate || {}
+      whereClause.donateDate[db.Sequelize.Op.lte] = new Date(endDate)
     }
     const { rows: donations, count: total } = await db.Donation.findAndCountAll({
       where: whereClause,
