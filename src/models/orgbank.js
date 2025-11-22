@@ -21,7 +21,14 @@ module.exports = (sequelize, DataTypes) => {
       accountNumber: { type: DataTypes.STRING(50) },
       accountHolder: { type: DataTypes.STRING(255) },
       branch: { type: DataTypes.STRING(255) },
-      campaignId: { type: DataTypes.INTEGER, allowNull: true }
+      campaignId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'Campaigns',
+          key: 'campaignId'
+        }
+      }
     },
     {
       sequelize,

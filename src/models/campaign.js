@@ -17,7 +17,11 @@ module.exports = (sequelize, DataTypes) => {
       Campaign.hasMany(models.Donation, { foreignKey: 'campaignId', as: 'donations' })
       Campaign.hasMany(models.VolunteerRegistration, { foreignKey: 'campaignId', as: 'volunteers' })
       Campaign.hasMany(models.Withdrawal, { foreignKey: 'campaignId', as: 'withdrawals' })
-      Campaign.hasOne(models.Wallet, { foreignKey: 'ownerId', scope: { walletTypeId: walletType.Campaign }, as: 'wallet' })
+      Campaign.hasOne(models.Wallet, {
+        foreignKey: 'ownerId',
+        scope: { walletTypeId: walletType.Campaign },
+        as: 'wallet'
+      })
       Campaign.hasOne(models.OrgBank, { foreignKey: 'campaignId', as: 'bankDetails' })
     }
   }

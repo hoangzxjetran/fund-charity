@@ -68,8 +68,10 @@ class CampaignsServices {
 
   async createCampaign(data) {
     const transaction = await db.sequelize.transaction()
+    let newCampaign = null
     try {
       const {
+        userId,
         orgId,
         categoryId,
         title,
@@ -83,7 +85,7 @@ class CampaignsServices {
         accountHolder,
         media = []
       } = data
-      const newCampaign = await db.Campaign.create(
+      newCampaign = await db.Campaign.create(
         {
           orgId,
           categoryId,
@@ -111,8 +113,9 @@ class CampaignsServices {
       await db.Wallet.create(
         {
           walletTypeId: walletType.Campaign,
-          ownerId: newCampaign.campaignId,
-          statusId: walletStatus.Active
+          ownerId: userId,
+          statusId: walletStatus.Active,
+          campaignId: newCampaign.campaignId
         },
         { transaction }
       )
@@ -126,43 +129,45 @@ class CampaignsServices {
         await db.CampaignMedia.bulkCreate(mediaRecords, { transaction })
       }
       await transaction.commit()
-
-      const createdCampaign = await db.Campaign.findOne({
-        where: { campaignId: newCampaign.campaignId },
-        attributes: { exclude: ['statusId', 'categoryId'] },
-        include: [
-          {
-            model: db.CategoryFundraising,
-            as: 'category',
-            attributes: ['categoryId', 'categoryName', 'logoIcon']
-          },
-          {
-            model: db.CampaignStatus,
-            as: 'status'
-          },
-          {
-            model: db.OrgBank,
-            as: 'bankDetails'
-          },
-          {
-            model: db.CampaignMedia,
-            as: 'media',
-            attributes: { exclude: ['mediaTypeId'] },
-            include: [
-              {
-                model: db.Media,
-                as: 'mediaType',
-                attributes: ['mediaTypeId', 'mediaName']
-              }
-            ]
-          }
-        ]
-      })
-      return createdCampaign
     } catch (error) {
-      await transaction.rollback()
+      if (!transaction.finished) {
+        await transaction.rollback()
+      }
       throw error
     }
+    const createdCampaign = await db.Campaign.findOne({
+      where: { campaignId: newCampaign.campaignId },
+      attributes: { exclude: ['statusId', 'categoryId'] },
+      include: [
+        {
+          model: db.CategoryFundraising,
+          as: 'category',
+          attributes: ['categoryId', 'categoryName', 'logoIcon']
+        },
+        {
+          model: db.CampaignStatus,
+          as: 'status'
+        },
+        {
+          model: db.OrgBank,
+          as: 'bankDetails'
+        },
+        {
+          model: db.CampaignMedia,
+          as: 'media',
+          attributes: { exclude: ['mediaTypeId'] },
+          include: [
+            {
+              model: db.Media,
+              as: 'mediaType',
+              attributes: ['mediaTypeId', 'mediaName']
+            }
+          ]
+        }
+      ]
+    })
+
+    return createdCampaign
   }
 
   async getCampaignById(campaignId) {

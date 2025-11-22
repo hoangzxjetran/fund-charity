@@ -18,6 +18,7 @@ class CampaignsControllers {
   }
   async createCampaign(req, res, next) {
     const { orgId } = req.params
+    const { userId } = req.user
     const {
       categoryId,
       title,
@@ -32,6 +33,7 @@ class CampaignsControllers {
       media
     } = req.body
     const data = await campaignsServices.createCampaign({
+      userId,
       orgId,
       categoryId,
       title,

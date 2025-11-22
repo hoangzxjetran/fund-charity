@@ -99,7 +99,7 @@ class DonationsServices {
       }
 
       const adminWallet = await db.Wallet.findOne({
-        where: { campaignId: donation.campaignId, walletTypeId: walletType.Campaign },
+        where: { walletTypeId: walletType.Campaign },
         transaction: t,
         lock: t.LOCK.UPDATE
       })
