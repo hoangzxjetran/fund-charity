@@ -274,6 +274,18 @@ const NOTIFICATION_MESSAGES = {
   IS_READ_INVALID: 'isRead must be a boolean',
   WAS_READ: 'Notification was already marked as read'
 }
+const WALLET_MESSAGES = {
+  WALLET_NOT_FOUND: 'Wallet not found',
+  INSUFFICIENT_BALANCE: 'Insufficient balance',
+  AMOUNT_REQUIRED: 'Amount is required',
+  AMOUNT_MUST_BE_NUMBER: 'Amount must be a number',
+  AMOUNT_MINIMUM: 'Amount must be at least 0',
+  SORT_ORDER_INVALID: 'Sort order must be either "asc" or "desc"',
+  SORT_BY_INVALID: 'Sort by must be one of the following: balance, createdAt',
+  STATUS_INVALID: 'Status must be one of the following: active, inactive'
+  
+
+}
 module.exports = {
   USER_MESSAGES,
   COMMON,
@@ -285,5 +297,6 @@ module.exports = {
   ORGANIZATION_MESSAGES,
   PAYMENT_MESSAGES,
   DONATION_MESSAGES,
-  NOTIFICATION_MESSAGES
+  NOTIFICATION_MESSAGES,
+  WALLET_MESSAGES
 }

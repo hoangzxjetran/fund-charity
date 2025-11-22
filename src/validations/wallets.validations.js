@@ -1,8 +1,9 @@
 const { checkSchema } = require('express-validator')
 const validate = require('../utils/validate')
-const { USER_MESSAGES, COMMON } = require('../constants/message')
+const { USER_MESSAGES, COMMON, WALLET_MESSAGES } = require('../constants/message')
 const { AppError } = require('../controllers/error.controllers')
 const HTTP_STATUS = require('../constants/httpStatus')
+const { walletStatus } = require('../constants/enum')
 
 const getWalletByUserIdValidator = validate(
   checkSchema({
@@ -74,17 +75,17 @@ const getWalletsValidator = validate(
         optional: true,
         isIn: {
           options: [['ASC', 'DESC']],
-          errorMessage: CAMPAIGN_MESSAGES.SORT_ORDER_INVALID
+          errorMessage: WALLET_MESSAGES.SORT_ORDER_INVALID
         }
       },
       status: {
         optional: true,
         isIn: {
           options: [Object.values(walletStatus)],
-          errorMessage: CAMPAIGN_MESSAGES.STATUS_INVALID
+          errorMessage: WALLET_MESSAGES.STATUS_INVALID
         },
         isInt: {
-          errorMessage: CAMPAIGN_MESSAGES.STATUS_INVALID
+          errorMessage: WALLET_MESSAGES.STATUS_INVALID
         },
         toInt: true
       }
@@ -94,5 +95,6 @@ const getWalletsValidator = validate(
 )
 
 module.exports = {
-  getWalletByUserIdValidator
+  getWalletByUserIdValidator,
+  getWalletsValidator
 }

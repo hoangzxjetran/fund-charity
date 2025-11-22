@@ -9,8 +9,9 @@ class WalletControllers {
   }
 
   async getAll(req, res, next) {
-    const data = await walletsServices.getAllWallets()
-    return res.status(HTTP_STATUS.OK).json({ data })
+    const { page, limit, search, sortBy, sortOrder } = req.query
+    const data = await walletsServices.getAllWallets({ page, limit, search, sortBy, sortOrder })
+    return res.status(HTTP_STATUS.OK).json(data)
   }
 }
 

@@ -31,8 +31,28 @@ class WalletServices {
     })
   }
 
-  async getAllWallets() {
-    const wallets = await db.Wallet.findAll({
+  async getAllWallets({ page, limit, search, sortBy = 'createdAt', sortOrder = 'DESC' }) {
+    page = parseInt(page) || 1
+    limit = parseInt(limit) || 10
+    const offset = (page - 1) * limit
+    const whereClause = {}
+
+    if (search) {
+      whereClause[db.Sequelize.Op.or] = [
+        { '$owner.firstName$': { [db.Sequelize.Op.like]: `%${search}%` } },
+        { '$owner.lastName$': { [db.Sequelize.Op.like]: `%${search}%` } },
+        { '$owner.email$': { [db.Sequelize.Op.like]: `%${search}%` } },
+        { '$campaign.title$': { [db.Sequelize.Op.like]: `%${search}%` } },
+        { '$campaign.bankDetails.bankName$': { [db.Sequelize.Op.like]: `%${search}%` } },
+        { '$campaign.bankDetails.accountHolder$': { [db.Sequelize.Op.like]: `%${search}%` } },
+        { '$campaign.bankDetails.branch$': { [db.Sequelize.Op.like]: `%${search}%` } }
+      ]
+    }
+    const { rows: wallets, count } = await db.Wallet.findAndCountAll({
+      where: whereClause,
+      limit,
+      offset,
+      order: [[sortBy, sortOrder]],
       attributes: ['walletId', 'balance', 'receiveAmount'],
       include: [
         { model: db.WalletStatus, as: 'status' },
@@ -50,15 +70,25 @@ class WalletServices {
             }
           ]
         }
-      ]
+      ],
+      distinct: true,
+      col: 'walletId'
     })
-    return wallets.map((w) => {
-      const data = w.toJSON()
-      data.bankDetails = data?.campaign?.bankDetails || null
-      delete data?.campaign?.bankDetails
 
-      return data
-    })
+    return {
+      data: wallets.map((w) => {
+        const data = w.toJSON()
+        data.bankDetails = data?.campaign?.bankDetails || null
+        delete data?.campaign?.bankDetails
+
+        return data
+      }),
+      pagination: {
+        page,
+        limit,
+        total: count
+      }
+    }
   }
 }
 

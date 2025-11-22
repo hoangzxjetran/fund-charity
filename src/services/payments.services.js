@@ -74,15 +74,14 @@ class PaymentServices {
       include: [{ model: db.Organization, as: 'organization' }]
     })
     const campaign = campaignRow.get()
-    const creatorId = campaign?.organization.get()?.createdBy
+    const creatorId = campaign?.organization ? campaign.organization.get()?.createdBy : null
     if (data.vnp_ResponseCode === '00') {
       const transaction = await db.sequelize.transaction()
       try {
         await db.Donation.update({ statusId: donationStatus.Completed }, { where: { donationId }, transaction })
         await db.Campaign.increment({ currentAmount: data.vnp_Amount / 100 }, { where: { campaignId }, transaction })
         const walletRow = await db.Wallet.findOne({
-          where: { walletTypeId: walletType.Campaign, ownerId: campaignId },
-          transaction
+          where: { walletTypeId: walletType.Campaign, campaignId }
         })
         const wallet = walletRow.get()
         await db.Wallet.increment(
@@ -91,7 +90,7 @@ class PaymentServices {
             receiveAmount: data.vnp_Amount / 100
           },
           {
-            where: { walletTypeId: walletType.Campaign, ownerId: campaignId },
+            where: { walletTypeId: walletType.Campaign, campaignId },
             transaction
           }
         )
@@ -109,8 +108,7 @@ class PaymentServices {
         )
 
         const adminRow = await db.User.findOne({
-          where: { firstName: 'Admin', lastName: 'Admin' },
-          transaction
+          where: { firstName: 'Admin', lastName: 'Admin' }
         })
         const admin = adminRow.get()
         const notifications = [
