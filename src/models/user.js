@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.Withdrawal, { foreignKey: 'approvedBy', as: 'approvedWithdrawals' })
       User.hasMany(models.Notification, { foreignKey: 'userId', as: 'notifications' })
       User.hasMany(models.Wallet, { foreignKey: 'ownerId', scope: { walletTypeId: walletType.User }, as: 'wallets' })
+      User.hasMany(models.Organization, {
+        foreignKey: 'createdBy',
+        as: 'createdOrganizations'
+      })
     }
   }
   User.init(

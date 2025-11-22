@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'statusId',
         as: 'status'
       })
+      Organization.belongsTo(models.User, { foreignKey: 'createdBy', as: 'creator' })
     }
   }
   Organization.init(

@@ -262,6 +262,15 @@ const DONATION_MESSAGES = {
   DONATION_NOT_FOUND: 'Donation not found',
   ALREADY_PROCESS: 'Transaction already processed'
 }
+
+const NOTIFICATION_MESSAGES = {
+  NOTIFICATION_NOT_FOUND: 'Notification not found',
+  NOTIFICATION_ID_REQUIRED: 'Notification ID is required',
+  NOTIFICATION_ID_INVALID: 'Notification ID must be a positive integer',
+  IS_READ_REQUIRED: 'isRead is required',
+  IS_READ_INVALID: 'isRead must be a boolean',
+  WAS_READ: 'Notification was already marked as read'
+}
 module.exports = {
   USER_MESSAGES,
   COMMON,
@@ -272,5 +281,6 @@ module.exports = {
   VOLUNTEER_MESSAGES,
   ORGANIZATION_MESSAGES,
   PAYMENT_MESSAGES,
-  DONATION_MESSAGES
+  DONATION_MESSAGES,
+  NOTIFICATION_MESSAGES
 }

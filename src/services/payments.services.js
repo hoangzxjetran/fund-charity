@@ -41,7 +41,7 @@ class PaymentServices {
       const paymentUrl = createPaymentUrl({
         donationId,
         amount,
-        orderInfo: `Ung_ho_camp_${campaignId}_donation_${response.donationId}`,
+        orderInfo: `Ung_ho_camp_${campaignId}_donation_${response.donationId}_user_${userId || 'guest'}`,
         ipAddr
       })
 
@@ -52,12 +52,14 @@ class PaymentServices {
     }
   }
 
-  async checkPayment(query, userId = null) {
+  async checkPayment(query) {
     const result = verifyResponse(query)
     const { data, valid } = result
     if (!valid) return result
     const donationId = data.vnp_TxnRef
     const campaignId = data.vnp_OrderInfo.split('_')[3]
+    const userIdString = data.vnp_OrderInfo.split('_')[7]
+    const userId = userIdString === 'guest' ? null : +userIdString
     const donationRow = await db.Donation.findOne({ where: { donationId } })
     const donation = donationRow?.get()
 
@@ -67,14 +69,12 @@ class PaymentServices {
     if (donation.statusId === donationStatus.Completed) {
       throw new AppError(DONATION_MESSAGES.ALREADY_PROCESS, HTTP_STATUS.INTERNAL_SERVER_ERROR)
     }
-    const transaction = await db.sequelize.transaction()
     const campaignRow = await db.Campaign.findOne({
       where: { campaignId },
-      transaction
+      include: [{ model: db.Organization, as: 'organization' }]
     })
-
     const campaign = campaignRow.get()
-    const creatorId = campaign.ownerId
+    const creatorId = campaign?.organization.get()?.createdBy
     if (data.vnp_ResponseCode === '00') {
       const transaction = await db.sequelize.transaction()
       try {
@@ -122,7 +122,7 @@ class PaymentServices {
             relatedCampaignId: campaignId
           }
         ]
-        if (creatorId) {
+        if (creatorId && creatorId !== userId && creatorId !== admin.userId) {
           notifications.push({
             userId: creatorId,
             title: 'Chiến dịch của bạn vừa nhận được quyên góp',
@@ -145,7 +145,6 @@ class PaymentServices {
           transaction,
           returning: true
         })
-
         const io = getIO()
         createdNotifications.forEach((notifRow) => {
           const notif = notifRow.get()

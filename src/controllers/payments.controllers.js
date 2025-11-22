@@ -3,11 +3,10 @@ const paymentsServices = require('../services/payments.services')
 
 class PaymentsControllers {
   async createPayment(req, res) {
-    const { campaignId, amount, isAnonymous, email, address, phoneNumber, message } = req.body
-    const user = req.user || null
+    const { campaignId, amount, userId, isAnonymous, email, address, phoneNumber, message } = req.body
     const { ip } = req
     const paymentUrl = await paymentsServices.createPayment({
-      userId: user?.userId || null,
+      userId,
       campaignId,
       amount,
       isAnonymous,

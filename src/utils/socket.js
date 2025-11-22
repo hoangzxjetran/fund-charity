@@ -15,6 +15,7 @@ function initSocket(server) {
       socket.join(String(userId))
     })
     socket.on('disconnect', () => {
+      console.log('❌ Client disconnected:', socket.id)
     })
   })
   return io

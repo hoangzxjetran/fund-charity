@@ -1,5 +1,5 @@
 const { checkSchema } = require('express-validator')
-const { COMMON } = require('../constants/message')
+const { COMMON, NOTIFICATION_MESSAGES } = require('../constants/message')
 const { AppError } = require('../controllers/error.controllers')
 const validate = require('../utils/validate')
 const HTTP_STATUS = require('../constants/httpStatus')
@@ -47,6 +47,33 @@ const getNotificationsValidator = validate(
   )
 )
 
+const updateNotificationValidator = validate(
+  checkSchema({
+    notificationId: {
+      in: ['params'],
+      exists: {
+        errorMessage: NOTIFICATION_MESSAGES.NOTIFICATION_ID_REQUIRED
+      },
+      isInt: {
+        options: { min: 1 },
+        errorMessage: NOTIFICATION_MESSAGES.NOTIFICATION_ID_INVALID
+      },
+      toInt: true
+    },
+    isRead: {
+      in: ['body'],
+      exists: {
+        errorMessage: NOTIFICATION_MESSAGES.IS_READ_REQUIRED
+      },
+      isBoolean: {
+        errorMessage: NOTIFICATION_MESSAGES.IS_READ_INVALID
+      },
+      toBoolean: true
+    }
+  })
+)
+
 module.exports = {
-  getNotificationsValidator
+  getNotificationsValidator,
+  updateNotificationValidator
 }
