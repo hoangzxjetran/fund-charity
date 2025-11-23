@@ -120,45 +120,20 @@ const resizeImagesFund = async (req, res, next) => {
   next()
 }
 
-const resizeImageRestaurant = async (req, res, next) => {
-  if (!req.file) return next()
-  if (req.file.mimetype.startsWith('video')) {
-    return next()
-  }
-  req.file.filename = `${v4()}.jpeg`
-  req.file.buffer = await sharp(req.file.buffer)
-    .resize({ width: 500, height: 500, fit: 'cover' })
-    .toFormat('jpeg')
-    .jpeg({ quality: 90 })
-    .toBuffer()
-  next()
-}
-
-const resizeImageReview = async (req, res, next) => {
-  if (!req.file) return next()
-  if (req.file.mimetype.startsWith('video')) {
-    return next()
-  }
-  req.file.filename = `${v4()}.jpeg`
-  req.file.buffer = await sharp(req.file.buffer)
-    .resize({ width: 300, height: 300, fit: 'cover' })
-    .toFormat('jpeg')
-    .jpeg({ quality: 90 })
-    .toBuffer()
-  next()
-}
-
-const resizeImageMenu = async (req, res, next) => {
-  if (!req.file) return next()
-  if (req.file.mimetype.startsWith('video')) {
-    return next()
-  }
-  req.file.filename = `${v4()}.jpeg`
-  req.file.buffer = await sharp(req.file.buffer)
-    .resize({ width: 300, height: 300, fit: 'cover' })
-    .toFormat('jpeg')
-    .jpeg({ quality: 90 })
-    .toBuffer()
+const resizeImagesComment = async (req, res, next) => {
+  if (!req.files || req.files.length === 0) return next()
+  await Promise.all(
+    req.files.map(async (file) => {
+      if (file.mimetype.startsWith('image')) {
+        file.filename = `comment-${v4()}.jpeg`
+        file.buffer = await sharp(file.buffer)
+          .resize({ width: 200, height: 200, fit: 'cover' })
+          .toFormat('jpeg')
+          .jpeg({ quality: 100 })
+          .toBuffer()
+      }
+    })
+  )
   next()
 }
 
@@ -222,29 +197,6 @@ const multerMediaFund = multer({
     fileSize: 1024 * 1024 * 30 // 50MB
   }
 })
-const multerRestaurant = multer({
-  storage: multerStorage,
-  fileFilter: multerFilter,
-  limits: {
-    fileSize: 1024 * 1024 * 50 // 50MB
-  }
-})
-const multerMenu = multer({
-  storage: multerStorage,
-  fileFilter: multerFilter,
-  limits: {
-    fileSize: 1024 * 1024 * 50 // 50MB
-  }
-})
-const uploadRestaurant = multerRestaurant.single('file')
-
-const multerReview = multer({
-  storage: multerStorage,
-  fileFilter: multerFilter,
-  limits: {
-    fileSize: 1024 * 1024 * 50 // 50MB
-  }
-})
 
 const uploadOrgAvatar = multerOrgAvatar.single('file')
 const uploadOrgMedia = multerOrgMedia.array('files', 5)
@@ -253,8 +205,7 @@ const uploadAvatar = multerAvatar.single('file')
 const uploadIconFundCategory = multerIconFundCategory.single('file')
 const uploadBannerFund = multerBannerFund.single('file')
 const uploadMediaFund = multerMediaFund.array('files', 10)
-const uploadReview = multerReview.single('file')
-const uploadMenu = multerMenu.single('file')
+const uploadImagesComment = multerMediaFund.array('files', 4)
 
 module.exports = {
   renameVideo,
@@ -265,9 +216,8 @@ module.exports = {
   resizeIconFundCategory,
   resizeBannerFund,
   resizeImagesFund,
-  resizeImageMenu,
-  resizeImageRestaurant,
-  resizeImageReview,
+  resizeImagesComment,
+
   uploadOrgAvatar,
   uploadOrgMedia,
   uploadCampaignMedia,
@@ -275,7 +225,5 @@ module.exports = {
   uploadBannerFund,
   uploadIconFundCategory,
   uploadMediaFund,
-  uploadMenu,
-  uploadRestaurant,
-  uploadReview
+  uploadImagesComment
 }

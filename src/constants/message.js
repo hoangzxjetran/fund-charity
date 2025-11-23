@@ -89,7 +89,13 @@ const COMMON = {
   ID_IS_INVALID: 'ID is invalid',
   ID_IS_REQUIRED: 'ID is required',
   IS_ACTIVE_MUST_BE_BOOLEAN: 'isActive must be a boolean',
-  ROLE_INVALID: 'Role is invalid'
+  ROLE_INVALID: 'Role is invalid',
+  MEDIA_MUST_BE_ARRAY: 'Media must be an array',
+  MEDIA_MAX_ITEMS: 'Media must not contain more than {max} items',
+  MEDIA_URL_REQUIRED: 'Media URL is required',
+  MEDIA_TYPE_REQUIRED: 'Media type is required',
+  MEDIA_TYPE_ID_REQUIRED: 'Media type ID is required',
+  MEDIA_TYPE_ID_MUST_BE_INT: 'Media type ID must be an integer'
 }
 const FUND_CATEGORY_MESSAGES = {
   CATEGORY_NAME_REQUIRED: 'Category name is required',
@@ -283,9 +289,18 @@ const WALLET_MESSAGES = {
   SORT_ORDER_INVALID: 'Sort order must be either "asc" or "desc"',
   SORT_BY_INVALID: 'Sort by must be one of the following: balance, createdAt',
   STATUS_INVALID: 'Status must be one of the following: active, inactive'
-  
-
 }
+
+const COMMENT_MESSAGES = {
+  CONTENT_IS_REQUIRED: 'Content is required',
+  CONTENT_MUST_BE_STRING: 'Content must be a string',
+  CAMPAIGN_ID_IS_REQUIRED: 'Post ID is required',
+  CAMPAIGN_ID_MUST_BE_INTEGER: 'Post ID must be an integer',
+  COMMENT_NOT_FOUND: 'Comment not found',
+  COMMENT_ID_IS_REQUIRED: 'Comment ID is required',
+  COMMENT_ID_MUST_BE_INTEGER: 'Comment ID must be an integer'
+}
+
 module.exports = {
   USER_MESSAGES,
   COMMON,
@@ -298,5 +313,6 @@ module.exports = {
   PAYMENT_MESSAGES,
   DONATION_MESSAGES,
   NOTIFICATION_MESSAGES,
-  WALLET_MESSAGES
+  WALLET_MESSAGES,
+  COMMENT_MESSAGES
 }
