@@ -56,13 +56,11 @@ class CommentsServices {
     }
   }
 
-  async getCommentsByCampaignId({ campaignId, page, limit, sortBy, sortOrder }) {
+  async getCommentsByCampaignId({ campaignId, page, limit, sortBy = 'createdAt', sortOrder = 'DESC' }) {
     page = parseInt(page) || 1
     limit = parseInt(limit) || 10
     const offset = (page - 1) * limit
-    sortBy = sortBy || 'createdAt'
-    sortOrder = sortOrder || 'DESC'
-    const { rows, count } = await db.Comment.findAllAndCount({
+    const { rows, count } = await db.Comment.findAndCountAll({
       where: { campaignId, isDeleted: false },
       attributes: {
         exclude: ['userId']

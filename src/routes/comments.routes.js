@@ -2,13 +2,13 @@ const { Router } = require('express')
 const {
   createCommentValidator,
   commentIdValidator,
-  campaignIdValidator
+  campaignIdValidator,
+  getCommentsByCampaignIdValidator
 } = require('../validations/comments.validations')
 const commentsControllers = require('../controllers/comments.controllers')
 const catchAsync = require('../middlewares/catchAsync.middleware')
 const { isAuthorized } = require('../middlewares/auth.middlewares')
 const { uploadImagesComment, resizeImagesComment } = require('../middlewares/uploadFile.middlewares')
-const { getCommentsByCampaignId } = require('../services/comments.services')
 
 const commentRouter = Router()
 
@@ -16,7 +16,7 @@ commentRouter.post('/', isAuthorized, createCommentValidator, catchAsync(comment
 commentRouter.get(
   '/:campaignId',
   campaignIdValidator,
-  getCommentsByCampaignId,
+  getCommentsByCampaignIdValidator,
   catchAsync(commentsControllers.getComments)
 )
 commentRouter.delete('/:commentId', isAuthorized, commentIdValidator, catchAsync(commentsControllers.deleteComment))

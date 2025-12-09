@@ -36,11 +36,11 @@ class CommentsControllers {
     res.status(HTTP_STATUS.OK).json({ data: result })
   }
 
-  getComments(req, res) {
+  async getComments(req, res) {
     const { campaignId } = req.params
     // Logic to get comments by campaignId
     const { page, limit, sortBy, sortOrder } = req.query
-    const data = commentsServices.getCommentsByCampaignId({
+    const data = await commentsServices.getCommentsByCampaignId({
       campaignId,
       page,
       limit,

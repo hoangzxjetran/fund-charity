@@ -10,6 +10,7 @@ const donationsRouter = require('./donations.routes.js')
 const notificationRouter = require('./notifications.routes.js')
 const walletRouter = require('./wallets.routes.js')
 const commentsRouter = require('./comments.routes.js')
+const reasonsRouter = require('./reasons.routes.js')
 const HTTP_STATUS = require('../constants/httpStatus.js')
 
 const route = (app) => {
@@ -23,6 +24,7 @@ const route = (app) => {
   app.use('/v1/notifications', notificationRouter)
   app.use('/v1/wallets', walletRouter)
   app.use('/v1/comments', commentsRouter)
+  app.use('/v1/reasons', reasonsRouter)
 
   app.all(/(.*)/, (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server!`, HTTP_STATUS.NOT_FOUND))
