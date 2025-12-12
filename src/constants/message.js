@@ -301,6 +301,19 @@ const COMMENT_MESSAGES = {
   COMMENT_ID_MUST_BE_INTEGER: 'Comment ID must be an integer'
 }
 
+const REPORT_MESSAGES = {
+  REPORTER_ID_IS_REQUIRED: 'Reporter ID is required',
+  REPORTER_ID_MUST_BE_INTEGER: 'Reporter ID must be an integer',
+  TARGET_ID_IS_REQUIRED: 'Target ID is required',
+  TARGET_ID_MUST_BE_INTEGER: 'Target ID must be an integer',
+  REASON_ID_IS_REQUIRED: 'Reason ID is required',
+  REASON_ID_MUST_BE_INTEGER: 'Reason ID must be an integer',
+  DESCRIPTION_MUST_BE_STRING: 'Description must be a string',
+  REPORT_NOT_FOUND: 'Report not found',
+  STATUS_INVALID: 'Status must be one of the following: pending, reviewed, rejected',
+  CAMPAIGN_ID_MUST_BE_INTEGER: 'Campaign ID must be an integer'
+}
+
 module.exports = {
   USER_MESSAGES,
   COMMON,
@@ -314,5 +327,6 @@ module.exports = {
   DONATION_MESSAGES,
   NOTIFICATION_MESSAGES,
   WALLET_MESSAGES,
-  COMMENT_MESSAGES
+  COMMENT_MESSAGES,
+  REPORT_MESSAGES
 }

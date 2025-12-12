@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         as: 'wallet'
       })
       Campaign.hasOne(models.OrgBank, { foreignKey: 'campaignId', as: 'bankDetails' })
+      Campaign.hasMany(models.Report, { foreignKey: 'targetId', as: 'reports' })
     }
   }
   Campaign.init(

@@ -70,6 +70,20 @@ class CommentsServices {
           model: db.User,
           as: 'user',
           attributes: ['userId', 'firstName', 'lastName', 'email']
+        },
+        {
+          model: db.CommentMedia,
+          as: 'media',
+          attributes: {
+            exclude: ['commentId', 'mediaTypeId']
+          },
+          include: [
+            {
+              model: db.Media,
+              as: 'mediaType',
+              attributes: ['mediaTypeId', 'mediaName']
+            }
+          ]
         }
       ],
       limit,
