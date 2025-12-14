@@ -95,7 +95,41 @@ const getDonationsValidator = validate(
     ['query']
   )
 )
+const getTop5DonationsValidator = validate(
+  checkSchema({
+    includeAnonymous: {
+      in: ['query'],
+      optional: true,
+      isBoolean: {
+        errorMessage: DONATION_MESSAGES.INCLUDE_ANONYMOUS_INVALID
+      },
+      toBoolean: true
+    }
+  })
+)
+
+const getTop5DonationsByCampaignValidator = validate(
+  checkSchema(
+    {
+      campaignId: {
+        notEmpty: { errorMessage: CAMPAIGN_MESSAGES.CAMPAIGN_ID_REQUIRED },
+        isInt: { errorMessage: CAMPAIGN_MESSAGES.CAMPAIGN_ID_INVALID }
+      },
+      includeAnonymous: {
+        in: ['query'],
+        optional: true,
+        isBoolean: {
+          errorMessage: DONATION_MESSAGES.INCLUDE_ANONYMOUS_INVALID
+        },
+        toBoolean: true
+      }
+    },
+    ['params']
+  )
+)
 module.exports = {
   campaignIdValidator,
-  getDonationsValidator
+  getDonationsValidator,
+  getTop5DonationsValidator,
+  getTop5DonationsByCampaignValidator
 }

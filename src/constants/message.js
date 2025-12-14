@@ -269,7 +269,8 @@ const DONATION_MESSAGES = {
   ALREADY_PROCESS: 'Transaction already processed',
   START_DATE_INVALID: 'Start date is invalid',
   END_DATE_INVALID: 'End date is invalid',
-  END_DATE_MUST_BE_AFTER_START_DATE: 'End date must be after start date'
+  END_DATE_MUST_BE_AFTER_START_DATE: 'End date must be after start date',
+  INCLUDE_ANONYMOUS_INVALID: 'includeAnonymous must be a boolean'
 }
 
 const NOTIFICATION_MESSAGES = {

@@ -24,6 +24,17 @@ class DonationsControllers {
     return res.status(HTTP_STATUS.OK).json(data)
   }
 
+  async getTop5Donations(req, res) {
+    const { includeAnonymous } = req.query
+    const data = await DonationsServices.getTop5Donors(includeAnonymous)
+    return res.status(HTTP_STATUS.OK).json({ data })
+  }
+  async getTop5DonationsByCampaign(req, res) {
+    const { campaignId } = req.params
+    const { includeAnonymous } = req.query
+    const data = await DonationsServices.getTop5DonorsByCampaign({ campaignId, includeAnonymous })
+    return res.status(HTTP_STATUS.OK).json({ data })
+  }
   async getDonationById(req, res) {
     // Implementation for retrieving a donation by ID
   }

@@ -151,5 +151,49 @@ class DonationsServices {
       throw err
     }
   }
+  async getTop5Donors(includeAnonymous) {
+    const whereClause = { statusId: donationStatus.Completed }
+    const includeAnonymousBool = includeAnonymous === 'true'
+    if (!includeAnonymousBool) {
+      whereClause.isAnonymous = false
+      whereClause.userId = { [db.Sequelize.Op.ne]: null }
+    }
+    return await db.Donation.findAll({
+      where: whereClause,
+      attributes: ['userId', [db.Sequelize.fn('SUM', db.Sequelize.col('amount')), 'totalAmount']],
+      include: [
+        {
+          model: db.User,
+          as: 'user',
+          attributes: ['userId', 'firstName', 'lastName', 'email']
+        }
+      ],
+      group: ['userId', 'user.userId'],
+      order: [[db.Sequelize.literal('totalAmount'), 'DESC']],
+      limit: 5
+    })
+  }
+  async getTop5DonorsByCampaign({ campaignId, includeAnonymous }) {
+    const whereClause = { statusId: donationStatus.Completed, campaignId }
+    const includeAnonymousBool = includeAnonymous === 'true'
+    if (!includeAnonymousBool) {
+      whereClause.isAnonymous = false
+      whereClause.userId = { [db.Sequelize.Op.ne]: null }
+    }
+    return await db.Donation.findAll({
+      where: whereClause,
+      attributes: ['userId', [db.Sequelize.fn('SUM', db.Sequelize.col('amount')), 'totalAmount']],
+      include: [
+        {
+          model: db.User,
+          as: 'user',
+          attributes: ['userId', 'firstName', 'lastName', 'email']
+        }
+      ],
+      group: ['userId', 'user.userId'],
+      order: [[db.Sequelize.literal('totalAmount'), 'DESC']],
+      limit: 5
+    })
+  }
 }
 module.exports = new DonationsServices()
