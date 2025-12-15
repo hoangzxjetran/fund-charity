@@ -13,6 +13,11 @@ class WalletControllers {
     const data = await walletsServices.getAllWallets({ page, limit, search, sortBy, sortOrder })
     return res.status(HTTP_STATUS.OK).json(data)
   }
+  async getWalletById(req, res, next) {
+    const { walletId } = req.params
+    const data = await walletsServices.getWalletById(walletId)
+    return res.status(HTTP_STATUS.OK).json({ data })
+  }
 }
 
 module.exports = new WalletControllers()

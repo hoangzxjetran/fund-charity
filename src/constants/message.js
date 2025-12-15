@@ -289,7 +289,9 @@ const WALLET_MESSAGES = {
   AMOUNT_MINIMUM: 'Amount must be at least 0',
   SORT_ORDER_INVALID: 'Sort order must be either "asc" or "desc"',
   SORT_BY_INVALID: 'Sort by must be one of the following: balance, createdAt',
-  STATUS_INVALID: 'Status must be one of the following: active, inactive'
+  STATUS_INVALID: 'Status must be one of the following: active, inactive',
+  WALLET_ID_REQUIRED: 'Wallet ID is required',
+  WALLET_ID_INVALID: 'Wallet ID is invalid'
 }
 
 const COMMENT_MESSAGES = {

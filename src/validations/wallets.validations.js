@@ -94,7 +94,24 @@ const getWalletsValidator = validate(
   )
 )
 
+const getWalletByIdValidator = validate(
+  checkSchema({
+    walletId: {
+      in: ['params'],
+      exists: {
+        errorMessage: WALLET_MESSAGES.WALLET_ID_REQUIRED
+      },
+      isInt: {
+        options: { min: 1 },
+        errorMessage: WALLET_MESSAGES.WALLET_ID_INVALID
+      },
+      toInt: true
+    }
+  })
+)
+
 module.exports = {
   getWalletByUserIdValidator,
-  getWalletsValidator
+  getWalletsValidator,
+  getWalletByIdValidator
 }

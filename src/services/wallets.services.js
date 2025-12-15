@@ -1,3 +1,6 @@
+const HTTP_STATUS = require('../constants/httpStatus.js')
+const { WALLET_MESSAGES } = require('../constants/message.js')
+const { AppError } = require('../controllers/error.controllers.js')
 const db = require('../models/index.js')
 class WalletServices {
   async getWalletByUserId(userId) {
@@ -89,6 +92,37 @@ class WalletServices {
         total: count
       }
     }
+  }
+
+  async getWalletById(walletId) {
+    const wallet = await db.Wallet.findByPk(walletId, {
+      attributes: ['walletId', 'balance', 'receiveAmount'],
+      include: [
+        { model: db.WalletStatus, as: 'status' },
+        { model: db.WalletType, as: 'type' },
+        { model: db.User, as: 'owner', attributes: ['userId', 'firstName', 'lastName', 'email'] },
+        {
+          model: db.Campaign,
+          as: 'campaign',
+          attributes: ['title', 'campaignId'],
+          include: [
+            {
+              model: db.OrgBank,
+              as: 'bankDetails',
+              attributes: ['bankAccountId', 'orgId', 'bankName', 'accountNumber', 'accountHolder', 'branch']
+            }
+          ]
+        }
+      ]
+    })
+    if (!wallet) {
+      throw new AppError(WALLET_MESSAGES.WALLET_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
+    const data = wallet.toJSON()
+    data.bankDetails = data?.campaign?.bankDetails || null
+    delete data?.campaign?.bankDetails
+
+    return data
   }
 }
 
