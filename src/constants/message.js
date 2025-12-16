@@ -291,7 +291,15 @@ const WALLET_MESSAGES = {
   SORT_BY_INVALID: 'Sort by must be one of the following: balance, createdAt',
   STATUS_INVALID: 'Status must be one of the following: active, inactive',
   WALLET_ID_REQUIRED: 'Wallet ID is required',
-  WALLET_ID_INVALID: 'Wallet ID is invalid'
+  WALLET_ID_INVALID: 'Wallet ID is invalid',
+  INSUFFICIENT_FUNDS: 'Insufficient funds in requester wallet',
+  PURPOSE_MUST_BE_STRING: 'Purpose must be a string',
+  PURPOSE_REQUIRED: 'Purpose is required',
+  CAMPAIGN_ID_REQUIRED: 'Campaign ID is required',
+  CAMPAIGN_ID_MUST_BE_NUMBER: 'Campaign ID must be a number',
+  FROM_WALLET_ID_REQUIRED: 'From wallet ID is required',
+  FROM_WALLET_ID_MUST_BE_NUMBER: 'From wallet ID must be a number',
+  WITHDRAWAL_STATUS_INVALID: 'Withdrawal status is invalid'
 }
 
 const COMMENT_MESSAGES = {

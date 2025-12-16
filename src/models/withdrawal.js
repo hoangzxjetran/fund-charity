@@ -26,18 +26,11 @@ module.exports = (sequelize, DataTypes) => {
         as: 'toWallet'
       })
 
-      // Bank Account (OrgBank)
-      Withdrawal.belongsTo(models.OrgBank, {
-        foreignKey: 'toBankAccountId',
-        as: 'bankAccount'
-      })
-
       // Requested By User
       Withdrawal.belongsTo(models.User, {
         foreignKey: 'requestedBy',
         as: 'requester'
       })
-
       // Approved By User
       Withdrawal.belongsTo(models.User, {
         foreignKey: 'approvedBy',
@@ -67,10 +60,10 @@ module.exports = (sequelize, DataTypes) => {
       campaignId: DataTypes.INTEGER,
       fromWalletId: DataTypes.INTEGER,
       toWalletId: DataTypes.INTEGER,
-      toBankAccountId: DataTypes.INTEGER,
       requestedBy: DataTypes.INTEGER,
-      approvedBy: DataTypes.INTEGER,
       amount: DataTypes.DECIMAL(18, 2),
+      purpose: DataTypes.STRING,
+      reasonRejected: DataTypes.STRING,
       statusId: DataTypes.INTEGER,
       requestedAt: DataTypes.DATE,
       approvedAt: DataTypes.DATE
