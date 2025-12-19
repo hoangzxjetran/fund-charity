@@ -1,11 +1,12 @@
 const { Router } = require('express')
 
 const catchAsync = require('../middlewares/catchAsync.middleware')
-const { isAuthorized } = require('../middlewares/auth.middlewares')
+const { isAuthorized, isAdmin } = require('../middlewares/auth.middlewares')
 const {
   createWithdrawalValidator,
   getAllWithdrawalsValidator,
-  updateWithdrawalStatusValidator
+  updateWithdrawalStatusValidator,
+  rejectedWithdrawalValidator
 } = require('../validations/withdrawals.validations')
 const withdrawalsControllers = require('../controllers/withdrawals.controllers')
 
@@ -19,5 +20,11 @@ withdrawalRouter
 withdrawalRouter
   .route('/:withdrawalId')
   .post(isAuthorized, updateWithdrawalStatusValidator, catchAsync(withdrawalsControllers.updateStatus))
+withdrawalRouter
+  .route('/:withdrawalId/approved')
+  .post(isAuthorized, isAdmin, catchAsync(withdrawalsControllers.approved))
+withdrawalRouter
+  .route('/:withdrawalId/rejected')
+  .post(isAuthorized, isAdmin, rejectedWithdrawalValidator, catchAsync(withdrawalsControllers.rejected))
 
 module.exports = withdrawalRouter

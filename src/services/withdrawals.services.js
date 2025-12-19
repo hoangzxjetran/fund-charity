@@ -3,6 +3,8 @@ const HTTP_STATUS = require('../constants/httpStatus.js')
 const { WALLET_MESSAGES } = require('../constants/message.js')
 const { AppError } = require('../controllers/error.controllers.js')
 const db = require('../models/index.js')
+const { getIO } = require('../utils/socket.js')
+const { sendWithdrawalApprovedEmail, sendNotifyWithdrawalToUser } = require('../utils/s3-ses.js')
 class WithdrawalServices {
   async createWithdrawal({ campaignId, fromWalletId, requestedBy, amount, purpose }) {
     const transaction = await db.sequelize.transaction()
@@ -86,21 +88,110 @@ class WithdrawalServices {
     }
   }
 
-  async approveWithdrawal(withdrawalId, adminId) {
-    const withdrawal = await db.Withdrawal.findByPk(withdrawalId)
-    if (!withdrawal) {
-      throw new Error('Withdrawal request not found')
-    }
-    if (withdrawal.status !== 'pending') {
-      throw new Error('Only pending withdrawals can be approved')
-    }
+  async approvedWithdrawal({ withdrawalId, adminId }) {
+    const transaction = await db.sequelize.transaction()
+    try {
+      const withdrawal = await db.Withdrawal.findByPk(withdrawalId)
+      if (!withdrawal) {
+        throw new AppError(WALLET_MESSAGES.WALLET_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+      }
+      if (withdrawal.statusId !== withdrawalStatus.Pending) {
+        throw new AppError(WALLET_MESSAGES.STATUS_INVALID, HTTP_STATUS.BAD_REQUEST)
+      }
+      withdrawal.statusId = withdrawalStatus.Approved
 
-    withdrawal.status = 'approved'
-    withdrawal.approvedBy = adminId
-    withdrawal.approvedAt = new Date()
-    await withdrawal.save()
+      withdrawal.approvedBy = adminId
+      withdrawal.approvedAt = new Date()
+      await withdrawal.save()
+      const emailRequester = await db.User.findByPk(withdrawal.requestedBy)
+      if (emailRequester) {
+        sendWithdrawalApprovedEmail({
+          toAddress: emailRequester.email,
+          userName: `${emailRequester.firstName} ${emailRequester.lastName}`,
+          amount: withdrawal.amount,
+          withdrawalId: withdrawal.withdrawalId
+        })
+      }
+      const donations = await db.Donation.findOne({
+        where: { campaignId: withdrawal.campaignId },
+        order: [['createdAt', 'DESC']],
+        transaction
+      })
+      if (donations) {
+        for (const donation of donations) {
+          sendNotifyWithdrawalToUser({
+            toAddress: donation.donor.email,
+            userName: `${donation.donor.firstName} ${donation.donor.lastName}`,
+            fundName: donation.campaign.title,
+            amount: withdrawal.amount,
+            withdrawalId: withdrawal.withdrawalId,
+            fundId: withdrawal.campaignId,
+            purpose: withdrawal.purpose
+          })
+        }
+      }
+      await transaction.commit()
+      return withdrawal
+    } catch (error) {
+      if (!transaction.finished) {
+        await transaction.rollback()
+      }
+      throw error
+    }
+  }
 
-    return withdrawal
+  async rejectedWithdrawal({ withdrawalId, adminId, reasonRejected }) {
+    const transaction = await db.sequelize.transaction()
+    try {
+      const withdrawal = await db.Withdrawal.findByPk(withdrawalId, { transaction })
+      if (!withdrawal) {
+        throw new AppError(WALLET_MESSAGES.WALLET_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+      }
+      if (withdrawal.statusId !== withdrawalStatus.Pending) {
+        throw new AppError(WALLET_MESSAGES.STATUS_INVALID, HTTP_STATUS.BAD_REQUEST)
+      }
+      withdrawal.statusId = withdrawalStatus.Rejected
+      withdrawal.reasonRejected = reasonRejected
+      const requesterId = withdrawal.requestedBy
+      const notify = await db.Notification.create(
+        {
+          userId: requesterId,
+          title: 'Rút tiền bị từ chối',
+          content: 'Rút tiền của bạn đã bị từ chối sau quá trình xem xét.'
+        },
+        { transaction }
+      )
+      const io = getIO()
+      io.to(String(requesterId)).emit('notification', notify)
+      await withdrawal.save({ transaction })
+
+      const walletRequester = await db.Wallet.findByPk(withdrawal.fromWalletId, {
+        transaction,
+        lock: transaction.LOCK.UPDATE
+      })
+      const walletAdmin = await db.Wallet.find(
+        {
+          where: { walletTypeId: walletType.Admin }
+        },
+        {
+          transaction,
+          lock: transaction.LOCK.UPDATE
+        }
+      )
+      if (!walletRequester) {
+        throw new AppError(WALLET_MESSAGES.WALLET_ID_INVALID, HTTP_STATUS.NOT_FOUND)
+      }
+      await walletRequester.increment('balance', { by: withdrawal.amount, transaction })
+      await walletAdmin.decrement('receiveAmount', { by: withdrawal.amount, transaction })
+
+      await transaction.commit()
+      return true
+    } catch (error) {
+      if (!transaction.finished) {
+        await transaction.rollback()
+      }
+      return false
+    }
   }
 
   async getWithdrawalById(withdrawalId) {
@@ -114,7 +205,7 @@ class WithdrawalServices {
       ]
     })
     if (!withdrawal) {
-      throw new Error('Withdrawal request not found')
+      throw new AppError(WALLET_MESSAGES.WITHDRAWAL_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
     }
     return withdrawal
   }
@@ -129,7 +220,7 @@ class WithdrawalServices {
     if (campaignId) {
       whereClause.campaignId = campaignId
     }
-   
+
     const withdrawals = await db.Withdrawal.findAndCountAll({
       where: whereClause,
       include: [

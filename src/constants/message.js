@@ -327,6 +327,14 @@ const REPORT_MESSAGES = {
   CAMPAIGN_ID_MUST_BE_INTEGER: 'Campaign ID must be an integer'
 }
 
+const WITHDRAWAL_MESSAGES = {
+  WITHDRAWAL_NOT_FOUND: 'Withdrawal not found',
+  WITHDRAWAL_STATUS_INVALID: 'Withdrawal status is invalid',
+  REJECTION_REASON_REQUIRED: 'Rejection reason is required',
+  REJECTION_REASON_MUST_BE_STRING: 'Rejection reason must be a string',
+  CAMPAIGN_ID_MUST_BE_NUMBER: 'Campaign ID must be a number'
+}
+
 module.exports = {
   USER_MESSAGES,
   COMMON,
@@ -341,5 +349,6 @@ module.exports = {
   NOTIFICATION_MESSAGES,
   WALLET_MESSAGES,
   COMMENT_MESSAGES,
-  REPORT_MESSAGES
+  REPORT_MESSAGES,
+  WITHDRAWAL_MESSAGES
 }

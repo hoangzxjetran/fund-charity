@@ -1,6 +1,6 @@
 const { checkSchema } = require('express-validator')
 const validate = require('../utils/validate')
-const { WALLET_MESSAGES, COMMON } = require('../constants/message')
+const { WALLET_MESSAGES, COMMON, WITHDRAWAL_MESSAGES } = require('../constants/message')
 const { AppError } = require('../controllers/error.controllers')
 const { withdrawalStatus } = require('../constants/enum')
 const HTTP_STATUS = require('../constants/httpStatus')
@@ -102,8 +102,24 @@ const updateWithdrawalStatusValidator = validate(
     ['body']
   )
 )
+const rejectedWithdrawalValidator = validate(
+  checkSchema(
+    {
+      reasonRejected: {
+        notEmpty: {
+          errorMessage: WITHDRAWAL_MESSAGES.REJECTION_REASON_REQUIRED
+        },
+        isString: {
+          errorMessage: WITHDRAWAL_MESSAGES.REJECTION_REASON_MUST_BE_STRING
+        }
+      }
+    },
+    ['body']
+  )
+)
 module.exports = {
   createWithdrawalValidator,
   getAllWithdrawalsValidator,
-  updateWithdrawalStatusValidator
+  updateWithdrawalStatusValidator,
+  rejectedWithdrawalValidator
 }
