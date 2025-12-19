@@ -15,7 +15,7 @@ const sesClient = new SESClient({
 })
 
 const forgotPasswordTemplate = fs.readFileSync(path.join(__dirname, '../template/forgot-password.html'), 'utf-8')
-
+const closeCampaignTemplate = fs.readFileSync(path.join(__dirname, '../template/closed-campaign.html'), 'utf-8')
 const createSendEmailCommand = ({ toAddress, subject, template, textBody }) => {
   return new SendEmailCommand({
     Destination: {
@@ -43,7 +43,7 @@ const createSendEmailCommand = ({ toAddress, subject, template, textBody }) => {
   })
 }
 
-const sendForgotPasswordEmail = async ({ toAddress, passwordToken }) => {
+const sendForgotPasswordEmail = async ({ toAddress, userName }) => {
   try {
     const contentTemplateForgotPassword = forgotPasswordTemplate
       .replace('{{YEAR}}', new Date().getFullYear().toString())
@@ -51,7 +51,7 @@ const sendForgotPasswordEmail = async ({ toAddress, passwordToken }) => {
     const command = createSendEmailCommand({
       toAddress,
       subject: 'Forgot Password',
-      template: contentTemplateForgotPassword,
+      template: closeCampaignTemplate,
       textBody: 'Please click the link to reset your password.'
     })
     const data = await sesClient.send(command)
@@ -60,4 +60,26 @@ const sendForgotPasswordEmail = async ({ toAddress, passwordToken }) => {
     throw new AppError('Failed to send email', HTTP_STATUS.INTERNAL_SERVER_ERROR)
   }
 }
-module.exports = { sendForgotPasswordEmail }
+
+const sendCloseCampaignEmail = async ({ toAddress, userName, campaignName, campaignId }) => {
+  try {
+    const contentTemplateCloseCampaign = closeCampaignTemplate
+      .replace('{{user_name}}', userName)
+      .replace('{{campaign_name}}', campaignName)
+      .replace('{{campaign_id}}', campaignId)
+      .replace('{{closed_date}}', new Date().toLocaleDateString('vi-VN'))
+      .replace('{{appeal_days}}', '7')
+      .replace('{{year}}', new Date().getFullYear().toString())
+    const command = createSendEmailCommand({
+      toAddress,
+      subject: 'Campaign Closed Notification',
+      template: contentTemplateCloseCampaign,
+      textBody: 'Your campaign has been closed. Thank you for your support!'
+    })
+    const data = await sesClient.send(command)
+    return data.$metadata.httpStatusCode === HTTP_STATUS.OK
+  } catch (error) {
+    throw new AppError('Failed to send email', HTTP_STATUS.INTERNAL_SERVER_ERROR)
+  }
+}
+module.exports = { sendForgotPasswordEmail, sendCloseCampaignEmail }

@@ -109,7 +109,7 @@ const updateStatusReportValidator = validate(
       status: {
         custom: {
           options: (value, { req }) => {
-            const allowedStatuses = ['pending', 'reviewed', 'rejected']
+            const allowedStatuses = ['pending', 'reviewed', 'rejected', 'approved']
             if (!allowedStatuses.includes(value)) {
               throw new AppError(REPORT_MESSAGES.STATUS_INVALID, HTTP_STATUS.UNPROCESSABLE_ENTITY)
             }

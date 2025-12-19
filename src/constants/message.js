@@ -247,7 +247,8 @@ const CAMPAIGN_MESSAGES = {
   STATUS_ID_INVALID: 'Status ID is invalid',
   SORT_BY_INVALID: 'Sort by must be one of the following: title, startDate, createdAt, targetAmount, currentAmount',
   SORT_ORDER_INVALID: 'Sort order must be either "asc" or "desc"',
-  STATUS_INVALID: 'Status must be one of the following: active,paused, completed, closed'
+  STATUS_INVALID: 'Status must be one of the following: active,paused, completed, closed',
+  CLOSED: 'Campaign is already closed'
 }
 
 const PAYMENT_MESSAGES = {
@@ -299,7 +300,8 @@ const WALLET_MESSAGES = {
   CAMPAIGN_ID_MUST_BE_NUMBER: 'Campaign ID must be a number',
   FROM_WALLET_ID_REQUIRED: 'From wallet ID is required',
   FROM_WALLET_ID_MUST_BE_NUMBER: 'From wallet ID must be a number',
-  WITHDRAWAL_STATUS_INVALID: 'Withdrawal status is invalid'
+  WITHDRAWAL_STATUS_INVALID: 'Withdrawal status is invalid',
+  STATUS_INVALID: 'Only pending withdrawals can be approved'
 }
 
 const COMMENT_MESSAGES = {

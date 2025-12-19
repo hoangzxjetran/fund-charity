@@ -205,6 +205,11 @@ class CampaignsServices {
               attributes: ['mediaTypeId', 'mediaName']
             }
           ]
+        },
+        {
+          model: db.User,
+          as: 'owner',
+          attributes: ['userId', 'firstName', 'lastName', 'email']
         }
       ]
     })
