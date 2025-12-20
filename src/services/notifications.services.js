@@ -46,5 +46,26 @@ class NotificationServices {
     await notification.save()
     return notification
   }
+
+  async markAsRead({ notificationId }) {
+    const resNotify = await db.Notification.findByPk(notificationId)
+    const notification = resNotify.get({ plain: true })
+    if (!notification) {
+      throw new AppError(NOTIFICATION_MESSAGES.NOTIFICATION_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
+    notification.isRead = true
+    await notification.save()
+    return true
+  }
+
+  async markAsReadAll({ userId }) {
+    await db.Notification.update(
+      { isRead: true },
+      {
+        where: { userId, isRead: false }
+      }
+    )
+    return true
+  }
 }
 module.exports = new NotificationServices()

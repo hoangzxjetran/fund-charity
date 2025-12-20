@@ -73,7 +73,23 @@ const updateNotificationValidator = validate(
   })
 )
 
+const markAsReadValidator = validate(
+  checkSchema({
+    notificationId: {
+      in: ['params'],
+      exists: {
+        errorMessage: NOTIFICATION_MESSAGES.NOTIFICATION_ID_REQUIRED
+      },
+      isInt: {
+        options: { min: 1 },
+        errorMessage: NOTIFICATION_MESSAGES.NOTIFICATION_ID_INVALID
+      },
+      toInt: true
+    }
+  })
+)
 module.exports = {
   getNotificationsValidator,
-  updateNotificationValidator
+  updateNotificationValidator,
+  markAsReadValidator
 }

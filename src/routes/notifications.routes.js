@@ -16,4 +16,7 @@ notificationRouter
   .route('/:notificationId')
   .put(isAuthorized, updateNotificationValidator, catchAsync(NotificationControllers.updateNotification))
 
+notificationRouter.route('/:notificationId/read').put(isAuthorized, catchAsync(NotificationControllers.markAsRead))
+notificationRouter.route('/read-all').put(isAuthorized, catchAsync(NotificationControllers.markAsReadAll))
+
 module.exports = notificationRouter
