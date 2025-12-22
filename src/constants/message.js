@@ -335,6 +335,11 @@ const WITHDRAWAL_MESSAGES = {
   CAMPAIGN_ID_MUST_BE_NUMBER: 'Campaign ID must be a number'
 }
 
+const TRANSACTION_MESSAGES = {
+  WALLET_ID_INVALID: 'Wallet ID is invalid',
+  TYPE_INVALID: 'Type must be one of the following: donation, withdrawal'
+}
+
 module.exports = {
   USER_MESSAGES,
   COMMON,
@@ -350,5 +355,6 @@ module.exports = {
   WALLET_MESSAGES,
   COMMENT_MESSAGES,
   REPORT_MESSAGES,
-  WITHDRAWAL_MESSAGES
+  WITHDRAWAL_MESSAGES,
+  TRANSACTION_MESSAGES
 }

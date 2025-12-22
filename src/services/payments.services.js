@@ -99,6 +99,8 @@ class PaymentServices {
             donationId,
             walletId: wallet.walletId,
             walletTypeId: walletType.Campaign,
+            balanceBefore: wallet.balance,
+            balanceAfter: wallet.balance + data.vnp_Amount / 100,
             amount: data.vnp_Amount / 100,
             transactionTime: new Date(),
             typeId: transactionType.Inflow,

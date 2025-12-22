@@ -1,40 +1,21 @@
-class TransactionsController {
-  constructor(transactionService) {
-    this.transactionService = transactionService
-  }
+const HTTP_STATUS = require('../constants/httpStatus')
+const transactionsServices = require('../services/transactions.services')
 
-  async createTransaction(req, res) {
-    try {
-      const transactionData = req.body
-      const newTransaction = await this.transactionService.createTransaction(transactionData)
-      res.status(201).json(newTransaction)
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to create transaction' })
-    }
-  }
-
-  async getTransactionById(req, res) {
-    try {
-      const transactionId = req.params.id
-      const transaction = await this.transactionService.getTransactionById(transactionId)
-      if (transaction) {
-        res.status(200).json(transaction)
-      } else {
-        res.status(404).json({ error: 'Transaction not found' })
-      }
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to retrieve transaction' })
-    }
-  }
-
-  async getAllTransactions(req, res) {
-    try {
-      const transactions = await this.transactionService.getAllTransactions()
-      res.status(200).json(transactions)
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to retrieve transactions' })
-    }
+class TransactionControllers {
+  async getTransactions(req, res) {
+    const { page, limit, search, type, sortBy, sortOrder, walletId } = req.query
+    const result = await transactionsServices.getTransactions({
+      page,
+      limit,
+      search,
+      sortBy,
+      walletId,
+      sortOrder,
+      type
+    })
+    return res.status(HTTP_STATUS.OK).json({
+      ...result
+    })
   }
 }
-
-module.exports = new TransactionsController()
+module.exports = new TransactionControllers()

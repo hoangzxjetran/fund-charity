@@ -13,6 +13,7 @@ const commentsRouter = require('./comments.routes.js')
 const reasonsRouter = require('./reasons.routes.js')
 const reportRouter = require('./reports.routes.js')
 const withdrawalRouter = require('./withdrawals.routes.js')
+const transactionRouter = require('./transactions.routes.js')
 const statisticsRouter = require('./statistics.routes.js')
 const HTTP_STATUS = require('../constants/httpStatus.js')
 
@@ -30,6 +31,7 @@ const route = (app) => {
   app.use('/v1/reasons', reasonsRouter)
   app.use('/v1/reports', reportRouter)
   app.use('/v1/withdrawals', withdrawalRouter)
+  app.use('/v1/transactions', transactionRouter)
   app.use('/v1/statistics', statisticsRouter)
   app.all(/(.*)/, (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server!`, HTTP_STATUS.NOT_FOUND))

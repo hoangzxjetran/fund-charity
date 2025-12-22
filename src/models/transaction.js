@@ -19,17 +19,14 @@ module.exports = (sequelize, DataTypes) => {
     {
       transactionId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
       donationId: { type: DataTypes.INTEGER },
+      withdrawalId: { type: DataTypes.INTEGER },
       walletId: { type: DataTypes.INTEGER, allowNull: false },
-      bankName: { type: DataTypes.STRING(255) },
-      accountNumber: { type: DataTypes.STRING(50) },
-      accountHolder: { type: DataTypes.STRING(255) },
-      branch: { type: DataTypes.STRING(255) },
+      balanceBefore: { type: DataTypes.DECIMAL(18, 2) },
+      balanceAfter: { type: DataTypes.DECIMAL(18, 2) },
       amount: { type: DataTypes.DECIMAL(18, 2), allowNull: false },
       transactionTime: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
-      proofImage: { type: DataTypes.STRING(255) },
       typeId: { type: DataTypes.INTEGER, allowNull: false },
       statusId: { type: DataTypes.INTEGER, allowNull: false },
-      bankRef: { type: DataTypes.STRING(100) }
     },
     {
       sequelize,

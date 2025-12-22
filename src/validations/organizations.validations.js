@@ -131,42 +131,42 @@ const createOrganizationValidator = validate(
           errorMessage: ORGANIZATION_MESSAGES.BANKS_MUST_BE_ARRAY
         }
       },
-      'banks.*.bankName': {
-        notEmpty: {
-          errorMessage: ORGANIZATION_MESSAGES.BANK_NAME_REQUIRED
-        },
-        isString: {
-          errorMessage: ORGANIZATION_MESSAGES.BANK_NAME_MUST_BE_STRING
-        },
-        trim: true
-      },
-      'banks.*.accountNumber': {
-        notEmpty: {
-          errorMessage: ORGANIZATION_MESSAGES.ACCOUNT_NUMBER_REQUIRED
-        },
-        isString: {
-          errorMessage: ORGANIZATION_MESSAGES.ACCOUNT_NUMBER_MUST_BE_STRING
-        },
-        trim: true
-      },
-      'banks.*.accountHolder': {
-        notEmpty: {
-          errorMessage: ORGANIZATION_MESSAGES.ACCOUNT_HOLDER_REQUIRED
-        },
-        isString: {
-          errorMessage: ORGANIZATION_MESSAGES.ACCOUNT_HOLDER_MUST_BE_STRING
-        },
-        trim: true
-      },
-      'banks.*.branch': {
-        notEmpty: {
-          errorMessage: ORGANIZATION_MESSAGES.BRANCH_REQUIRED
-        },
-        isString: {
-          errorMessage: ORGANIZATION_MESSAGES.BRANCH_MUST_BE_STRING
-        },
-        trim: true
-      }
+      // 'banks.*.bankName': {
+      //   notEmpty: {
+      //     errorMessage: ORGANIZATION_MESSAGES.BANK_NAME_REQUIRED
+      //   },
+      //   isString: {
+      //     errorMessage: ORGANIZATION_MESSAGES.BANK_NAME_MUST_BE_STRING
+      //   },
+      //   trim: true
+      // },
+      // 'banks.*.accountNumber': {
+      //   notEmpty: {
+      //     errorMessage: ORGANIZATION_MESSAGES.ACCOUNT_NUMBER_REQUIRED
+      //   },
+      //   isString: {
+      //     errorMessage: ORGANIZATION_MESSAGES.ACCOUNT_NUMBER_MUST_BE_STRING
+      //   },
+      //   trim: true
+      // },
+      // 'banks.*.accountHolder': {
+      //   notEmpty: {
+      //     errorMessage: ORGANIZATION_MESSAGES.ACCOUNT_HOLDER_REQUIRED
+      //   },
+      //   isString: {
+      //     errorMessage: ORGANIZATION_MESSAGES.ACCOUNT_HOLDER_MUST_BE_STRING
+      //   },
+      //   trim: true
+      // },
+      // 'banks.*.branch': {
+      //   notEmpty: {
+      //     errorMessage: ORGANIZATION_MESSAGES.BRANCH_REQUIRED
+      //   },
+      //   isString: {
+      //     errorMessage: ORGANIZATION_MESSAGES.BRANCH_MUST_BE_STRING
+      //   },
+      //   trim: true
+      // }
     },
     ['body']
   )

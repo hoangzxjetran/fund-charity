@@ -55,7 +55,9 @@ class WithdrawalServices {
           walletId: fromWalletId,
           walletTypeId: walletType.Campaign,
           amount,
-          message: purpose,
+          balanceBefore: walletRequester.balance,
+          balanceAfter: walletRequester.balance - amount,
+          withdrawalId: withdrawal.withdrawalId,
           typeId: transactionType.Outflow,
           statusId: transactionStatus.Pending,
           transactionTime: new Date()
@@ -80,7 +82,6 @@ class WithdrawalServices {
         ]
       })
     } catch (error) {
-      console.log(error)
       if (!transaction.finished) {
         await transaction.rollback()
       }
@@ -102,6 +103,14 @@ class WithdrawalServices {
 
       withdrawal.approvedBy = adminId
       withdrawal.approvedAt = new Date()
+      const transactionRecord = await db.Transaction.findOne({
+        where: { withdrawalId: withdrawal.withdrawalId },
+        transaction
+      })
+      if (transactionRecord) {
+        transactionRecord.statusId = transactionStatus.Completed
+        await transactionRecord.save({ transaction })
+      }
       await withdrawal.save()
       const emailRequester = await db.User.findByPk(withdrawal.requestedBy)
       if (emailRequester) {
