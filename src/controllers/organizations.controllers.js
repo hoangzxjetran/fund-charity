@@ -57,13 +57,14 @@ class OrganizationControllers {
     })
   }
   async getOrganizations(req, res) {
-    const { page, limit, search, sortBy, sortOrder } = req.query
+    const { page, limit, search, sortBy, sortOrder, userId } = req.query
     const result = await OrganizationServices.getOrganizations({
       page,
       limit,
       search,
       sortBy,
-      sortOrder
+      sortOrder,
+      userId
     })
     return res.status(HTTP_STATUS.OK).json({
       ...result

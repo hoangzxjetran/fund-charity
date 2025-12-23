@@ -119,7 +119,7 @@ class OrganizationServices {
     return organization
   }
 
-  async getOrganizations({ page, limit, search, sortBy = 'createdAt', sortOrder = 'DESC' }) {
+  async getOrganizations({ page, limit, search, sortBy = 'createdAt', sortOrder = 'DESC', userId }) {
     page = Number(page) || 1
     limit = Number(limit) || 10
     const offset = (page - 1) * limit
@@ -130,6 +130,9 @@ class OrganizationServices {
         { email: { [db.Sequelize.Op.like]: `%${search}%` } },
         { phoneNumber: { [db.Sequelize.Op.like]: `%${search}%` } }
       ]
+    }
+    if (userId) {
+      whereClause.createdBy = userId
     }
 
     const organizations = await db.Organization.findAndCountAll({

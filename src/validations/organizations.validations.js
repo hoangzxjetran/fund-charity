@@ -1,6 +1,6 @@
 const { checkSchema } = require('express-validator')
 const HTTP_STATUS = require('../constants/httpStatus.js')
-const { COMMON, ORGANIZATION_MESSAGES } = require('../constants/message.js')
+const { COMMON, ORGANIZATION_MESSAGES, USER_MESSAGES } = require('../constants/message.js')
 const { AppError } = require('../controllers/error.controllers.js')
 const validate = require('../utils/validate.js')
 
@@ -59,6 +59,14 @@ const getOrganizationsValidator = validate(
           options: [['ASC', 'DESC']],
           errorMessage: COMMON.SORT_ORDER_INVALID
         }
+      },
+      userId: {
+        optional: true,
+        isInt: {
+          options: { min: 1 },
+          errorMessage: USER_MESSAGES.USER_ID_INVALID
+        },
+        toInt: true
       }
     },
     ['query']
@@ -130,7 +138,7 @@ const createOrganizationValidator = validate(
         isArray: {
           errorMessage: ORGANIZATION_MESSAGES.BANKS_MUST_BE_ARRAY
         }
-      },
+      }
       // 'banks.*.bankName': {
       //   notEmpty: {
       //     errorMessage: ORGANIZATION_MESSAGES.BANK_NAME_REQUIRED
