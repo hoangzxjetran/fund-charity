@@ -1,5 +1,5 @@
 const { checkSchema } = require('express-validator')
-const { CAMPAIGN_MESSAGES, ORGANIZATION_MESSAGES, COMMON } = require('../constants/message')
+const { CAMPAIGN_MESSAGES, ORGANIZATION_MESSAGES, COMMON, USER_MESSAGES } = require('../constants/message')
 const { AppError } = require('../controllers/error.controllers')
 const { parseISO, isBefore } = require('date-fns')
 const validate = require('../utils/validate')
@@ -197,6 +197,14 @@ const getCampaignsValidator = validate(
         },
         isInt: {
           errorMessage: CAMPAIGN_MESSAGES.STATUS_INVALID
+        },
+        toInt: true
+      },
+      userId: {
+        optional: true,
+        isInt: {
+          options: { min: 1 },
+          errorMessage: USER_MESSAGES.USER_ID_INVALID
         },
         toInt: true
       }

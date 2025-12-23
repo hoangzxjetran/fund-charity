@@ -4,7 +4,7 @@ const { uploadFileToS3 } = require('../utils/s3-bucket')
 
 class CampaignsControllers {
   async getAll(req, res, next) {
-    const { page, limit, search, sortBy, sortOrder, status, categoryId } = req.query
+    const { page, limit, search, sortBy, sortOrder, status, categoryId, userId } = req.query
     const data = await campaignsServices.getAll({
       page,
       limit,
@@ -12,7 +12,8 @@ class CampaignsControllers {
       sortBy,
       sortOrder,
       status,
-      categoryId
+      categoryId,
+      userId
     })
     res.status(HTTP_STATUS.OK).json(data)
   }

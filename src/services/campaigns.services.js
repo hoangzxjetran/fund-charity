@@ -265,12 +265,11 @@ class CampaignsServices {
     return !!result
   }
 
-  async getAll({ page, limit, search, sortBy, sortOrder, status, categoryId }) {
+  async getAll({ page, limit, search, sortBy, sortOrder, status, categoryId, userId }) {
     page = parseInt(page) || 1
     limit = parseInt(limit) || 10
     const offset = (page - 1) * limit
     const whereClause = {}
-
     if (search) {
       whereClause.title = { [db.Sequelize.Op.like]: `%${search}%` }
     }
@@ -280,6 +279,18 @@ class CampaignsServices {
     if (categoryId) {
       whereClause.categoryId = categoryId
     }
+    const organizationInclude = {
+      model: db.Organization,
+      as: 'organization',
+      attributes: ['orgId', 'orgName', 'avatar']
+    }
+    if (userId) {
+      organizationInclude.where = {
+        createdBy: userId
+      }
+      organizationInclude.required = true
+    }
+
     const { rows: campaigns, count } = await db.Campaign.findAndCountAll({
       where: whereClause,
       limit,
@@ -289,11 +300,7 @@ class CampaignsServices {
       distinct: true,
       col: 'campaignId',
       include: [
-        {
-          model: db.Organization,
-          as: 'organization',
-          attributes: ['orgId', 'orgName', 'orgName', 'avatar']
-        },
+        organizationInclude,
         {
           model: db.CategoryFundraising,
           as: 'category',
