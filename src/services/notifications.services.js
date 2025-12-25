@@ -48,8 +48,7 @@ class NotificationServices {
   }
 
   async markAsRead({ notificationId }) {
-    const resNotify = await db.Notification.findByPk(notificationId)
-    const notification = resNotify.get({ plain: true })
+    const notification = await db.Notification.findByPk(notificationId)
     if (!notification) {
       throw new AppError(NOTIFICATION_MESSAGES.NOTIFICATION_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
     }
