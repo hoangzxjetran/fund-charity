@@ -119,7 +119,7 @@ const sendWithdrawalApprovedEmail = async ({ toAddress, userName, amount, withdr
   }
 }
 
-const sendNotifyWithdrawalToUser = async ({ toAddress, userName, amount, withdrawalId }) => {
+const sendNotifyWithdrawalToUser = async ({ toAddress, fundName, userName, amount, withdrawalId, purpose, fundId }) => {
   // Implementation for sending notification email to user about withdrawal
   try {
     const contentTemplateNotifyWithdrawal = notifyWithdrawalToUserTemplate
@@ -144,9 +144,9 @@ const sendNotifyWithdrawalToUser = async ({ toAddress, userName, amount, withdra
       .replace('{{year}}', new Date().getFullYear().toString())
     const command = createSendEmailCommand({
       toAddress,
-      subject: 'Thông báo về  việc chủ quỹ rút tiền quyên góp',
+      subject: `Thông báo về  việc chủ quỹ ${fundName} rút tiền quyên góp`,
       template: contentTemplateNotifyWithdrawal,
-      textBody: 'Thông báo về việc chủ quỹ rút tiền quyên góp. Vui lòng kiểm tra chi tiết trong email.'
+      textBody: `Thông báo về việc chủ quỹ ${fundName} rút tiền quyên góp. Vui lòng kiểm tra chi tiết trong email.`
     })
     const data = await sesClient.send(command)
     return data.$metadata.httpStatusCode === HTTP_STATUS.OK
@@ -154,4 +154,9 @@ const sendNotifyWithdrawalToUser = async ({ toAddress, userName, amount, withdra
     throw new AppError('Failed to send email', HTTP_STATUS.INTERNAL_SERVER_ERROR)
   }
 }
-module.exports = { sendForgotPasswordEmail, sendCloseCampaignEmail, sendWithdrawalApprovedEmail }
+module.exports = {
+  sendForgotPasswordEmail,
+  sendCloseCampaignEmail,
+  sendWithdrawalApprovedEmail,
+  sendNotifyWithdrawalToUser
+}

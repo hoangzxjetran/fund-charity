@@ -104,14 +104,14 @@ class WithdrawalServices {
       withdrawal.approvedBy = adminId
       withdrawal.approvedAt = new Date()
       const transactionRecord = await db.Transaction.findOne({
-        where: { withdrawalId: withdrawal.withdrawalId },
-        transaction
+        where: { withdrawalId: withdrawal.withdrawalId }
       })
       if (transactionRecord) {
         transactionRecord.statusId = transactionStatus.Completed
         await transactionRecord.save({ transaction })
       }
       await withdrawal.save()
+      await transaction.commit()
       const emailRequester = await db.User.findByPk(withdrawal.requestedBy)
       if (emailRequester) {
         sendWithdrawalApprovedEmail({
@@ -121,16 +121,31 @@ class WithdrawalServices {
           withdrawalId: withdrawal.withdrawalId
         })
       }
-      const donations = await db.Donation.findOne({
-        where: { campaignId: withdrawal.campaignId },
-        order: [['createdAt', 'DESC']],
-        transaction
+      const donations = await db.Donation.findAll({
+        where: {
+          campaignId: withdrawal.campaignId,
+          userId: { [db.Sequelize.Op.ne]: null },
+          donationId: {
+            [db.Sequelize.Op.in]: literal(`(
+              SELECT MAX(donationId) 
+              FROM Donations 
+              WHERE campaignId = ${withdrawal.campaignId} AND userId IS NOT NULL 
+              GROUP BY userId
+            )`)
+          }
+        },
+        include: [
+          { model: db.User, as: 'user', attributes: ['userId', 'firstName', 'lastName', 'email'] },
+          { model: db.Campaign, as: 'campaign', attributes: ['campaignId', 'title'] }
+        ],
+        order: [['createdAt', 'DESC']]
       })
-      if (donations) {
-        for (const donation of donations) {
+
+      for (const donation of donations) {
+        if (donation?.user?.email && withdrawal) {
           sendNotifyWithdrawalToUser({
-            toAddress: donation.donor.email,
-            userName: `${donation.donor.firstName} ${donation.donor.lastName}`,
+            toAddress: donation.user.email,
+            userName: `${donation.user.firstName} ${donation.user.lastName}`,
             fundName: donation.campaign.title,
             amount: withdrawal.amount,
             withdrawalId: withdrawal.withdrawalId,
@@ -139,7 +154,6 @@ class WithdrawalServices {
           })
         }
       }
-      await transaction.commit()
       return withdrawal
     } catch (error) {
       if (!transaction.finished) {
@@ -170,6 +184,15 @@ class WithdrawalServices {
         },
         { transaction }
       )
+      const transactionRecord = await db.Transaction.findOne({
+        where: { withdrawalId: withdrawal.withdrawalId }
+      })
+      if (transactionRecord) {
+        transactionRecord.statusId = transactionStatus.Rejected
+        transactionRecord.balanceBefore = transactionRecord.balance + transactionRecord.amount
+        transactionRecord.balanceAfter = transactionRecord.balance - transactionRecord.amount
+        await transactionRecord.save({ transaction })
+      }
       const io = getIO()
       io.to(String(requesterId)).emit('notification', notify)
       await withdrawal.save({ transaction })
@@ -178,7 +201,7 @@ class WithdrawalServices {
         transaction,
         lock: transaction.LOCK.UPDATE
       })
-      const walletAdmin = await db.Wallet.find(
+      const walletAdmin = await db.Wallet.findOne(
         {
           where: { walletTypeId: walletType.Admin }
         },
@@ -196,6 +219,7 @@ class WithdrawalServices {
       await transaction.commit()
       return true
     } catch (error) {
+      console.log(error)
       if (!transaction.finished) {
         await transaction.rollback()
       }
