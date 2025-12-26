@@ -189,8 +189,8 @@ class WithdrawalServices {
       })
       if (transactionRecord) {
         transactionRecord.statusId = transactionStatus.Rejected
-        transactionRecord.balanceBefore = transactionRecord.balance + transactionRecord.amount
-        transactionRecord.balanceAfter = transactionRecord.balance - transactionRecord.amount
+        transactionRecord.balanceBefore = transactionRecord.balanceBefore || 0 + transactionRecord.amount
+        transactionRecord.balanceAfter = transactionRecord.balanceAfter || 0 - transactionRecord.amount
         await transactionRecord.save({ transaction })
       }
       const io = getIO()
