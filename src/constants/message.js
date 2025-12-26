@@ -67,7 +67,8 @@ const USER_MESSAGES = {
   AVATAR_IS_REQUIRED: 'Avatar is required',
   TOKEN_INVALID: 'Token is invalid',
   ROLE_INVALID: 'Role is invalid',
-  SORT_BY_INVALID: 'Sort by is include firstName, lastName, email, createdAt, updatedAt'
+  SORT_BY_INVALID: 'Sort by is include firstName, lastName, email, createdAt, updatedAt',
+  IS_SHOW_AS_ANONYMOUS_MUST_BE_BOOLEAN: 'isShowAsAnonymous must be a boolean'
 }
 
 const COMMON = {

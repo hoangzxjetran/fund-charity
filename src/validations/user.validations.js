@@ -337,6 +337,13 @@ const updateProfileValidator = validate(
           errorMessage: USER_MESSAGES.AVATAR_MUST_BE_URL
         },
         trim: true
+      },
+      isShowAsAnonymous: {
+        optional: true,
+        isBoolean: {
+          errorMessage: USER_MESSAGES.IS_SHOW_AS_ANONYMOUS_MUST_BE_BOOLEAN
+        },
+        toBoolean: true
       }
     },
     ['body']
