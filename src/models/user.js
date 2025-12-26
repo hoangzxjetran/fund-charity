@@ -35,7 +35,8 @@ module.exports = (sequelize, DataTypes) => {
       avatar: { type: DataTypes.STRING(255) },
       isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
       refreshToken: { type: DataTypes.STRING(255) },
-      accessTokenForgotPassword: { type: DataTypes.STRING(255) }
+      accessTokenForgotPassword: { type: DataTypes.STRING(255) },
+      isShowAsAnonymous: { type: DataTypes.BOOLEAN, defaultValue: false }
     },
     {
       sequelize,

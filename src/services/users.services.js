@@ -303,12 +303,10 @@ class UserServices {
       ]
     }
 
-    // Sort an toàn: chỉ cho phép những cột hợp lệ
     const validSortBy = ['firstName', 'lastName', 'email', 'createdAt', 'updatedAt']
     if (!validSortBy.includes(sortBy)) sortBy = 'createdAt'
     sortOrder = sortOrder.toUpperCase() === 'DESC' ? 'DESC' : 'ASC'
 
-    // Count riêng
     const total = await db.User.count({
       where: whereClause,
       include: role
@@ -323,7 +321,6 @@ class UserServices {
         : []
     })
 
-    // Lấy dữ liệu
     const users = await db.User.findAll({
       where: whereClause,
       order: [[sortBy, sortOrder]],

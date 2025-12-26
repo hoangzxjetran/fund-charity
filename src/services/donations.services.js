@@ -165,7 +165,7 @@ class DonationsServices {
         {
           model: db.User,
           as: 'user',
-          attributes: ['userId', 'firstName', 'lastName', 'email']
+          attributes: ['userId', 'firstName', 'lastName', 'email', 'isShowAsAnonymous']
         }
       ],
       group: ['userId', 'user.userId'],
@@ -187,7 +187,7 @@ class DonationsServices {
         {
           model: db.User,
           as: 'user',
-          attributes: ['userId', 'firstName', 'lastName', 'email']
+          attributes: ['userId', 'firstName', 'lastName', 'email', 'isShowAsAnonymous']
         }
       ],
       group: ['userId', 'user.userId'],
