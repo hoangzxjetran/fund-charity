@@ -96,7 +96,10 @@ const COMMON = {
   MEDIA_URL_REQUIRED: 'Media URL is required',
   MEDIA_TYPE_REQUIRED: 'Media type is required',
   MEDIA_TYPE_ID_REQUIRED: 'Media type ID is required',
-  MEDIA_TYPE_ID_MUST_BE_INT: 'Media type ID must be an integer'
+  MEDIA_TYPE_ID_MUST_BE_INT: 'Media type ID must be an integer',
+  START_TIME_INVALID: 'Start time must be a valid ISO 8601 date',
+  END_TIME_INVALID: 'End time must be a valid ISO 8601 date',
+  END_TIME_MUST_BE_AFTER_START_TIME: 'End time must be after start time'
 }
 const FUND_CATEGORY_MESSAGES = {
   CATEGORY_NAME_REQUIRED: 'Category name is required',

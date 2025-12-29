@@ -4,7 +4,8 @@ const statisticsServices = require('../services/statistics.services')
 class StatisticsControllers {
   async getStatistics(req, res) {
     // Logic to gather statistics data
-    const data = await statisticsServices.getStatistics()
+    const { startTime, endTime } = req.query
+    const data = await statisticsServices.getStatistics({ startTime, endTime })
     res.status(HTTP_STATUS.OK).json({
       data
     })

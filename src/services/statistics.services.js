@@ -1,36 +1,48 @@
 const db = require('../models')
 class StatisticsServices {
-  async getStatistics() {
+  async getStatistics({ startTime, endTime }) {
+    const whereClause = {}
+    if (startTime && endTime) {
+      whereClause.createdAt = {
+        [db.Sequelize.Op.between]: [new Date(startTime), new Date(endTime)]
+      }
+    }
     const donationStats = db.Donation.findAll({
       attributes: [
         [db.Sequelize.fn('COUNT', db.Sequelize.col('donationId')), 'totalDonations'],
         [db.Sequelize.fn('SUM', db.Sequelize.col('amount')), 'totalAmount']
-      ]
+      ],
+      where: whereClause
     })
 
     const withdrawalStats = db.Withdrawal.findAll({
       attributes: [
         [db.Sequelize.fn('COUNT', db.Sequelize.col('withdrawalId')), 'totalWithdrawals'],
         [db.Sequelize.fn('SUM', db.Sequelize.col('amount')), 'totalAmount']
-      ]
+      ],
+      where: whereClause
     })
 
     const campaignStats = db.Campaign.findAll({
       attributes: [
         [db.Sequelize.fn('COUNT', db.Sequelize.col('campaignId')), 'totalCampaigns'],
         [db.Sequelize.fn('SUM', db.Sequelize.col('currentAmount')), 'currentAmount']
-      ]
+      ],
+      where: whereClause
     })
     const userStats = db.User.findAll({
-      attributes: [[db.Sequelize.fn('COUNT', db.Sequelize.col('userId')), 'totalUsers']]
+      attributes: [[db.Sequelize.fn('COUNT', db.Sequelize.col('userId')), 'totalUsers']],
+      where: whereClause
     })
 
     const organizationStats = db.Organization.findAll({
-      attributes: [[db.Sequelize.fn('COUNT', db.Sequelize.col('orgId')), 'totalOrganizations']]
+      attributes: [[db.Sequelize.fn('COUNT', db.Sequelize.col('orgId')), 'totalOrganizations']],
+      where: whereClause
     })
 
     const volunteerStats = db.VolunteerRegistration.findAll({
-      attributes: [[db.Sequelize.fn('COUNT', db.Sequelize.col('registrationId')), 'totalVolunteers']]
+      attributes: [[db.Sequelize.fn('COUNT', db.Sequelize.col('registrationId')), 'totalVolunteers']],
+      where: whereClause
     })
 
     return Promise.all([

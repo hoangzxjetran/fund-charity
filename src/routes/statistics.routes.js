@@ -2,10 +2,11 @@ const { Router } = require('express')
 const statisticsControllers = require('../controllers/statistics.controllers')
 const catchAsync = require('../middlewares/catchAsync.middleware')
 const { isAuthorized } = require('../middlewares/auth.middlewares')
+const { getStatsValidator } = require('../validations/statistics.validations')
 
 const router = Router()
 
-router.get('/overview', isAuthorized, catchAsync(statisticsControllers.getStatistics))
+router.get('/overview', isAuthorized, getStatsValidator, catchAsync(statisticsControllers.getStatistics))
 router.get('/donations-by-month', isAuthorized, catchAsync(statisticsControllers.getDonationByMonth))
 
 module.exports = router
