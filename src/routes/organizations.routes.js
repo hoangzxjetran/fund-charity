@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { isAuthorized } = require('../middlewares/auth.middlewares.js')
+const { isAuthorized, isAdmin } = require('../middlewares/auth.middlewares.js')
 const OrganizationControllers = require('../controllers/organizations.controllers')
 const {
   createOrganizationValidator,
@@ -30,4 +30,10 @@ router
   .route('/:orgId')
   .get(organizationIdValidator, catchAsync(OrganizationControllers.getOrganizationById))
   .put(organizationIdValidator, updateOrganizationValidator, catchAsync(OrganizationControllers.updateOrganization))
+router
+  .route('/:orgId/approved')
+  .put(isAuthorized, isAdmin, organizationIdValidator, catchAsync(OrganizationControllers.approvedOrganization))
+router
+  .route('/:orgId/rejected')
+  .put(isAuthorized, isAdmin, organizationIdValidator, catchAsync(OrganizationControllers.rejectedOrganization))
 module.exports = router

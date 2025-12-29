@@ -126,5 +126,20 @@ class OrganizationControllers {
       data: uploadResults
     })
   }
+
+  async approvedOrganization(req, res) {
+    const { orgId } = req.params
+    const result = await OrganizationServices.approvedOrganization(orgId)
+    return res.status(HTTP_STATUS.OK).json({
+      data: result
+    })
+  }
+  async rejectedOrganization(req, res) {
+    const { orgId } = req.params
+    const result = await OrganizationServices.rejectedOrganization(orgId)
+    return res.status(HTTP_STATUS.OK).json({
+      data: result
+    })
+  }
 }
 module.exports = new OrganizationControllers()

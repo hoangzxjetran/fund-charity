@@ -3,6 +3,7 @@ const { AppError } = require('../controllers/error.controllers')
 const HTTP_STATUS = require('../constants/httpStatus')
 const { CAMPAIGN_MESSAGES } = require('../constants/message')
 const { campaignStatus, walletType, walletStatus } = require('../constants/enum')
+const { getIO } = require('../utils/socket')
 class CampaignsServices {
   async getCampaigns({ orgId, page, limit, search, sortBy, sortOrder, status, categoryId }) {
     page = parseInt(page) || 1
@@ -95,7 +96,7 @@ class CampaignsServices {
           endDate,
           targetAmount,
           currentAmount: 0,
-          statusId: campaignStatus.Active
+          statusId: campaignStatus.Pending
         },
         { transaction }
       )
@@ -333,6 +334,47 @@ class CampaignsServices {
         total: count
       }
     }
+  }
+
+  async approvedCampaign(campaignId) {
+    const campaign = await db.Campaign.findByPk(campaignId, {
+      include: [{ model: db.Organization, as: 'organization', attributes: ['orgId', 'orgName', 'createdBy'] }]
+    })
+    if (!campaign) {
+      throw new AppError(CAMPAIGN_MESSAGES.CAMPAIGN_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
+    await campaign.update({ statusId: campaignStatus.Active })
+    const newNotification = await db.Notification.create({
+      userId: campaign.organization.createdBy,
+      title: 'Yêu cầu tạo chiến dịch được phê duyệt',
+      content: `Chiến dịch "${campaign.title}" của bạn đã được phê duyệt và hiện đang hoạt động. Chúc bạn thành công!`
+    })
+    if (newNotification) {
+      const io = getIO()
+      io.to(String(newNotification.userId)).emit('notification', newNotification)
+    }
+    return campaign
+  }
+
+  async rejectedCampaign(campaignId) {
+    const campaign = await db.Campaign.findByPk(campaignId, {
+      include: [{ model: db.Organization, as: 'organization', attributes: ['orgId', 'orgName', 'createdBy'] }]
+    })
+    if (!campaign) {
+      throw new AppError(CAMPAIGN_MESSAGES.CAMPAIGN_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
+    await campaign.update({ statusId: campaignStatus.Paused })
+    const newNotification = await db.Notification.create({
+      userId: campaign.organization.createdBy,
+      title: 'Yêu cầu tạo chiến dịch bị từ chối',
+      content: `Chiến dịch "${campaign.title}" của bạn đã bị từ chối. Vui lòng liên hệ quản trị viên để biết thêm chi tiết.`
+    })
+    if (newNotification) {
+      const io = getIO()
+      io.to(String(newNotification.userId)).emit('notification', newNotification)
+    }
+
+    return campaign
   }
 }
 module.exports = new CampaignsServices()

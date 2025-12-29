@@ -110,5 +110,21 @@ class CampaignsControllers {
       result
     })
   }
+
+  async approvedCampaign(req, res) {
+    const { campaignId } = req.params
+    const result = await campaignsServices.approvedCampaign(campaignId)
+    return res.status(HTTP_STATUS.OK).json({
+      data: result
+    })
+  }
+
+  async rejectedCampaign(req, res) {
+    const { campaignId } = req.params
+    const result = await campaignsServices.rejectedCampaign(campaignId)
+    return res.status(HTTP_STATUS.OK).json({
+      data: result
+    })
+  }
 }
 module.exports = new CampaignsControllers()

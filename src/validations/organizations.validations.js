@@ -132,9 +132,10 @@ const createOrganizationValidator = validate(
         trim: true
       },
       banks: {
-        notEmpty: {
-          errorMessage: ORGANIZATION_MESSAGES.BANK_IS_REQUIRED
-        },
+        optional: true,
+        // notEmpty: {
+        //   errorMessage: ORGANIZATION_MESSAGES.BANK_IS_REQUIRED
+        // },
         isArray: {
           errorMessage: ORGANIZATION_MESSAGES.BANKS_MUST_BE_ARRAY
         }

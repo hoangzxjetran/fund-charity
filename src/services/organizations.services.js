@@ -4,6 +4,7 @@ const { ORGANIZATION_MESSAGES } = require('../constants/message')
 const { AppError } = require('../controllers/error.controllers')
 const db = require('../models')
 const { deleteImageFromS3 } = require('../utils/s3-bucket')
+const { getIO } = require('../utils/socket')
 class OrganizationServices {
   async createOrganization(userId, data) {
     const t = await db.sequelize.transaction()
@@ -19,12 +20,12 @@ class OrganizationServices {
           website: data.website,
           avatar: data.avatar,
           createdBy: userId,
-          statusId: orgStatus.Active
+          statusId: orgStatus.Pending
         },
         { transaction: t }
       )
       const orgId = organization.orgId
-      const userRole = await db.UserRole.create(
+      await db.UserRole.create(
         {
           userId,
           orgId,
@@ -32,39 +33,27 @@ class OrganizationServices {
         },
         { transaction: t }
       )
-
-      for (const bank of data.banks) {
-        await db.OrgBank.create(
-          {
-            orgId,
-            bankName: bank.bankName,
-            accountNumber: bank.bankAccount,
-            branch: bank.branch,
-            accountHolder: bank.accountHolder,
-            statusId: orgStatus.Active
-          },
-          { transaction: t }
-        )
-      }
-      const banks = await db.OrgBank.findOne({ where: { orgId }, transaction: t })
-      const wallet = await db.Wallet.create(
-        {
-          ownerId: orgId,
-          walletTypeId: walletType.Organization,
-          balance: 0,
-          statusId: walletStatus.Active
-        },
-        { transaction: t }
-      )
       await t.commit()
+      const role = await db.UserRole.findOne({
+        where: {
+          orgId
+        },
+        attributes: { exclude: ['userId', 'orgId', 'roleId'] },
+        include: [
+          {
+            model: db.Role,
+            as: 'role'
+          }
+        ]
+      })
       return {
         organization: organization.get({ plain: true }),
-        role: userRole.get({ plain: true }),
-        banks: banks.get({ plain: true }),
-        wallet: wallet.get({ plain: true })
+        role
       }
     } catch (error) {
-      await t.rollback()
+      if (!t.finished) {
+        await t.rollback()
+      }
       throw error
     }
   }
@@ -255,6 +244,37 @@ class OrganizationServices {
 
       return updatedOrganization
     })
+  }
+  async approvedOrganization(organizationId) {
+    const organization = await db.Organization.findByPk(organizationId)
+    if (!organization) throw new AppError(ORGANIZATION_MESSAGES.ORGANIZATION_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    await organization.update({ statusId: orgStatus.Active })
+    const newNotification = await db.Notification.create({
+      userId: organization.createdBy,
+      title: 'Yêu cầu tạo tổ chức được phê duyệt',
+      content: `Tổ chức "${organization.orgName}" của bạn đã được phê duyệt và kích hoạt.`
+    })
+    if (newNotification) {
+      const io = getIO()
+      io.to(String(newNotification.userId)).emit('notification', newNotification)
+    }
+    return organization
+  }
+
+  async rejectedOrganization(organizationId) {
+    const organization = await db.Organization.findByPk(organizationId)
+    if (!organization) throw new AppError(ORGANIZATION_MESSAGES.ORGANIZATION_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    await organization.update({ statusId: orgStatus.Reject })
+    const newNotification = await db.Notification.create({
+      userId: organization.createdBy,
+      title: 'Yêu cầu tạo tổ chức bị từ chối',
+      content: `Tổ chức "${organization.orgName}" của bạn đã bị từ chối. Vui lòng liên hệ bộ phận hỗ trợ để biết thêm chi tiết.`
+    })
+    if (newNotification) {
+      const io = getIO()
+      io.to(String(newNotification.userId)).emit('notification', newNotification)
+    }
+    return organization
   }
 }
 module.exports = new OrganizationServices()

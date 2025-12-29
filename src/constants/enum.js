@@ -14,7 +14,8 @@ const campaignStatus = {
   Active: 1,
   Paused: 2,
   Completed: 3,
-  Closed: 4
+  Closed: 4,
+  Pending: 5
 }
 
 const roleType = {
