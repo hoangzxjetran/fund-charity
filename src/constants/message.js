@@ -344,6 +344,15 @@ const TRANSACTION_MESSAGES = {
   TYPE_INVALID: 'Type must be one of the following: donation, withdrawal'
 }
 
+const FRIEND_REQUEST_MESSAGES = {
+  FRIEND_REQUEST_NOT_FOUND: 'Friend request not found',
+  FRIEND_REQUEST_ALREADY_EXISTS: 'Friend request already sent',
+  CANNOT_SEND_REQUEST_TO_YOURSELF: 'Cannot send friend request to yourself',
+  INVALID_STATUS: 'Status must be one of the following: pending, accepted, rejected',
+  REQUEST_ID_REQUIRED: 'Request ID is required',
+  REQUEST_ID_INVALID: 'Request ID is invalid'
+}
+
 module.exports = {
   USER_MESSAGES,
   COMMON,
@@ -360,5 +369,6 @@ module.exports = {
   COMMENT_MESSAGES,
   REPORT_MESSAGES,
   WITHDRAWAL_MESSAGES,
-  TRANSACTION_MESSAGES
+  TRANSACTION_MESSAGES,
+  FRIEND_REQUEST_MESSAGES
 }

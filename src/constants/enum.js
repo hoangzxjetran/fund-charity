@@ -82,6 +82,23 @@ const walletStatus = {
   Closed: 3
 }
 
+const friendRequestStatus = {
+  Pending: 'pending',
+  Accepted: 'accepted',
+  Rejected: 'rejected'
+}
+
+const conversationType = {
+  Private: 'private',
+  Group: 'group'
+}
+
+const conversationRole = {
+  Member: 'member',
+  Admin: 'admin',
+  Owner: 'owner'
+}
+
 module.exports = {
   userVerifyStatus,
   orgStatus,
@@ -95,5 +112,8 @@ module.exports = {
   transactionType,
   transactionStatus,
   withdrawalStatus,
-  walletStatus
+  walletStatus,
+  friendRequestStatus,
+  conversationType,
+  conversationRole
 }
