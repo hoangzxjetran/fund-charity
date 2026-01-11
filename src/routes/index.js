@@ -15,6 +15,7 @@ const reportRouter = require('./reports.routes.js')
 const withdrawalRouter = require('./withdrawals.routes.js')
 const transactionRouter = require('./transactions.routes.js')
 const statisticsRouter = require('./statistics.routes.js')
+const friendRouter = require('./friends.routes.js')
 const HTTP_STATUS = require('../constants/httpStatus.js')
 
 const route = (app) => {
@@ -33,6 +34,7 @@ const route = (app) => {
   app.use('/v1/withdrawals', withdrawalRouter)
   app.use('/v1/transactions', transactionRouter)
   app.use('/v1/statistics', statisticsRouter)
+  app.use('/v1/friends', friendRouter)
   app.all(/(.*)/, (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server!`, HTTP_STATUS.NOT_FOUND))
   })

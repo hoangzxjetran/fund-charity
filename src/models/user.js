@@ -22,6 +22,9 @@ module.exports = (sequelize, DataTypes) => {
         as: 'createdOrganizations'
       })
       User.hasMany(models.Report, { foreignKey: 'reporterId', as: 'reports' })
+      User.hasMany(models.FriendRequest, { foreignKey: 'senderId', as: 'sentFriendRequests' })
+      User.hasMany(models.FriendRequest, { foreignKey: 'receiverId', as: 'receivedFriendRequests' })
+      User.hasMany(models.Friend, { foreignKey: 'userId', as: 'friends' })
     }
   }
   User.init(
