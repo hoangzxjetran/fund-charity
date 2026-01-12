@@ -376,5 +376,36 @@ class CampaignsServices {
 
     return campaign
   }
+  async getCampaignNotDisbursed() {
+    const campaigns = await db.Campaign.findAll({
+      where: {
+        endDate: {
+          [db.Sequelize.Op.lte]: new Date()
+        },
+        lastReminderSentAt: {
+          [db.Sequelize.Op.eq]: null
+        },
+        statusId: campaignStatus.Active,
+        currentAmount: {
+          [db.Sequelize.Op.gt]: 0
+        }
+      },
+      include: [
+        {
+          model: db.Organization,
+          as: 'organization',
+          attributes: ['orgId', 'orgName', 'createdBy']
+        }
+      ]
+    })
+    return campaigns
+  }
+  async updateLastReminderSentAt(campaignId) {
+    const campaign = await db.Campaign.findByPk(campaignId)
+    if (!campaign) {
+      throw new AppError(CAMPAIGN_MESSAGES.CAMPAIGN_NOT_FOUND, HTTP_STATUS.NOT_FOUND)
+    }
+    await campaign.update({ lastReminderSentAt: new Date() })
+  }
 }
 module.exports = new CampaignsServices()

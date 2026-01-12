@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cảnh báo chưa giải ngân</title>
+
+</head>
+
+<body style="margin:0; padding:0; background-color:#f4f6f8; font-family:Arial, Helvetica, sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="padding:20px 0;">
+        <tr>
+            <td align="center">
+
+                <!-- Container -->
+                <table width="600" cellpadding="0" cellspacing="0"
+                    style="background-color:#ffffff; border-radius:8px; overflow:hidden;">
+
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color:#dc2626; padding:20px; text-align:center;">
+                            <h2 style="margin:0; color:#ffffff;">
+                                ⚠️ Cảnh báo chưa giải ngân
+                            </h2>
+                        </td>
+                    </tr>
+
+                    <!-- Body -->
+                    <tr>
+                        <td style="padding:30px; font-size:14px; color:#333; line-height:1.6;">
+                            <p>
+                                Xin chào <strong>{{user_name}}</strong>,
+                            </p>
+
+                            <p>
+                                Chúng tôi ghi nhận rằng chiến dịch thiện nguyện
+                                <strong>"{{campaign_name}}"</strong> mà bạn đã từng đóng góp
+                                đã <strong>kết thúc vào ngày {{end_date}}</strong>,
+                                tuy nhiên đến thời điểm hiện tại vẫn <strong>chưa được giải ngân</strong>.
+                            </p>
+
+                            <!-- Info box -->
+                            <table width="100%" cellpadding="0" cellspacing="0"
+                                style="background:#f9fafb; border:1px solid #e5e7eb; margin:20px 0;">
+                                <tr>
+                                    <td style="padding:12px;">
+                                        <p style="margin:0;"><strong>Tên chiến dịch:</strong> {{campaign_name}}</p>
+                                        <p style="margin:6px 0 0;"><strong>Tổng số tiền quyên góp:</strong>
+                                            {{total_amount}} VND</p>
+                                        <p style="margin:6px 0 0;"><strong>Trạng thái:</strong> Chưa giải ngân</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p>
+                                Hệ thống gửi email này nhằm <strong>đảm bảo tính minh bạch</strong> và
+                                giúp bạn nắm rõ tình trạng sử dụng nguồn tiền đã đóng góp.
+                                Hiện tại, số tiền vẫn đang được <strong>quản lý an toàn trên hệ thống</strong>
+                                và <strong>chưa được sử dụng cho bất kỳ mục đích nào</strong>.
+                            </p>
+
+                            <p>
+                                Ban quản trị đã ghi nhận tình trạng này và sẽ tiến hành
+                                <strong>giám sát, nhắc nhở đơn vị quản lý chiến dịch</strong>
+                                để đảm bảo việc giải ngân được thực hiện đúng quy định.
+                            </p>
+
+                            <!-- Button -->
+                            <div style="text-align:center; margin-top:30px;">
+                                <a href="{{detail_url}}" style="
+                  display:inline-block;
+                  padding:12px 24px;
+                  background-color:#dc2626;
+                  color:#ffffff;
+                  text-decoration:none;
+                  border-radius:4px;
+                  font-weight:bold;
+                ">
+                                    Xem chi tiết chiến dịch
+                                </a>
+                            </div>
+
+                            <p style="margin-top:30px;">
+                                Nếu bạn có bất kỳ thắc mắc nào, vui lòng liên hệ qua
+                                <a href="mailto:{{support_email}}" style="color:#2563eb; text-decoration:none;">
+                                    {{support_email}}
+                                </a>.
+                            </p>
+
+                            <p>
+                                Xin chân thành cảm ơn sự đóng góp và đồng hành của bạn.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td
+                            style="background-color:#f9fafb; padding:16px; text-align:center; font-size:12px; color:#6b7280;">
+                            © {{year}} Hệ thống từ thiện trực tuyến. Email được gửi tự động.
+                        </td>
+                    </tr>
+
+                </table>
+                <!-- End Container -->
+
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>

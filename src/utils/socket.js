@@ -14,14 +14,14 @@ function initSocket(server) {
       if (!userId) return
       socket.join(String(userId))
     })
-    socket.on('join-conversation', ({ conversationId }) => {
+    socket.on('join-conversation', (conversationId) => {
       if (!conversationId) return
-      socket.join(`conversation_${conversationId}`)
+      socket.join(`conversation-${conversationId}`)
     })
 
-    socket.on('leave-conversation', ({ conversationId }) => {
+    socket.on('leave-conversation', (conversationId) => {
       if (!conversationId) return
-      socket.leave(`conversation_${conversationId}`)
+      socket.leave(`conversation-${conversationId}`)
     })
     socket.on('disconnect', () => {
       console.log('❌ Client disconnected:', socket.id)

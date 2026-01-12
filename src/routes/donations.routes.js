@@ -9,6 +9,7 @@ const donationsControllers = require('../controllers/donations.controllers.js')
 const catchAsync = require('../middlewares/catchAsync.middleware.js')
 const donationRouter = Router()
 
+donationRouter.get('/', catchAsync(donationsControllers.getUserDisbursed))
 donationRouter.get('/top-5', getTop5DonationsValidator, catchAsync(donationsControllers.getTop5Donations))
 donationRouter.get(
   '/top-5/:campaignId',

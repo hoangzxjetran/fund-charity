@@ -126,5 +126,10 @@ class CampaignsControllers {
       data: result
     })
   }
+
+  async getCampaignNotDisbursed(req, res) {
+    const data = await campaignsServices.getCampaignNotDisbursed()
+    return res.status(HTTP_STATUS.OK).json({ data })
+  }
 }
 module.exports = new CampaignsControllers()

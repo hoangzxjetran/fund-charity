@@ -100,8 +100,19 @@ const friendRequestIdValidator = validate(
     {
       requestId: {
         notEmpty: { errorMessage: FRIEND_REQUEST_MESSAGES.REQUEST_ID_REQUIRED },
-        isInt: { errorMessage: FRIEND_REQUEST_MESSAGES.REQUEST_ID_INVALID },
-        toInt: true
+        isInt: { errorMessage: FRIEND_REQUEST_MESSAGES.REQUEST_ID_INVALID }
+      }
+    },
+    ['params']
+  )
+)
+
+const friendIdValidator = validate(
+  checkSchema(
+    {
+      friendId: {
+        notEmpty: { errorMessage: USER_MESSAGES.USER_ID_REQUIRED },
+        isInt: { errorMessage: USER_MESSAGES.USER_ID_INVALID }
       }
     },
     ['params']
@@ -125,5 +136,6 @@ module.exports = {
   getListFriendValidator,
   getListFriendRequestValidator,
   sendRequestValidator,
-  friendRequestIdValidator
+  friendRequestIdValidator,
+  friendIdValidator
 }

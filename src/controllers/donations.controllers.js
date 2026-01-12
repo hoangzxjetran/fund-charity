@@ -35,16 +35,14 @@ class DonationsControllers {
     const data = await DonationsServices.getTop5DonorsByCampaign({ campaignId, includeAnonymous })
     return res.status(HTTP_STATUS.OK).json({ data })
   }
-  async getDonationById(req, res) {
-    // Implementation for retrieving a donation by ID
-  }
-
-  async updateDonation(req, res) {
-    // Implementation for updating a donation
-  }
-
-  async deleteDonation(req, res) {
-    // Implementation for deleting a donation
+  async getUserDisbursed(req, res) {
+    const { campaignId, timeCloseCampaign, timeScan } = req.query
+    const data = await DonationsServices.getUserDonationsCampaignDisbursed({
+      campaignId,
+      timeCloseCampaign,
+      timeScan
+    })
+    return res.status(HTTP_STATUS.OK).json({ data })
   }
 }
 

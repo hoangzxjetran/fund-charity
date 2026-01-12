@@ -12,8 +12,10 @@ const {
 const { isAuthorized, isAdmin } = require('../middlewares/auth.middlewares')
 const catchAsync = require('../middlewares/catchAsync.middleware')
 
+
 router.route('/').get(getCampaignsValidator, catchAsync(CampaignsControllers.getAll))
 router.route('/uploads').post(isAuthorized, uploadCampaignMedia, resizeCampaignMedia, CampaignsControllers.uploadMedia)
+router.get('/not-disbursed', catchAsync(CampaignsControllers.getCampaignNotDisbursed))
 router
   .route('/:orgId')
   .post(isAuthorized, orgIdValidator, createCampaignValidator, catchAsync(CampaignsControllers.createCampaign))

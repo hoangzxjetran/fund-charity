@@ -7,7 +7,8 @@ const {
   getListFriendValidator,
   getListFriendRequestValidator,
   friendRequestIdValidator,
-  sendRequestValidator
+  sendRequestValidator,
+  friendIdValidator
 } = require('../validations/friends.validations')
 
 friendRouter.get('/', isAuthorized, getListFriendValidator, catchAsync(friendControllers.getListFriend))
@@ -27,6 +28,6 @@ friendRouter.post(
   friendRequestIdValidator,
   catchAsync(friendControllers.declineFriendRequest)
 )
-friendRouter.delete('/:friendId', isAuthorized, friendRequestIdValidator, catchAsync(friendControllers.removeFriend))
+friendRouter.delete('/:friendId', isAuthorized, friendIdValidator, catchAsync(friendControllers.removeFriend))
 friendRouter.get('/count-requests', isAuthorized, catchAsync(friendControllers.countFriendRequests))
 module.exports = friendRouter

@@ -6,6 +6,7 @@ const route = require('./routes')
 const { connectDB } = require('./config/connectDB')
 const errorMiddleware = require('./middlewares/error.middlewares')
 const { initSocket } = require('./utils/socket')
+const disbursedWarning = require('./utils/cron/disbursed-warning')
 
 dotenv.config()
 const app = express()
@@ -16,7 +17,7 @@ app.use(express.json())
 const httpServer = http.createServer(app)
 
 initSocket(httpServer)
-
+disbursedWarning()
 
 route(app)
 connectDB()

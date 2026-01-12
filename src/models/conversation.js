@@ -10,8 +10,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      models.Conversation.hasMany(models.ConversationMember, { foreignKey: 'conversationId', as: 'Members' });
-      models.Conversation.hasMany(models.Message, { foreignKey: 'conversationId', as: 'Messages' });
+      models.Conversation.hasMany(models.ConversationMember, {
+        foreignKey: 'conversationId',
+        as: 'members'
+      })
+      models.Conversation.hasMany(models.Message, { foreignKey: 'conversationId', as: 'messages' })
     }
   }
   Conversation.init(

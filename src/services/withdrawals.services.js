@@ -126,7 +126,7 @@ class WithdrawalServices {
           campaignId: withdrawal.campaignId,
           userId: { [db.Sequelize.Op.ne]: null },
           donationId: {
-            [db.Sequelize.Op.in]: literal(`(
+            [db.Sequelize.Op.in]: db.Sequelize.literal(`(
               SELECT MAX(donationId) 
               FROM Donations 
               WHERE campaignId = ${withdrawal.campaignId} AND userId IS NOT NULL 

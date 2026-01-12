@@ -50,7 +50,8 @@ module.exports = (sequelize, DataTypes) => {
           return rawValue ? parseFloat(rawValue) : 0
         }
       },
-      statusId: { type: DataTypes.INTEGER, allowNull: false }
+      statusId: { type: DataTypes.INTEGER, allowNull: false },
+      lastReminderSentAt: { type: DataTypes.DATE, allowNull: true }
     },
     {
       sequelize,

@@ -1,3 +1,4 @@
+const { endOfDay } = require('date-fns')
 const { donationStatus, walletType } = require('../constants/enum.js')
 const HTTP_STATUS = require('../constants/httpStatus.js')
 const { DONATION_MESSAGES } = require('../constants/message.js')
@@ -194,6 +195,42 @@ class DonationsServices {
       order: [[db.Sequelize.literal('totalAmount'), 'DESC']],
       limit: 5
     })
+  }
+  async getUserDonationsCampaignDisbursed({ campaignId, timeCloseCampaign }) {
+    const donations = await await db.Donation.findAll({
+      attributes: ['userId', [db.Sequelize.fn('SUM', db.Sequelize.col('Donation.amount')), 'totalAmount']],
+      where: {
+        statusId: donationStatus.Completed,
+        campaignId,
+        userId: {
+          [db.Sequelize.Op.ne]: null
+        },
+        donateDate: {
+          [db.Sequelize.Op.lte]: endOfDay(timeCloseCampaign)
+        }
+      },
+      include: [
+        {
+          model: db.Campaign,
+          as: 'campaign',
+          attributes: ['campaignId', 'title']
+        },
+        {
+          model: db.User,
+          as: 'user',
+          attributes: ['userId', 'email', 'firstName', 'lastName'],
+          where: {
+            [db.Sequelize.Op.or]: [
+              { email: { [db.Sequelize.Op.like]: 'danghoang0901zaqw%' } },
+              { email: { [db.Sequelize.Op.like]: 'danghoang0901zaqwe%' } },
+              { email: { [db.Sequelize.Op.like]: 'giabao712411%' } }
+            ]
+          }
+        }
+      ],
+      group: ['Donation.userId', 'user.userId']
+    })
+    return donations
   }
 }
 module.exports = new DonationsServices()

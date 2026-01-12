@@ -21,6 +21,10 @@ const notifyWithdrawalToUserTemplate = fs.readFileSync(
   path.join(__dirname, '../template/notify-withdrawal-to-user.html'),
   'utf-8'
 )
+const warningDisbursedTemplate = fs.readFileSync(
+  path.join(__dirname, '../template/campaign-not-disbursed-warning.html'),
+  'utf-8'
+)
 const createSendEmailCommand = ({ toAddress, subject, template, textBody }) => {
   return new SendEmailCommand({
     Destination: {
@@ -92,7 +96,7 @@ const sendWithdrawalApprovedEmail = async ({ toAddress, userName, amount, withdr
   try {
     const contentTemplateWithdrawalApproved = withdrawalApprovedTemplate
       .replace('{{user_name}}', userName)
-      .replace('{{amount}}', amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }))
+      .replace('{{amount}}', Number(amount || 0).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }))
       .replace('{{withdrawal_id}}', withdrawalId)
       .replace(
         '{{processing_time}}',
@@ -125,7 +129,7 @@ const sendNotifyWithdrawalToUser = async ({ toAddress, fundName, userName, amoun
     const contentTemplateNotifyWithdrawal = notifyWithdrawalToUserTemplate
       .replace('{{user_name}}', userName)
       .replace('{{fund_name}}', fundName)
-      .replace('{{amount}}', amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }))
+      .replace('{{amount}}', (Number(amount) || 0).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }))
       .replace('{{withdrawal_id}}', withdrawalId)
       .replace(
         '{{withdrawal_time}}',
@@ -154,9 +158,43 @@ const sendNotifyWithdrawalToUser = async ({ toAddress, fundName, userName, amoun
     throw new AppError('Failed to send email', HTTP_STATUS.INTERNAL_SERVER_ERROR)
   }
 }
+
+const sendWarningDisbursedEmail = async ({ toAddress, userName, fundName, endDate, totalAmount }) => {
+  try {
+    const amountNumber = Number(totalAmount || 0)
+    const formattedEndDate = endDate instanceof Date ? endDate.toLocaleDateString('vi-VN') : endDate
+    const contentTemplateNotifyWithdrawal = warningDisbursedTemplate
+      .replace('{{user_name}}', userName)
+      .replaceAll('{{campaign_name}}', fundName)
+      .replace('{{end_date}}', formattedEndDate)
+      .replace(
+        '{{total_amount}}',
+        amountNumber.toLocaleString('vi-VN', {
+          style: 'currency',
+          currency: 'VND'
+        })
+      )
+      .replace('{{support_email}}', 'admin@gmail.com')
+      .replace('{{year}}', new Date().getFullYear().toString())
+
+    const command = createSendEmailCommand({
+      toAddress,
+      subject: `Thông báo về việc chủ quỹ ${fundName} chưa giải ngân`,
+      template: contentTemplateNotifyWithdrawal,
+      textBody: `Chủ quỹ ${fundName} chưa thực hiện giải ngân sau thời gian kết thúc chiến dịch.`
+    })
+    const data = await sesClient.send(command)
+    return data.$metadata.httpStatusCode === HTTP_STATUS.OK
+  } catch (error) {
+    console.error('[SES] Failed to send email:', error)
+    throw new AppError('Failed to send email', HTTP_STATUS.INTERNAL_SERVER_ERROR)
+  }
+}
+
 module.exports = {
   sendForgotPasswordEmail,
   sendCloseCampaignEmail,
   sendWithdrawalApprovedEmail,
-  sendNotifyWithdrawalToUser
+  sendNotifyWithdrawalToUser,
+  sendWarningDisbursedEmail
 }

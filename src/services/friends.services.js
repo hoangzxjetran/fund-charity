@@ -8,32 +8,32 @@ class FriendServices {
     page = parseInt(page) || 1
     limit = parseInt(limit) || 10
     const offset = (page - 1) * limit
-    const whereClause = { userId }
+    const friendWhere = {}
     if (search) {
-      whereClause['$friend.firstName$'] = { [db.Sequelize.Op.like]: `%${search}%` }
-      whereClause['$friend.lastName$'] = { [db.Sequelize.Op.like]: `%${search}%` }
+      friendWhere[db.Sequelize.Op.or] = [
+        { firstName: { [db.Sequelize.Op.like]: `%${search}%` } },
+        { lastName: { [db.Sequelize.Op.like]: `%${search}%` } }
+      ]
     }
-    const { rows: friends, count } = await db.Friend.findAndCountAll({
-      where: whereClause,
+    const { rows, count } = await db.Friend.findAndCountAll({
+      where: { userId },
       include: [
         {
           model: db.User,
-          as: 'friend',
-          attributes: ['userId', 'email', 'firstName', 'lastName']
+          where: friendWhere,
+          attributes: ['userId', 'email', 'firstName', 'lastName', 'avatar']
         }
       ],
+      distinct: true,
       offset,
       limit
     })
     return {
-      data: friends,
-      pagination: {
-        total: count,
-        page,
-        limit
-      }
+      data: rows,
+      pagination: { total: count, page, limit }
     }
   }
+
   async sendFriendRequest({ senderId, receiverId }) {
     if (senderId === receiverId) {
       throw new AppError(FRIEND_REQUEST_MESSAGES.CANNOT_SEND_REQUEST_TO_YOURSELF, HTTP_STATUS.UNPROCESSABLE_ENTITY)
@@ -143,7 +143,7 @@ class FriendServices {
         transaction: t
       })
       await t.commit()
-      return { deletedCount: deletedCount1 + deletedCount2 }
+      return true
     } catch (error) {
       if (!t.finished) await t.rollback()
       throw error
