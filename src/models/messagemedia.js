@@ -9,8 +9,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      models.MessageMedia.belongsTo(models.Message, { foreignKey: 'messageId', as: 'Message' });
-      models.MessageMedia.belongsTo(models.Media, { foreignKey: 'mediaTypeId', as: 'MediaType' });
+      models.MessageMedia.belongsTo(models.Message, { foreignKey: 'messageId', as: 'message' })
+      models.MessageMedia.belongsTo(models.Media, { foreignKey: 'mediaTypeId', as: 'mediaType' })
     }
   }
   MessageMedia.init(

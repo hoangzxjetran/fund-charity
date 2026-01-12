@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Media.hasMany(models.CampaignMedia, { foreignKey: 'mediaTypeId', as: 'campaignMedia' })
       Media.hasMany(models.OrgMedia, { foreignKey: 'mediaTypeId', as: 'orgMedia' })
+      Media.hasMany(models.MessageMedia, { foreignKey: 'mediaTypeId', as: 'messageMedia' })
     }
   }
   Media.init(

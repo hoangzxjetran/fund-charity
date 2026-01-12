@@ -9,9 +9,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      models.Message.belongsTo(models.Conversation, { foreignKey: 'conversationId', as: 'Conversation' });
-      models.Message.belongsTo(models.User, { foreignKey: 'senderId', as: 'sender' });
-      models.Message.hasMany(models.MessageMedia, { foreignKey: 'messageId', as: 'Media' });
+      models.Message.belongsTo(models.Conversation, { foreignKey: 'conversationId', as: 'conversation' })
+      models.Message.belongsTo(models.User, { foreignKey: 'senderId', as: 'sender' })
+      models.Message.hasMany(models.MessageMedia, { foreignKey: 'messageId', as: 'media' })
     }
   }
   Message.init(
@@ -34,11 +34,6 @@ module.exports = (sequelize, DataTypes) => {
       content: {
         type: DataTypes.TEXT,
         allowNull: false
-      },
-      messageMediaId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: { model: 'MessageMedias', key: 'messageMediaId' }
       },
       createdAt: {
         type: DataTypes.DATE,
