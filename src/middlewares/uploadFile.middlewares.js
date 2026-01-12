@@ -137,6 +137,23 @@ const resizeImagesComment = async (req, res, next) => {
   next()
 }
 
+const resizeImageMessage = async (req, res, next) => {
+  if (!req.files || req.files.length === 0) return next()
+  await Promise.all(
+    req.files.map(async (file) => {
+      if (file.mimetype.startsWith('image')) {
+        file.filename = `message-${v4()}.jpeg`
+        file.buffer = await sharp(file.buffer)
+          .resize({ width: 200, height: 200, fit: 'cover' })
+          .toFormat('jpeg')
+          .jpeg({ quality: 100 })
+          .toBuffer()
+      }
+    })
+  )
+  next()
+}
+
 const renameVideo = (req, res, next) => {
   if (!req.file || !req.file.mimetype.startsWith('video')) {
     return next()
@@ -198,6 +215,29 @@ const multerMediaFund = multer({
   }
 })
 
+const multerMediaMessage = multer({
+  storage: multerStorage,
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = [
+      'image',
+      'video',
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/zip'
+    ]
+    const isValid = allowedTypes.some((type) => file.mimetype.startsWith(type))
+    if (isValid) {
+      cb(null, true)
+    } else {
+      cb(new AppError('Unsupported file type', HTTP_STATUS.BAD_REQUEST), false)
+    }
+  },
+  limits: {
+    fileSize: 1024 * 1024 * 50
+  }
+})
+
 const uploadOrgAvatar = multerOrgAvatar.single('file')
 const uploadOrgMedia = multerOrgMedia.array('files', 5)
 const uploadCampaignMedia = multerCampaignMedia.array('files', 10)
@@ -206,6 +246,7 @@ const uploadIconFundCategory = multerIconFundCategory.single('file')
 const uploadBannerFund = multerBannerFund.single('file')
 const uploadMediaFund = multerMediaFund.array('files', 10)
 const uploadImagesComment = multerMediaFund.array('files', 4)
+const uploadImagesMessage = multerMediaMessage.array('files', 5)
 
 module.exports = {
   renameVideo,
@@ -217,6 +258,7 @@ module.exports = {
   resizeBannerFund,
   resizeImagesFund,
   resizeImagesComment,
+  resizeImageMessage,
 
   uploadOrgAvatar,
   uploadOrgMedia,
@@ -225,5 +267,6 @@ module.exports = {
   uploadBannerFund,
   uploadIconFundCategory,
   uploadMediaFund,
-  uploadImagesComment
+  uploadImagesComment,
+  uploadImagesMessage
 }

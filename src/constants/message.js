@@ -359,7 +359,14 @@ const CONVERSATION_MESSAGES = {
   CONVERSATION_NOT_FOUND: 'Conversation not found',
   CONVERSATION_ID_REQUIRED: 'Conversation ID is required',
   CONVERSATION_ID_INVALID: 'Conversation ID must be a positive integer',
-  TYPE_INVALID: 'Conversation type must be one of the following: private, group'
+  TYPE_INVALID: 'Conversation type must be one of the following: private, group',
+  CONTENT_INVALID: 'Content must be a string',
+  MEDIA_MUST_BE_ARRAY: 'Media must be an array',
+  MEDIA_URL_REQUIRED: 'Media URL is required',
+  MEDIA_TYPE_ID_REQUIRED: 'Media type ID is required',
+  MEDIA_TYPE_ID_MUST_BE_INT: 'Media type ID must be an integer',
+  CONTENT_OR_MEDIA_REQUIRED: 'Either content or media is required'
+
 }
 
 module.exports = {
